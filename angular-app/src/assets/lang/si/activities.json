@@ -1,0 +1,11 @@
+{
+  "activities": {
+    "subtitle": "Celotna zgodovina pohodov",
+    "empty": "Ni še zabeleženih aktivnosti.",
+    "addActivity": "Dodaj aktivnost",
+    "addTitle": "Dodaj aktivnost",
+    "editTitle": "Uredi aktivnost",
+    "deleteTitle": "Izbrišem aktivnost?",
+    "deleteConfirmation": "Ali res želiš odstraniti to aktivnost?"
+  }
+}

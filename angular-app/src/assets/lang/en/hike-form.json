@@ -1,0 +1,11 @@
+{
+  "hikeForm": {
+    "activityType": "Activity type",
+    "hiking": "Hiking",
+    "fitness": "Fitness",
+    "name": "Activity name",
+    "metres": "Metres",
+    "minutes": "Minutes",
+    "personRequired": "At least one person needs to be added."
+  }
+}

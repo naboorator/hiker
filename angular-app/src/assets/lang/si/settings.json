@@ -1,0 +1,22 @@
+{
+  "settings": {
+    "subtitle": "Nastavi svoj dnevnik",
+    "logName": "Ime dnevnika",
+    "yourName": "Tvoje ime",
+    "save": "Shrani nastavitve",
+    "saved": "Nastavitve so shranjene.",
+    "backupTitle": "Varnostna kopija aktivnosti",
+    "backupDescription": "Uvoz združi aktivnosti z obstoječim dnevnikom.",
+    "export": "Izvozi aktivnosti",
+    "import": "Uvozi aktivnosti",
+    "importing": "Uvažanje aktivnosti…",
+    "importSuccess": "Uspešno uvoženih aktivnosti: {{ imported }}.",
+    "importSuccessWithSkipped": "Uspešno uvoženih aktivnosti: {{ imported }} ({{ skipped }} jih je že obstajalo).",
+    "importError": "Podatkov ni bilo mogoče uvoziti. Izberi veljavno datoteko varnostne kopije.",
+    "clearAll": "Izbriši vse aktivnosti",
+    "clearTitle": "Izbrišem vse aktivnosti?",
+    "clearDescription": "Pred odstranitvijo pohodov se bo prenesla varnostna kopija JSON.",
+    "clear": "Izbriši aktivnosti",
+    "clearSuccess": "Varnostna kopija je shranjena in vse aktivnosti so izbrisane."
+  }
+}

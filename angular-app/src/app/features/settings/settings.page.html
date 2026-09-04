@@ -1,0 +1,55 @@
+<main>
+  <app-header [appName]="store.settings().appName" [subtitle]="'settings.subtitle' | transloco" />
+  <section>
+    <h2>{{ 'common.settings' | transloco }}</h2>
+    <form (submit)="save($event)">
+      <label>{{ 'settings.logName' | transloco }}<input [formField]="settingsForm.appName" /></label
+      ><label
+        >{{ 'settings.yourName' | transloco }}<input [formField]="settingsForm.ownerName"
+      /></label>
+      <button type="submit">{{ 'settings.save' | transloco }}</button>
+    </form>
+    @if (saved()) {
+      <p class="status">{{ 'settings.saved' | transloco }}</p>
+    }
+  </section>
+  <section>
+    <h2>{{ 'settings.backupTitle' | transloco }}</h2>
+    <p>{{ 'settings.backupDescription' | transloco }}</p>
+    <div class="backup">
+      <button type="button" (click)="download()">{{ 'settings.export' | transloco }}</button
+      ><label class="import"
+        >{{ 'settings.import' | transloco
+        }}<input type="file" accept="application/json,.json" (change)="import($event)"
+      /></label>
+    </div>
+    @if (importStatus()) {
+      <p class="status">{{ importStatus() }}</p>
+    }
+    <button type="button" class="danger" (click)="confirmClear.set(true)">
+      {{ 'settings.clearAll' | transloco }}
+    </button>
+  </section>
+  @if (confirmClear()) {
+    <div class="overlay" role="dialog" aria-modal="true">
+      <section class="dialog">
+        <button
+          class="x"
+          (click)="confirmClear.set(false)"
+          [attr.aria-label]="'common.close' | transloco"
+        >
+          ×
+        </button>
+        <h2>{{ 'settings.clearTitle' | transloco }}</h2>
+        <p>{{ 'settings.clearDescription' | transloco }}</p>
+        <div class="actions">
+          <button type="button" (click)="confirmClear.set(false)">
+            {{ 'common.cancel' | transloco }}</button
+          ><button type="button" class="danger" (click)="clear()">
+            {{ 'settings.clear' | transloco }}
+          </button>
+        </div>
+      </section>
+    </div>
+  }
+</main>

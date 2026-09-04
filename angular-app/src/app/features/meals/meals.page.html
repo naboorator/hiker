@@ -1,0 +1,13 @@
+<main>
+  <app-header [appName]="store.settings().appName" [subtitle]="'meals.subtitle' | transloco" />
+  <div class="cards">
+    @for (meal of store.meals(); track meal.title) {
+      <article>
+        <span>{{ meal.type | transloco }}</span>
+        <h2>{{ meal.title | transloco }}</h2>
+        <p>{{ meal.description | transloco }}</p>
+        <b>{{ 'meals.fitnessFriendly' | transloco }}</b>
+      </article>
+    }
+  </div>
+</main>

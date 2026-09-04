@@ -1,0 +1,32 @@
+{
+  "graphs": {
+    "subtitle": "Time active by day",
+    "timeChartTitle": "Time active by day",
+    "activityChartTitle": "Activities by day",
+    "empty": "Record an activity to see your active time here.",
+    "monthTotal": "Monthly total: {{ time }}",
+    "monthActivityTotal": "Monthly activities: {{ count }}",
+    "chooseMonth": "Choose month",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "timeChartDescription": "Daily time active for {{ month }}",
+    "activityChartDescription": "Daily activity count for {{ month }}",
+    "xAxis": "Day of month",
+    "yAxis": "Time active",
+    "activityYAxis": "Activities",
+    "timeDayValue": "Day {{ day }}: {{ time }}",
+    "activityDayValue": "Day {{ day }}: {{ count }} activities",
+    "participationChartTitle": "Solo and shared activities",
+    "solo": "Solo",
+    "withOthers": "With others",
+    "participationDescription": "Activities for {{ month }}: {{ solo }} solo and {{ withOthers }} with others",
+    "noParticipationData": "There are no activities to compare for this month.",
+    "weightChartTitle": "Weight progress",
+    "weightChartDescription": "All recorded weight measurements over time",
+    "weightYAxis": "Body weight",
+    "weightXAxis": "Measurement date",
+    "weightPointValue": "{{ date }}: {{ weight }}",
+    "weightChange": "Overall change: {{ change }}",
+    "noWeightData": "Record a weight measurement to see your progress here."
+  }
+}

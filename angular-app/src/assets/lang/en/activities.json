@@ -1,0 +1,11 @@
+{
+  "activities": {
+    "subtitle": "Your complete hiking history",
+    "empty": "No activities yet.",
+    "addActivity": "Add activity",
+    "addTitle": "Add activity",
+    "editTitle": "Edit activity",
+    "deleteTitle": "Delete activity?",
+    "deleteConfirmation": "Are you sure you want to remove this activity?"
+  }
+}

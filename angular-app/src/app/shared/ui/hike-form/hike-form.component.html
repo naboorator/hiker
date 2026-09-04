@@ -1,0 +1,76 @@
+<form (submit)="submit($event)">
+  <div class="activity-type">
+    <span class="activity-label">{{ 'hikeForm.activityType' | transloco }}</span>
+    <details class="activity-select" #activityMenu>
+      <summary>
+        <span class="activity-icon" aria-hidden="true">
+          {{ model().activityType === 'hiking' ? '🥾' : '🏋️' }}
+        </span>
+        <strong>
+          {{
+            (model().activityType === 'hiking' ? 'hikeForm.hiking' : 'hikeForm.fitness') | transloco
+          }}
+        </strong>
+        <span class="chevron" aria-hidden="true">⌄</span>
+      </summary>
+      <div class="activity-options" role="listbox">
+        <button
+          type="button"
+          role="option"
+          [attr.aria-selected]="model().activityType === 'hiking'"
+          (click)="selectActivityType('hiking'); activityMenu.open = false"
+        >
+          <span class="activity-icon" aria-hidden="true">🥾</span>
+          <span>{{ 'hikeForm.hiking' | transloco }}</span>
+        </button>
+        <button
+          type="button"
+          role="option"
+          [attr.aria-selected]="model().activityType === 'fitness'"
+          (click)="selectActivityType('fitness'); activityMenu.open = false"
+        >
+          <span class="activity-icon" aria-hidden="true">🏋️</span>
+          <span>{{ 'hikeForm.fitness' | transloco }}</span>
+        </button>
+      </div>
+    </details>
+  </div>
+  @if (model().activityType === 'hiking') {
+    <input
+      [formField]="hikeForm.name"
+      [placeholder]="'hikeForm.name' | transloco"
+      list="hike-names"
+    />
+    <datalist id="hike-names">
+      @for (name of sortedNames(); track name) {
+        <option [value]="name"></option>
+      }
+    </datalist>
+  }
+  <input [formField]="hikeForm.date" type="date" />
+  @if (model().activityType === 'hiking') {
+    <input
+      [formField]="hikeForm.metres"
+      type="number"
+      [placeholder]="'hikeForm.metres' | transloco"
+    />
+  }
+  <input
+    [formField]="hikeForm.minutes"
+    type="number"
+    [placeholder]="'hikeForm.minutes' | transloco"
+  />
+  <app-people-select
+    [ownerName]="ownerName()"
+    [suggestions]="peopleSuggestions()"
+    [selectedPeople]="model().people"
+    (selectionChange)="setPeople($event)"
+  />
+  @if (!model().people.length) {
+    <p>{{ 'hikeForm.personRequired' | transloco }}</p>
+  }
+  <div class="actions">
+    <button type="button" (click)="cancelled.emit()">{{ 'common.cancel' | transloco }}</button
+    ><button type="submit" [disabled]="!model().people.length">{{ buttonText() }}</button>
+  </div>
+</form>

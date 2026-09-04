@@ -1,0 +1,12 @@
+{
+  "meals": {
+    "subtitle": "Two fitness-friendly ideas for today",
+    "fitnessFriendly": "Fitness-friendly",
+    "breakfast": "Breakfast",
+    "dinner": "Dinner",
+    "proteinOats": "Protein oats",
+    "proteinOatsDescription": "Oats, yogurt and berries",
+    "salmonPlate": "Salmon sweet potato plate",
+    "salmonPlateDescription": "Salmon, sweet potato and broccoli"
+  }
+}

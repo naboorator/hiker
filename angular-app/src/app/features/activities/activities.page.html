@@ -1,0 +1,91 @@
+<main>
+  <app-header [appName]="store.settings().appName" [subtitle]="'activities.subtitle' | transloco" />
+  @if (store.hikes().length) {
+    <div class="page-actions">
+      <button type="button" (click)="adding.set(true)">
+        {{ 'activities.addActivity' | transloco }}
+      </button>
+    </div>
+  }
+  @if (!store.loading() && !store.hikes().length) {
+    <section class="empty-state">
+      <p>{{ 'activities.empty' | transloco }}</p>
+      <button type="button" (click)="adding.set(true)">
+        {{ 'activities.addActivity' | transloco }}
+      </button>
+    </section>
+  }
+  @for (month of months(); track month.key) {
+    <app-activity-month-list
+      [title]="month.title"
+      [days]="month.days"
+      [minutes]="month.minutes"
+      [metres]="month.metres"
+      [allowEdits]="true"
+      (remove)="pendingDelete.set($event)"
+      (edit)="selected.set($event)"
+    />
+  }
+  @if (adding()) {
+    <div
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="'activities.addTitle' | transloco"
+    >
+      <section>
+        <button
+          class="close"
+          type="button"
+          (click)="adding.set(false)"
+          [attr.aria-label]="'common.close' | transloco"
+        >
+          ×
+        </button>
+        <h2>{{ 'activities.addTitle' | transloco }}</h2>
+        <app-hike-form
+          [ownerName]="store.settings().ownerName"
+          [hikeNames]="names()"
+          [defaultHikingName]="store.lastHikingName()"
+          [peopleSuggestions]="store.people()"
+          [defaultActivityType]="store.lastActivityType()"
+          [buttonText]="'activities.addActivity' | transloco"
+          (saved)="add($event)"
+          (cancelled)="adding.set(false)"
+        />
+      </section>
+    </div>
+  }
+  @if (selected(); as hike) {
+    <div class="modal">
+      <section>
+        <button class="close" (click)="selected.set(null)">×</button>
+        <h2>{{ 'activities.editTitle' | transloco }}</h2>
+        <app-hike-form
+          [ownerName]="store.settings().ownerName"
+          [hikeNames]="names()"
+          [defaultHikingName]="store.lastHikingName()"
+          [peopleSuggestions]="store.people()"
+          [draft]="draft(hike)"
+          [buttonText]="'common.save' | transloco"
+          (saved)="save(hike.id, $event)"
+          (cancelled)="selected.set(null)"
+        />
+      </section>
+    </div>
+  }
+  @if (pendingDelete()) {
+    <div class="modal">
+      <section>
+        <h2>{{ 'activities.deleteTitle' | transloco }}</h2>
+        <p>{{ 'activities.deleteConfirmation' | transloco }}</p>
+        <div class="actions">
+          <button (click)="pendingDelete.set(null)">{{ 'common.cancel' | transloco }}</button
+          ><button class="danger" (click)="confirmDelete()">
+            {{ 'common.delete' | transloco }}
+          </button>
+        </div>
+      </section>
+    </div>
+  }
+</main>

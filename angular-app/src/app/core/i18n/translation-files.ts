@@ -1,0 +1,15 @@
+export const translationFiles = [
+  'common',
+  'home',
+  'activities',
+  'graphs',
+  'meals',
+  'settings',
+  'app-header',
+  'hike-form',
+  'hike-list',
+  'activity-month-list',
+  'my-weight',
+  'weight-records',
+  'people-select',
+] as const;

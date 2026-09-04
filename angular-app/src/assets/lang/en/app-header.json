@@ -1,0 +1,9 @@
+{
+  "appHeader": {
+    "activityDone": "{{ count }} activity done",
+    "noActivities": "0 activities",
+    "openMenu": "Open menu",
+    "graphs": "Graphs",
+    "todayMeal": "Today’s meal"
+  }
+}

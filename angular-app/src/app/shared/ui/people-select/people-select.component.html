@@ -1,0 +1,42 @@
+<div class="field">
+  <span class="label">{{ 'peopleSelect.label' | transloco }}</span>
+  <details class="select" #menu>
+    <summary>
+      <span class="people-icon" aria-hidden="true">👥</span>
+      <strong>
+        @if (selectedPeople().length) {
+          {{ selectedPeople().join(', ') }}
+        } @else {
+          {{ 'peopleSelect.placeholder' | transloco }}
+        }
+      </strong>
+      <span class="chevron" aria-hidden="true">⌄</span>
+    </summary>
+    <div class="menu">
+      <div class="new-person">
+        <input
+          #newPerson
+          type="text"
+          [placeholder]="'peopleSelect.newPerson' | transloco"
+          (keydown.enter)="add(newPerson, $event)"
+        />
+        <button type="button" (click)="add(newPerson)">
+          {{ 'peopleSelect.add' | transloco }}
+        </button>
+      </div>
+      <div class="options" role="listbox" aria-multiselectable="true">
+        @for (name of options(); track name) {
+          <button
+            type="button"
+            role="option"
+            [attr.aria-selected]="isSelected(name)"
+            (click)="toggle(name)"
+          >
+            <span class="checkbox" aria-hidden="true">{{ isSelected(name) ? '✓' : '' }}</span>
+            <span>{{ name }}</span>
+          </button>
+        }
+      </div>
+    </div>
+  </details>
+</div>

@@ -1,0 +1,8 @@
+{
+  "peopleSelect": {
+    "label": "Osebe",
+    "placeholder": "Izberi osebe",
+    "newPerson": "Vpiši ime nove osebe",
+    "add": "Dodaj"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "hikeForm": {
+    "activityType": "Vrsta aktivnosti",
+    "hiking": "Pohodništvo",
+    "fitness": "Fitnes",
+    "name": "Ime aktivnosti",
+    "metres": "Metri",
+    "minutes": "Minute",
+    "personRequired": "Dodati moraš vsaj eno osebo."
+  }
+}

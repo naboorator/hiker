@@ -1,0 +1,174 @@
+main {
+  max-width: 680px;
+  margin: auto;
+  padding: 1.5rem 1.1rem 3rem;
+}
+
+section {
+  margin-bottom: 1rem;
+  padding: 1.1rem;
+  border-radius: 22px;
+  background: #ffffffdf;
+  box-shadow: 0 10px 26px #31584322;
+}
+
+h2,
+p {
+  margin: 0;
+}
+
+.records {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+article {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem;
+  border: 1px solid #dfebdf;
+  border-radius: 15px;
+}
+
+.calendar-date {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  align-content: center;
+  border-radius: 12px;
+  background: #e4efe6;
+  color: #245e3b;
+}
+
+.calendar-date b {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.calendar-date small {
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.measurement {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.measurement small,
+.empty {
+  color: #849188;
+}
+
+.record-actions,
+.dialog-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: 0.65rem 0.8rem;
+  background: #1f6a43;
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.edit,
+.secondary {
+  background: #e4efe6;
+  color: #245e3b;
+}
+
+.delete {
+  background: #a34646;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: #10251a99;
+}
+
+.dialog {
+  position: relative;
+  width: min(100%, 440px);
+}
+
+.close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  border-radius: 50%;
+  padding: 0.2rem 0.55rem;
+  background: #edf1ed;
+  color: #486055;
+  font-size: 1.3rem;
+}
+
+form {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+label {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: 750;
+}
+
+input {
+  border: 1px solid #cfdcd0;
+  border-radius: 12px;
+  padding: 0.75rem;
+  font: inherit;
+}
+
+.weight-input {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.weight-input > span {
+  color: #587062;
+  font-weight: 750;
+}
+
+.dialog-actions {
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.dialog p {
+  margin: 1rem 0;
+  color: #65776d;
+}
+
+@media (max-width: 520px) {
+  article {
+    grid-template-columns: auto 1fr;
+  }
+
+  .record-actions {
+    grid-column: 1 / -1;
+  }
+
+  .record-actions button {
+    flex: 1;
+  }
+}

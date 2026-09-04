@@ -1,0 +1,45 @@
+<section>
+  <div class="title">
+    <h2>{{ title() }}</h2>
+    <span>{{ format(minutes()) }} · {{ distance(metres()) }}</span>
+  </div>
+  @for (day of days(); track day.date) {
+    <article class="day">
+      <div class="calendar">
+        <b>{{ day.day }}</b
+        ><small>{{ day.month }}</small>
+      </div>
+      <div>
+        <div class="daily">
+          <strong>
+            @if (day.hikes.length === 1) {
+              {{ day.hikes[0].name }}
+            } @else {
+              {{ 'activityMonthList.activityCount' | transloco: { count: day.hikes.length } }}
+            }
+          </strong>
+          @if (day.hikes.length > 1) {
+            <span>{{ format(day.minutes) }} · {{ distance(day.metres) }}</span>
+          }
+        </div>
+        <div class="entries">
+          @for (hike of day.hikes; track hike.id) {
+            <div>
+              <span
+                >{{ hike.name }} <em>· {{ hike.people.join(', ') }}</em></span
+              ><small>{{ format(hike.minutes) }} · {{ distance(hike.metres) }}</small>
+              @if (allowEdits()) {
+                <aside>
+                  <button type="button" (click)="edit.emit(hike)">✎</button
+                  ><button type="button" (click)="remove.emit(hike.id)">×</button>
+                </aside>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </article>
+  } @empty {
+    <p class="empty">{{ 'activityMonthList.empty' | transloco }}</p>
+  }
+</section>

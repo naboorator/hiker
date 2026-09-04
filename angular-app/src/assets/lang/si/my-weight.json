@@ -1,0 +1,14 @@
+{
+  "myWeight": {
+    "title": "Moja teža",
+    "description": "Dodaj meritve z datumi za spremljanje sprememb teže.",
+    "bodyWeight": "Telesna teža",
+    "measurementDate": "Datum meritve",
+    "save": "Shrani težo",
+    "saved": "Meritev teže je shranjena.",
+    "history": "Zabeležene teže",
+    "open": "Zabeleži težo",
+    "close": "Zapri vnos teže",
+    "emptyPrompt": "Telesna teža še ni zabeležena. Dodaj svojo težo za spremljanje napredka."
+  }
+}

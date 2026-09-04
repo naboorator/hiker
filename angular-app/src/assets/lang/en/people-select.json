@@ -1,0 +1,8 @@
+{
+  "peopleSelect": {
+    "label": "People",
+    "placeholder": "Select people",
+    "newPerson": "Type a new person's name",
+    "add": "Add"
+  }
+}

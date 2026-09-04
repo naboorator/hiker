@@ -1,0 +1,20 @@
+{
+  "common": {
+    "activities": "Activities",
+    "cancel": "Cancel",
+    "close": "Close",
+    "delete": "Delete",
+    "english": "English",
+    "hourShort": "h",
+    "kilometreShort": "km",
+    "language": "Language",
+    "metreShort": "m",
+    "minuteShort": "min",
+    "save": "Save",
+    "settings": "Settings",
+    "slovenian": "Slovenščina",
+    "defaultAppName": "My hike log",
+    "defaultOwner": "You",
+    "unnamedHike": "Unnamed hike"
+  }
+}

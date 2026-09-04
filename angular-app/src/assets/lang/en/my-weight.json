@@ -1,0 +1,14 @@
+{
+  "myWeight": {
+    "title": "My weight",
+    "description": "Add dated measurements to track weight changes over time.",
+    "bodyWeight": "Body weight",
+    "measurementDate": "Measurement date",
+    "save": "Save weight",
+    "saved": "Weight measurement saved.",
+    "history": "Recorded weights",
+    "open": "Record weight",
+    "close": "Close weight dialog",
+    "emptyPrompt": "No body weight has been recorded yet. Please add your weight to track your progress."
+  }
+}

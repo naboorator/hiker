@@ -1,0 +1,22 @@
+{
+  "settings": {
+    "subtitle": "Configure your log",
+    "logName": "Log name",
+    "yourName": "Your name",
+    "save": "Save settings",
+    "saved": "Settings saved.",
+    "backupTitle": "Activity backup",
+    "backupDescription": "Import merges activities with your existing log.",
+    "export": "Export activities",
+    "import": "Import activities",
+    "importing": "Importing activities…",
+    "importSuccess": "Successfully imported {{ imported }} activities.",
+    "importSuccessWithSkipped": "Successfully imported {{ imported }} activities ({{ skipped }} already existed).",
+    "importError": "Could not import data. Please choose a valid backup file.",
+    "clearAll": "Clear all activities",
+    "clearTitle": "Clear all activities?",
+    "clearDescription": "A JSON backup will download before your hikes are removed.",
+    "clear": "Clear activities",
+    "clearSuccess": "Backup saved and all activities cleared."
+  }
+}

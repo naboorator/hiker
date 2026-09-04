@@ -1,0 +1,14 @@
+{
+  "weightRecords": {
+    "navigation": "My weight",
+    "subtitle": "Manage weight measurements",
+    "title": "Weight history",
+    "empty": "No weight measurements have been recorded yet.",
+    "edit": "Edit",
+    "editTitle": "Edit weight measurement",
+    "bodyWeight": "Body weight",
+    "measurementDate": "Measurement date",
+    "deleteTitle": "Delete weight measurement?",
+    "deleteDescription": "Delete the {{ weight }} kg measurement recorded on {{ date }}?"
+  }
+}

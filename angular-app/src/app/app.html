@@ -1,0 +1,20 @@
+<router-outlet />
+<footer [attr.aria-label]="'common.language' | transloco">
+  <button
+    type="button"
+    [class.active]="activeLanguage() === 'si'"
+    [attr.aria-pressed]="activeLanguage() === 'si'"
+    (click)="changeLanguage('si')"
+  >
+    si
+  </button>
+  <span aria-hidden="true">|</span>
+  <button
+    type="button"
+    [class.active]="activeLanguage() === 'en'"
+    [attr.aria-pressed]="activeLanguage() === 'en'"
+    (click)="changeLanguage('en')"
+  >
+    en
+  </button>
+</footer>

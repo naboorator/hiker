@@ -1,0 +1,18 @@
+<div class="list">
+  @for (hike of hikes(); track hike.id) {
+    <article>
+      <div>
+        <strong>{{ hike.name }}</strong
+        ><span
+          >{{ hike.minutes }} {{ 'common.minuteShort' | transloco }} · {{ hike.metres }}
+          {{ 'common.metreShort' | transloco }}</span
+        >
+      </div>
+      <button type="button" (click)="remove.emit(hike.id)">
+        {{ 'common.delete' | transloco }}
+      </button>
+    </article>
+  } @empty {
+    <p>{{ 'hikeList.empty' | transloco }}</p>
+  }
+</div>

@@ -1,0 +1,6 @@
+{
+  "activityMonthList": {
+    "activityCount": "Aktivnosti: {{ count }}",
+    "empty": "Ni zabeleženih aktivnosti."
+  }
+}

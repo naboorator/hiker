@@ -1,0 +1,33 @@
+<header>
+  <div class="identity">
+    <img src="hike-logo.png" alt="" />
+    <div>
+      <a class="brand" routerLink="/">{{ appName() }}</a>
+      @if (subtitle()) {
+        <p>{{ subtitle() }}</p>
+      }
+    </div>
+  </div>
+  <div class="tools">
+    <span class="status" [class.done]="store.todayHikes().length">
+      {{
+        (store.todayHikes().length ? 'appHeader.activityDone' : 'appHeader.noActivities')
+          | transloco: { count: store.todayHikes().length }
+      }}
+    </span>
+    <details>
+      <summary [attr.aria-label]="'appHeader.openMenu' | transloco">☰</summary>
+      <nav>
+        <a routerLink="/activities" routerLinkActive="active">{{
+          'common.activities' | transloco
+        }}</a
+        ><a routerLink="/graphs" routerLinkActive="active">{{ 'appHeader.graphs' | transloco }}</a
+        ><a routerLink="/settings" routerLinkActive="active">{{ 'common.settings' | transloco }}</a
+        ><a routerLink="/meals" routerLinkActive="active">{{ 'appHeader.todayMeal' | transloco }}</a
+        ><a routerLink="/my-weight" routerLinkActive="active">{{
+          'weightRecords.navigation' | transloco
+        }}</a>
+      </nav>
+    </details>
+  </div>
+</header>

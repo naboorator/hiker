@@ -1,0 +1,30 @@
+.list {
+  display: grid;
+  gap: 0.55rem;
+}
+article {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem;
+  border-radius: 14px;
+  background: #f6f9f5;
+}
+strong,
+span {
+  display: block;
+}
+span,
+p {
+  color: #65776d;
+  font-size: 0.86rem;
+}
+button {
+  border: 0;
+  background: transparent;
+  color: #a34646;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}

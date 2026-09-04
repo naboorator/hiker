@@ -1,0 +1,120 @@
+form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+input {
+  min-width: 0;
+  border: 1px solid #cfdcd0;
+  border-radius: 12px;
+  padding: 0.8rem;
+  background: #fff;
+  font: inherit;
+}
+.activity-type {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 0.35rem;
+  color: #587062;
+  font-size: 0.85rem;
+  font-weight: 750;
+}
+.activity-select {
+  position: relative;
+}
+.activity-select summary {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 48px;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid #cfdcd0;
+  border-radius: 12px;
+  background: #fff;
+  color: #15251f;
+  cursor: pointer;
+  list-style: none;
+}
+.activity-select summary::-webkit-details-marker {
+  display: none;
+}
+.activity-icon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 10px;
+  background: #e4efe6;
+  font-size: 1.15rem;
+}
+.chevron {
+  color: #587062;
+  font-size: 1.2rem;
+  transition: transform 0.2s ease;
+}
+.activity-select[open] .chevron {
+  transform: rotate(180deg);
+}
+.activity-options {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  left: 0;
+  z-index: 3;
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.35rem;
+  border: 1px solid #dbe5de;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 12px 28px #19382b30;
+}
+.activity-options button {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.7rem;
+  border: 0;
+  border-radius: 10px;
+  padding: 0.5rem;
+  background: transparent;
+  color: #245e3b;
+  font: inherit;
+  font-weight: 750;
+  text-align: left;
+  cursor: pointer;
+}
+.activity-options button:hover,
+.activity-options button[aria-selected='true'] {
+  background: #edf5ee;
+}
+.actions {
+  grid-column: 1/-1;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.actions button {
+  border: 0;
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+  background: #e4efe6;
+  color: #245e3b;
+}
+.actions {
+  justify-content: space-between;
+}
+.actions button:last-child {
+  background: #1f6a43;
+  color: white;
+}
+p {
+  margin: 0;
+  color: #a34646;
+  font-size: 0.85rem;
+}

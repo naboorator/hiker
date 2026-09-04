@@ -1,0 +1,95 @@
+:host {
+  display: block;
+}
+h2 {
+  margin: 0 2.5rem 0 0;
+}
+p {
+  margin: 0.35rem 0 0;
+  color: #65776d;
+}
+form {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+label {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: 750;
+}
+input {
+  border: 1px solid #cfdcd0;
+  border-radius: 12px;
+  padding: 0.75rem;
+  font: inherit;
+}
+.weight-input {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.55rem;
+}
+.weight-input > span {
+  color: #587062;
+  font-weight: 750;
+}
+button {
+  border: 0;
+  border-radius: 12px;
+  padding: 0.8rem;
+  background: #1f6a43;
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+.status {
+  color: #245e3b;
+  font-weight: 750;
+}
+.history {
+  display: grid;
+  max-height: 260px;
+  overflow-y: auto;
+  gap: 0.55rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid #dfebdf;
+}
+.history h3 {
+  margin: 0 0 0.25rem;
+  font-size: 0.95rem;
+}
+.history article {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.history article > span:last-child {
+  display: grid;
+  gap: 0.15rem;
+}
+.history article > span:last-child small {
+  color: #849188;
+}
+.calendar-date {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  width: 48px;
+  height: 48px;
+  flex: none;
+  border-radius: 12px;
+  background: #e4efe6;
+  color: #245e3b;
+}
+.calendar-date b {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+.calendar-date small {
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}

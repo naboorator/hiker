@@ -1,0 +1,14 @@
+{
+  "weightRecords": {
+    "navigation": "Moja teža",
+    "subtitle": "Upravljaj meritve telesne teže",
+    "title": "Zgodovina telesne teže",
+    "empty": "Meritev telesne teže še ni.",
+    "edit": "Uredi",
+    "editTitle": "Uredi meritev telesne teže",
+    "bodyWeight": "Telesna teža",
+    "measurementDate": "Datum meritve",
+    "deleteTitle": "Izbrišem meritev telesne teže?",
+    "deleteDescription": "Izbrišem meritev {{ weight }} kg, zabeleženo dne {{ date }}?"
+  }
+}

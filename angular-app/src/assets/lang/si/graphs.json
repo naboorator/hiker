@@ -1,0 +1,32 @@
+{
+  "graphs": {
+    "subtitle": "Aktivni čas po dnevih",
+    "timeChartTitle": "Aktivni čas po dnevih",
+    "activityChartTitle": "Aktivnosti po dnevih",
+    "empty": "Zabeleži aktivnost, da se tukaj prikaže aktivni čas.",
+    "monthTotal": "Skupaj v mesecu: {{ time }}",
+    "monthActivityTotal": "Aktivnosti v mesecu: {{ count }}",
+    "chooseMonth": "Izberi mesec",
+    "previousMonth": "Prejšnji mesec",
+    "nextMonth": "Naslednji mesec",
+    "timeChartDescription": "Dnevni aktivni čas za {{ month }}",
+    "activityChartDescription": "Dnevno število aktivnosti za {{ month }}",
+    "xAxis": "Dan v mesecu",
+    "yAxis": "Aktivni čas",
+    "activityYAxis": "Aktivnosti",
+    "timeDayValue": "{{ day }}. dan: {{ time }}",
+    "activityDayValue": "{{ day }}. dan: {{ count }} aktivnosti",
+    "participationChartTitle": "Samostojne in skupne aktivnosti",
+    "solo": "Sam",
+    "withOthers": "Z drugimi",
+    "participationDescription": "Aktivnosti za {{ month }}: {{ solo }} samostojnih in {{ withOthers }} z drugimi",
+    "noParticipationData": "V tem mesecu ni aktivnosti za primerjavo.",
+    "weightChartTitle": "Napredek telesne teže",
+    "weightChartDescription": "Vse zabeležene meritve telesne teže skozi čas",
+    "weightYAxis": "Telesna teža",
+    "weightXAxis": "Datum meritve",
+    "weightPointValue": "{{ date }}: {{ weight }}",
+    "weightChange": "Skupna sprememba: {{ change }}",
+    "noWeightData": "Zabeleži meritev teže, da se tukaj prikaže napredek."
+  }
+}

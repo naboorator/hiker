@@ -1,0 +1,272 @@
+<main>
+  <app-header [appName]="store.settings().appName" [subtitle]="'graphs.subtitle' | transloco" />
+
+  <div class="month-picker" [attr.aria-label]="'graphs.chooseMonth' | transloco">
+    <button
+      type="button"
+      (click)="changeMonth(-1)"
+      [attr.aria-label]="'graphs.previousMonth' | transloco"
+    >
+      ‹
+    </button>
+    <strong>{{ monthLabel() }}</strong>
+    <button
+      type="button"
+      (click)="changeMonth(1)"
+      [disabled]="!canGoToNextMonth()"
+      [attr.aria-label]="'graphs.nextMonth' | transloco"
+    >
+      ›
+    </button>
+  </div>
+
+  <section>
+    <div class="chart-heading">
+      <h2>{{ 'graphs.timeChartTitle' | transloco }}</h2>
+      <p>{{ 'graphs.monthTotal' | transloco: { time: format(monthTotal()) } }}</p>
+    </div>
+    <div class="chart-scroll">
+      <svg
+        [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight"
+        role="img"
+        [attr.aria-label]="'graphs.timeChartDescription' | transloco: { month: monthLabel() }"
+      >
+        <text class="axis-title y-title" [attr.x]="16" [attr.y]="plot.top + 112">
+          {{ 'graphs.yAxis' | transloco }}
+        </text>
+        @for (tick of yTicks(); track tick.minutes) {
+          <line
+            class="grid horizontal"
+            [attr.x1]="plot.left"
+            [attr.x2]="plot.right"
+            [attr.y1]="tick.y"
+            [attr.y2]="tick.y"
+          />
+          <text class="y-label" [attr.x]="plot.left - 9" [attr.y]="tick.y + 4">
+            {{ format(tick.minutes) }}
+          </text>
+        }
+        @for (day of days(); track day.date) {
+          <line
+            class="grid vertical"
+            [attr.x1]="day.x"
+            [attr.x2]="day.x"
+            [attr.y1]="plot.top"
+            [attr.y2]="plot.bottom"
+          />
+          <text class="x-label" [attr.x]="day.x" [attr.y]="plot.bottom + 18">
+            {{ day.day }}
+          </text>
+        }
+        <polyline class="time-line" [attr.points]="timeLinePoints()" />
+        @for (day of days(); track day.date) {
+          <circle
+            class="time-point"
+            [class.inactive]="day.minutes === 0"
+            [attr.cx]="day.x"
+            [attr.cy]="day.y"
+            r="4"
+            tabindex="0"
+            [attr.aria-label]="timeDayLabel(day)"
+          >
+            <title>{{ timeDayLabel(day) }}</title>
+          </circle>
+        }
+        <text
+          class="axis-title x-title"
+          [attr.x]="(plot.left + plot.right) / 2"
+          [attr.y]="chartHeight - 8"
+        >
+          {{ 'graphs.xAxis' | transloco }}
+        </text>
+      </svg>
+    </div>
+  </section>
+
+  <section>
+    <div class="chart-heading">
+      <h2>{{ 'graphs.activityChartTitle' | transloco }}</h2>
+      <p>
+        {{ 'graphs.monthActivityTotal' | transloco: { count: monthActivityTotal() } }}
+      </p>
+    </div>
+    <div class="chart-scroll">
+      <svg
+        [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight"
+        role="img"
+        [attr.aria-label]="'graphs.activityChartDescription' | transloco: { month: monthLabel() }"
+      >
+        <text class="axis-title y-title" [attr.x]="16" [attr.y]="plot.top + 112">
+          {{ 'graphs.activityYAxis' | transloco }}
+        </text>
+        @for (tick of activityTicks(); track tick.count) {
+          <line
+            class="grid horizontal"
+            [attr.x1]="plot.left"
+            [attr.x2]="plot.right"
+            [attr.y1]="tick.y"
+            [attr.y2]="tick.y"
+          />
+          <text class="y-label" [attr.x]="plot.left - 9" [attr.y]="tick.y + 4">
+            {{ tick.count }}
+          </text>
+        }
+        @for (day of days(); track day.date) {
+          <line
+            class="grid vertical"
+            [attr.x1]="day.x"
+            [attr.x2]="day.x"
+            [attr.y1]="plot.top"
+            [attr.y2]="plot.bottom"
+          />
+          <text class="x-label" [attr.x]="day.x" [attr.y]="plot.bottom + 18">
+            {{ day.day }}
+          </text>
+        }
+        <polyline class="count-line" [attr.points]="activityLinePoints()" />
+        @for (day of days(); track day.date) {
+          <circle
+            class="count-point"
+            [class.inactive]="day.activityCount === 0"
+            [attr.cx]="day.x"
+            [attr.cy]="day.activityY"
+            r="4"
+            tabindex="0"
+            [attr.aria-label]="activityDayLabel(day)"
+          >
+            <title>{{ activityDayLabel(day) }}</title>
+          </circle>
+        }
+        <text
+          class="axis-title x-title"
+          [attr.x]="(plot.left + plot.right) / 2"
+          [attr.y]="chartHeight - 8"
+        >
+          {{ 'graphs.xAxis' | transloco }}
+        </text>
+      </svg>
+    </div>
+  </section>
+
+  <section>
+    <div class="chart-heading">
+      <h2>{{ 'graphs.participationChartTitle' | transloco }}</h2>
+      <p>
+        {{ 'graphs.monthActivityTotal' | transloco: { count: participation().total } }}
+      </p>
+    </div>
+    @if (participation().total) {
+      <div class="pie-layout">
+        <div
+          class="pie-chart"
+          role="img"
+          [style.--solo-percentage.%]="participation().soloPercentage"
+          [attr.aria-label]="
+            'graphs.participationDescription'
+              | transloco
+                : {
+                    solo: participation().solo,
+                    withOthers: participation().withOthers,
+                    month: monthLabel(),
+                  }
+          "
+        ></div>
+        <div class="pie-legend">
+          <div>
+            <i class="solo-swatch"></i>
+            <span>{{ 'graphs.solo' | transloco }}</span>
+            <strong>{{ participation().solo }} · {{ participation().soloPercentage }} %</strong>
+          </div>
+          <div>
+            <i class="together-swatch"></i>
+            <span>{{ 'graphs.withOthers' | transloco }}</span>
+            <strong
+              >{{ participation().withOthers }} ·
+              {{ participation().withOthersPercentage }} %</strong
+            >
+          </div>
+        </div>
+      </div>
+    } @else {
+      <p class="empty-chart">{{ 'graphs.noParticipationData' | transloco }}</p>
+    }
+  </section>
+
+  <section>
+    <div class="chart-heading">
+      <h2>{{ 'graphs.weightChartTitle' | transloco }}</h2>
+      @if (weightChart().points.length > 1) {
+        <p>
+          {{
+            'graphs.weightChange'
+              | transloco
+                : {
+                    change:
+                      (weightChart().change > 0 ? '+' : '') + formatWeight(weightChart().change),
+                  }
+          }}
+        </p>
+      }
+    </div>
+    @if (weightChart().points.length) {
+      <div class="chart-scroll">
+        <svg
+          class="weight-chart"
+          [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight"
+          role="img"
+          [attr.aria-label]="'graphs.weightChartDescription' | transloco"
+        >
+          <text class="axis-title y-title" [attr.x]="16" [attr.y]="plot.top + 112">
+            {{ 'graphs.weightYAxis' | transloco }}
+          </text>
+          @for (tick of weightChart().ticks; track tick.weightKg) {
+            <line
+              class="grid horizontal"
+              [attr.x1]="plot.left"
+              [attr.x2]="plot.right"
+              [attr.y1]="tick.y"
+              [attr.y2]="tick.y"
+            />
+            <text class="y-label" [attr.x]="plot.left - 9" [attr.y]="tick.y + 4">
+              {{ formatWeight(tick.weightKg) }}
+            </text>
+          }
+          @for (point of weightChart().points; track point.id) {
+            <line
+              class="grid vertical"
+              [attr.x1]="point.x"
+              [attr.x2]="point.x"
+              [attr.y1]="plot.top"
+              [attr.y2]="plot.bottom"
+            />
+            <text class="weight-x-label" [attr.x]="point.x" [attr.y]="plot.bottom + 18">
+              {{ formatWeightDate(point.recordedOn) }}
+            </text>
+          }
+          <polyline class="weight-line" [attr.points]="weightChart().linePoints" />
+          @for (point of weightChart().points; track point.id) {
+            <circle
+              class="weight-point"
+              [attr.cx]="point.x"
+              [attr.cy]="point.y"
+              r="4"
+              tabindex="0"
+              [attr.aria-label]="weightPointLabel(point)"
+            >
+              <title>{{ weightPointLabel(point) }}</title>
+            </circle>
+          }
+          <text
+            class="axis-title x-title"
+            [attr.x]="(plot.left + plot.right) / 2"
+            [attr.y]="chartHeight - 8"
+          >
+            {{ 'graphs.weightXAxis' | transloco }}
+          </text>
+        </svg>
+      </div>
+    } @else {
+      <p class="empty-chart">{{ 'graphs.noWeightData' | transloco }}</p>
+    }
+  </section>
+</main>

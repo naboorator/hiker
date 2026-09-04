@@ -1,0 +1,64 @@
+<main>
+  <app-header [appName]="store.settings().appName" [subtitle]="'home.subtitle' | transloco" />
+  <section>
+    <div class="top">
+      <h2>{{ 'home.todayHikes' | transloco }}</h2>
+      <button class="plus" type="button" (click)="formOpen.set(true)" [hidden]="formOpen()">
+        +
+      </button>
+    </div>
+    @if (formOpen()) {
+      <app-hike-form
+        [ownerName]="store.settings().ownerName"
+        [hikeNames]="names()"
+        [defaultHikingName]="store.lastHikingName()"
+        [peopleSuggestions]="store.people()"
+        [defaultActivityType]="store.lastActivityType()"
+        (saved)="save($event)"
+        (cancelled)="formOpen.set(false)"
+      />
+    } @else {
+      <app-hike-list [hikes]="store.todayHikes()" (remove)="store.removeMockHike($event)" />
+    }
+  </section>
+  <div class="stats">
+    <article>
+      {{ 'home.hikesToday' | transloco }}<strong>{{ store.todayHikes().length }}</strong>
+    </article>
+    <article>
+      {{ 'home.timeToday' | transloco }}<strong>{{ format(store.totalMinutes()) }}</strong>
+    </article>
+  </div>
+  @if (!store.weights().length) {
+    <p class="weight-empty">{{ 'myWeight.emptyPrompt' | transloco }}</p>
+  }
+  <button class="weight-button" type="button" (click)="weightModalOpen.set(true)">
+    {{ 'myWeight.open' | transloco }}
+  </button>
+  <app-activity-month-list
+    [title]="'home.thisMonth' | transloco"
+    [days]="month().days"
+    [minutes]="month().minutes"
+    [metres]="month().metres"
+  />
+  @if (weightModalOpen()) {
+    <div
+      class="weight-modal"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="'myWeight.title' | transloco"
+    >
+      <section class="weight-dialog">
+        <button
+          class="weight-close"
+          type="button"
+          (click)="weightModalOpen.set(false)"
+          [attr.aria-label]="'myWeight.close' | transloco"
+        >
+          ×
+        </button>
+        <app-my-weight (measurementSaved)="weightModalOpen.set(false)" />
+      </section>
+    </div>
+  }
+</main>

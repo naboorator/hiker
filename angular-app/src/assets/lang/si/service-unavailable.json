@@ -1,0 +1,8 @@
+{
+  "serviceUnavailable": {
+    "title": "Oprostite, aplikacija trenutno ne deluje",
+    "description": "Storitev trenutno ni na voljo. Poskusite znova čez nekaj časa.",
+    "retry": "Poskusi znova",
+    "checking": "Preverjanje…"
+  }
+}

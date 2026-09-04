@@ -4,6 +4,38 @@
   flex-direction: column;
 }
 
+.api-notification {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: min(calc(100% - 2rem), 680px);
+  margin: 1rem auto 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid #e5b4a5;
+  border-radius: 14px;
+  background: #fff0eb;
+  color: #8a382d;
+  box-shadow: 0 8px 20px #6e2d1d1a;
+}
+
+.api-notification span {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: #a34646;
+  color: #fff;
+  font-weight: 900;
+}
+
+.api-notification p {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
 footer {
   display: flex;
   justify-content: center;

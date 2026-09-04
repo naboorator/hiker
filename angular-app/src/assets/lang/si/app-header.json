@@ -3,6 +3,9 @@
     "activityDone": "Opravljene aktivnosti: {{ count }}",
     "noActivities": "0 aktivnosti",
     "openMenu": "Odpri meni",
-    "graphs": "Grafi"
+    "graphs": "Grafi",
+    "logout": "Odjava",
+    "pendingFriendRequests": "Na čakanju: {{ count }}",
+    "friendsActivities": "Aktivnosti prijateljev"
   }
 }

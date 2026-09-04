@@ -1,3 +1,9 @@
+@if (store.error(); as error) {
+  <div class="api-notification request-error" role="alert">
+    <span aria-hidden="true">!</span>
+    <p>{{ error | transloco }}</p>
+  </div>
+}
 <router-outlet />
 <footer [attr.aria-label]="'common.language' | transloco">
   <button

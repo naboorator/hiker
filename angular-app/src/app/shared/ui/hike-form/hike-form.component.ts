@@ -70,8 +70,14 @@ export class HikeFormComponent implements OnInit {
   }
   submit(e: SubmitEvent) {
     e.preventDefault();
-    if (this.model().people.length) {
-      const draft = this.model();
+    const allowedPeople = [this.ownerName(), ...this.peopleSuggestions()];
+    const selectedPeople = this.model().people.filter((person) =>
+      allowedPeople.some(
+        (allowedPerson) => allowedPerson.toLocaleLowerCase() === person.toLocaleLowerCase(),
+      ),
+    );
+    if (selectedPeople.length) {
+      const draft = { ...this.model(), people: selectedPeople };
       this.saved.emit({
         ...draft,
         name: draft.activityType === 'fitness' ? 'Fitness' : draft.name,

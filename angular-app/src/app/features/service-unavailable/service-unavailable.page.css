@@ -1,0 +1,53 @@
+main {
+  display: grid;
+  min-height: calc(100dvh - 64px);
+  padding: 1.5rem;
+  place-items: center;
+}
+section {
+  width: min(100%, 460px);
+  padding: 2.2rem;
+  border-radius: 24px;
+  background: #ffffffed;
+  box-shadow: 0 18px 48px #3158432b;
+  text-align: center;
+}
+img {
+  width: 76px;
+  height: 76px;
+  object-fit: contain;
+}
+.status-icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  margin: 1rem auto;
+  place-items: center;
+  border-radius: 50%;
+  background: #a34646;
+  color: #fff;
+  font-size: 1.7rem;
+  font-weight: 900;
+}
+h1 {
+  margin: 0;
+  color: #71362f;
+}
+p {
+  margin: 0.8rem auto 1.5rem;
+  color: #60726a;
+  line-height: 1.55;
+}
+button {
+  padding: 0.85rem 1.25rem;
+  border: 0;
+  border-radius: 12px;
+  background: #1f6a43;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}

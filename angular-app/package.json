@@ -10,7 +10,11 @@
     "lint": "ng lint",
     "lint:fix": "ng lint --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "api:start": "npm --prefix ../api start",
+    "api:dev": "npm --prefix ../api run dev",
+    "api:build": "npm --prefix ../api run build",
+    "api:typecheck": "npm --prefix ../api run typecheck"
   },
   "private": true,
   "packageManager": "npm@11.9.0",

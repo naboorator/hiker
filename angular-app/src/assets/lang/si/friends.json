@@ -1,0 +1,30 @@
+{
+  "friends": {
+    "subtitle": "Prijatelji",
+    "connectTitle": "Poveži se s prijateljem",
+    "connectDescription": "Vnesite e-poštni naslov, s katerim se je registriral.",
+    "email": "E-pošta prijatelja",
+    "emailPlaceholder": "prijatelj@primer.si",
+    "invalidEmail": "Vnesite veljaven e-poštni naslov.",
+    "connect": "Poveži",
+    "connecting": "Povezovanje…",
+    "connectedTitle": "Moji prijatelji",
+    "incomingTitle": "Prošnje za prijateljstvo",
+    "pendingTitle": "Poslane prošnje",
+    "accept": "Sprejmi",
+    "decline": "Zavrni",
+    "awaitingApproval": "Čaka na potrditev",
+    "cancelRequest": "Prekliči prošnjo",
+    "statusPending": "Na čakanju",
+    "statusAccepted": "Sprejeto",
+    "noFriends": "Trenutno še nimate povezanih prijateljev.",
+    "remove": "Odstrani",
+    "removeTitle": "Odstranim prijatelja?",
+    "removeConfirmation": "Ali res želite odstraniti osebo {{ name }} s seznama prijateljev?",
+    "activityTitle": "Aktivnosti prijateljev",
+    "noActivities": "Vaši prijatelji še nimajo aktivnosti.",
+    "like": "Všeč mi je",
+    "slap": "Klofni",
+    "slapSent": "Spodbudna klofuta je bila poslana"
+  }
+}

@@ -28,6 +28,35 @@
               <span
                 >{{ hike.name }} <em>· {{ hike.people.join(', ') }}</em></span
               ><small>{{ format(hike.minutes) }} · {{ distance(hike.metres) }}</small>
+              @if (showLikes()) {
+                <span
+                  class="likes"
+                  [class.has-likers]="hike.likedBy?.length"
+                  [attr.data-liked-by]="hike.likedBy?.join(', ') || null"
+                  [attr.title]="hike.likedBy?.join(', ') || null"
+                  [attr.tabindex]="hike.likedBy?.length ? 0 : null"
+                  [attr.aria-label]="
+                    'activityMonthList.likes' | transloco: { count: hike.likes ?? 0 }
+                  "
+                >
+                  ♥ {{ hike.likes ?? 0 }}
+                </span>
+                @if ((hike.slaps ?? 0) > 0) {
+                  <span
+                    class="slaps"
+                    [class.has-slappers]="hike.slappedBy?.length"
+                    [attr.data-slapped-by]="hike.slappedBy?.join(', ') || null"
+                    [attr.title]="hike.slappedBy?.join(', ') || null"
+                    [attr.tabindex]="hike.slappedBy?.length ? 0 : null"
+                    [attr.aria-label]="
+                      'activityMonthList.slaps' | transloco: { count: hike.slaps ?? 0 }
+                    "
+                  >
+                    <img src="friend-slap-small.png" alt="" />
+                    {{ hike.slaps }}
+                  </span>
+                }
+              }
               @if (allowEdits()) {
                 <aside>
                   <button type="button" (click)="edit.emit(hike)">✎</button

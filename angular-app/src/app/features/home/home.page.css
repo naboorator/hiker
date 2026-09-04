@@ -3,6 +3,64 @@ main {
   margin: auto;
   padding: 1.5rem 1.1rem 3rem;
 }
+.login-welcome {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  z-index: 20;
+  display: flex;
+  width: min(calc(100% - 2rem), 520px);
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.95rem 1.1rem;
+  border: 1px solid #d9a15f;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #174d32, #286f49);
+  color: #fff;
+  box-shadow: 0 14px 35px #173d2c55;
+  transform: translateX(-50%);
+  animation: welcome-toast 5s ease forwards;
+}
+.login-welcome span {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: #e18a3f;
+  color: #fff8df;
+}
+.login-welcome strong {
+  display: block;
+  margin-bottom: 0.2rem;
+}
+.login-welcome p {
+  margin: 0;
+  color: #e8f4eb;
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+@keyframes welcome-toast {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -12px);
+  }
+  8%,
+  82% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -8px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .login-welcome {
+    animation: none;
+  }
+}
 section,
 .stats article {
   background: #ffffffdf;

@@ -16,6 +16,7 @@ export class ActivityMonthListComponent {
   readonly minutes = input.required<number>();
   readonly metres = input.required<number>();
   readonly allowEdits = input(false);
+  readonly showLikes = input(false);
   readonly edit = output<Hike>();
   readonly remove = output<string>();
   format(minutes: number) {

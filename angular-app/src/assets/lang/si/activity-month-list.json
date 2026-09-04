@@ -1,6 +1,8 @@
 {
   "activityMonthList": {
     "activityCount": "Aktivnosti: {{ count }}",
-    "empty": "Ni zabeleženih aktivnosti."
+    "empty": "Ni zabeleženih aktivnosti.",
+    "likes": "Všečki: {{ count }}",
+    "slaps": "Slapi: {{ count }}"
   }
 }

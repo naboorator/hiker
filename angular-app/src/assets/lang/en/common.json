@@ -1,6 +1,8 @@
 {
   "common": {
     "activities": "Activities",
+    "myActivities": "My Activities",
+    "friends": "Friends",
     "cancel": "Cancel",
     "close": "Close",
     "delete": "Delete",
@@ -15,6 +17,8 @@
     "slovenian": "Slovenščina",
     "defaultAppName": "My hike log",
     "defaultOwner": "You",
-    "unnamedHike": "Unnamed hike"
+    "unnamedHike": "Unnamed hike",
+    "apiUnavailable": "The service is currently unavailable. Please try again later.",
+    "apiRequestFailed": "Something went wrong, the API didn't respond correctly."
   }
 }

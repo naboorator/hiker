@@ -11,4 +11,7 @@ export const translationFiles = [
   'my-weight',
   'weight-records',
   'people-select',
+  'auth',
+  'service-unavailable',
+  'friends',
 ] as const;

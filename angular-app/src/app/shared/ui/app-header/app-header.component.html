@@ -9,6 +9,12 @@
     </div>
   </div>
   <div class="tools">
+    @if (friendsStore.incomingRequests().length; as requestCount) {
+      <a class="friend-requests" routerLink="/friends">
+        <span aria-hidden="true">👥</span>
+        {{ 'appHeader.pendingFriendRequests' | transloco: { count: requestCount } }}
+      </a>
+    }
     <span class="status" [class.done]="store.todayHikes().length">
       {{
         (store.todayHikes().length ? 'appHeader.activityDone' : 'appHeader.noActivities')
@@ -18,14 +24,23 @@
     <details>
       <summary [attr.aria-label]="'appHeader.openMenu' | transloco">☰</summary>
       <nav>
-        <a routerLink="/activities" routerLinkActive="active">{{
-          'common.activities' | transloco
+        <a routerLink="/my-activities" routerLinkActive="active">{{
+          'common.myActivities' | transloco
         }}</a
-        ><a routerLink="/graphs" routerLinkActive="active">{{ 'appHeader.graphs' | transloco }}</a
+        ><a routerLink="/friends" routerLinkActive="active">{{ 'common.friends' | transloco }}</a>
+        @if (friendsStore.friends().length) {
+          <a routerLink="/friends-activities" routerLinkActive="active">{{
+            'appHeader.friendsActivities' | transloco
+          }}</a>
+        }
+        <a routerLink="/graphs" routerLinkActive="active">{{ 'appHeader.graphs' | transloco }}</a
         ><a routerLink="/settings" routerLinkActive="active">{{ 'common.settings' | transloco }}</a
         ><a routerLink="/my-weight" routerLinkActive="active">{{
           'weightRecords.navigation' | transloco
-        }}</a>
+        }}</a
+        ><button type="button" class="logout" (click)="logout()">
+          {{ 'appHeader.logout' | transloco }}
+        </button>
       </nav>
     </details>
   </div>

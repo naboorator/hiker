@@ -1,4 +1,13 @@
 <main>
+  @if (loginQuote(); as quote) {
+    <aside class="login-welcome" role="status" aria-live="polite">
+      <span aria-hidden="true">★</span>
+      <div>
+        <strong>{{ 'home.welcomeBack' | transloco }}</strong>
+        <p>“{{ quote }}” — Arnold Schwarzenegger</p>
+      </div>
+    </aside>
+  }
   <app-header [appName]="store.settings().appName" [subtitle]="'home.subtitle' | transloco" />
   <section>
     <div class="top">
@@ -40,6 +49,7 @@
     [days]="month().days"
     [minutes]="month().minutes"
     [metres]="month().metres"
+    [showLikes]="true"
   />
   @if (weightModalOpen()) {
     <app-modal-dialog

@@ -1,0 +1,107 @@
+{
+  "users": [
+    {
+      "id": "7c0ea6a3-8f95-4721-aed3-807a02c7a058",
+      "name": "Zoran",
+      "email": "zbarek@gmail.com",
+      "passwordHash": "$2b$12$ymMHJObI.4/aYJHkk6pQRu1ipxrHbozbAZnfVdXoduFgNJLRk504S",
+      "role": "normal_user",
+      "createdAt": "2026-09-04T18:29:17.612Z"
+    },
+    {
+      "id": "5bcf2f29-69ad-446f-b88e-4391741dfd19",
+      "name": "zoki",
+      "email": "zbarek+1@gmail.com",
+      "passwordHash": "$2b$12$8fF1NH3gduT2qknFuttOM.bYPbdquLcvvT4VvOdKbmASzL1gRza7K",
+      "role": "normal_user",
+      "createdAt": "2026-09-04T20:51:27.643Z"
+    }
+  ],
+  "settings": [
+    {
+      "appName": "My hike log",
+      "ownerName": "Zoran",
+      "userId": "7c0ea6a3-8f95-4721-aed3-807a02c7a058"
+    }
+  ],
+  "activities": [
+    {
+      "activityType": "hiking",
+      "name": "krnekam v hirb",
+      "date": "2026-09-04",
+      "minutes": 80,
+      "metres": 1000,
+      "people": [
+        "zoki",
+        "Zoran"
+      ],
+      "id": "a50f01c7-8edd-4e97-85d3-433339da346e",
+      "userId": "5bcf2f29-69ad-446f-b88e-4391741dfd19",
+      "createdAt": 1788558271516
+    },
+    {
+      "activityType": "fitness",
+      "name": "Fitness",
+      "date": "2026-09-04",
+      "minutes": 90,
+      "metres": 0,
+      "people": [
+        "Zoran"
+      ],
+      "id": "9553957d-e4e9-406f-9794-6ca21820500a",
+      "userId": "7c0ea6a3-8f95-4721-aed3-807a02c7a058",
+      "createdAt": 1788558544433
+    }
+  ],
+  "weights": [
+    {
+      "weightKg": 81,
+      "recordedOn": "2026-09-01",
+      "id": "5d365dfc-d298-41b3-9c99-c49e974005b1",
+      "userId": "7c0ea6a3-8f95-4721-aed3-807a02c7a058",
+      "createdAt": "2026-09-04T21:42:15.873Z"
+    }
+  ],
+  "friendConnections": [
+    {
+      "id": "1318cdf5-f07b-4fb4-95ae-3aa0f7405c26",
+      "userIds": [
+        "7c0ea6a3-8f95-4721-aed3-807a02c7a058",
+        "5bcf2f29-69ad-446f-b88e-4391741dfd19"
+      ],
+      "requesterId": "7c0ea6a3-8f95-4721-aed3-807a02c7a058",
+      "status": "accepted",
+      "createdAt": "2026-09-04T21:43:19.065Z"
+    }
+  ],
+  "activityReactions": [
+    {
+      "activityId": "a50f01c7-8edd-4e97-85d3-433339da346e",
+      "activityOwnerId": "5bcf2f29-69ad-446f-b88e-4391741dfd19",
+      "userId": "7c0ea6a3-8f95-4721-aed3-807a02c7a058",
+      "type": "like",
+      "createdAt": "2026-09-04T21:45:03.437Z"
+    },
+    {
+      "activityId": "9553957d-e4e9-406f-9794-6ca21820500a",
+      "activityOwnerId": "7c0ea6a3-8f95-4721-aed3-807a02c7a058",
+      "userId": "5bcf2f29-69ad-446f-b88e-4391741dfd19",
+      "type": "like",
+      "createdAt": "2026-09-04T21:49:35.466Z"
+    },
+    {
+      "activityId": "a50f01c7-8edd-4e97-85d3-433339da346e",
+      "activityOwnerId": "5bcf2f29-69ad-446f-b88e-4391741dfd19",
+      "userId": "7c0ea6a3-8f95-4721-aed3-807a02c7a058",
+      "type": "slap",
+      "createdAt": "2026-09-04T22:01:44.167Z"
+    },
+    {
+      "activityId": "9553957d-e4e9-406f-9794-6ca21820500a",
+      "activityOwnerId": "7c0ea6a3-8f95-4721-aed3-807a02c7a058",
+      "userId": "5bcf2f29-69ad-446f-b88e-4391741dfd19",
+      "type": "slap",
+      "createdAt": "2026-09-04T22:04:41.925Z"
+    }
+  ]
+}

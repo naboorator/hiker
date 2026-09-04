@@ -1,0 +1,11 @@
+<main>
+  <section>
+    <img src="hike-logo.png" alt="" />
+    <div class="status-icon" aria-hidden="true">!</div>
+    <h1>{{ 'serviceUnavailable.title' | transloco }}</h1>
+    <p>{{ 'serviceUnavailable.description' | transloco }}</p>
+    <button type="button" [disabled]="checking()" (click)="retry()">
+      {{ (checking() ? 'serviceUnavailable.checking' : 'serviceUnavailable.retry') | transloco }}
+    </button>
+  </section>
+</main>

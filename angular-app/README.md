@@ -12,6 +12,16 @@ ng serve
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
+The API must also be running on `http://localhost:3000`:
+
+```bash
+npm run api:dev
+```
+
+On the first successful connection, existing IndexedDB settings, activities, and weight measurements are copied to the API without changing their IDs. IndexedDB is retained as a local migration backup, while all subsequent reads and writes use the API.
+
+Register an account in the application and then log in. The frontend sends its bearer token automatically, and the API returns only that user's settings, activities, and weight measurements.
+
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:

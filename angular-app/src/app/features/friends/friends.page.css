@@ -1,0 +1,249 @@
+main {
+  max-width: 680px;
+  margin: auto;
+  padding: 1.5rem 1.1rem 3rem;
+}
+section {
+  margin-bottom: 1rem;
+  padding: 1.1rem;
+  border-radius: 22px;
+  background: #ffffffdf;
+  box-shadow: 0 10px 26px #31584322;
+}
+h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+}
+.connect-card > div p,
+.empty {
+  margin: -0.35rem 0 1rem;
+  color: #60726a;
+  line-height: 1.45;
+}
+form {
+  display: flex;
+  align-items: end;
+  gap: 0.6rem;
+}
+label {
+  display: grid;
+  flex: 1;
+  gap: 0.35rem;
+  color: #365246;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+input {
+  width: 100%;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid #b8c9bd;
+  border-radius: 11px;
+  background: #fff;
+}
+button {
+  border: 0;
+  border-radius: 11px;
+  padding: 0.75rem 0.9rem;
+  background: #1f6a43;
+  color: #fff;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.field-error,
+.error {
+  margin: 0.6rem 0 0;
+  color: #8a382d;
+  font-size: 0.82rem;
+}
+.error {
+  padding: 0.7rem;
+  border-radius: 10px;
+  background: #fff0eb;
+}
+.friend-list,
+.feed {
+  display: grid;
+  gap: 0.65rem;
+}
+.friend {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.7rem;
+  border-radius: 14px;
+  background: #edf4ee;
+}
+.friend div,
+.activity-heading div {
+  display: grid;
+  gap: 0.12rem;
+  min-width: 0;
+}
+small {
+  color: #60726a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.avatar {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e18a3f, #b95e32);
+  color: #fff;
+  font-weight: 900;
+}
+.avatar.small {
+  width: 34px;
+  height: 34px;
+}
+.remove {
+  margin-left: auto;
+  background: transparent;
+  color: #8a382d;
+  font-size: 0.8rem;
+}
+.friend-status {
+  flex: none;
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 850;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.friend-status.pending {
+  background: #fff0cf;
+  color: #86621b;
+}
+.friend-status.accepted {
+  background: #dcefe1;
+  color: #245e3b;
+}
+.request-actions {
+  display: flex !important;
+  margin-left: auto;
+  flex-direction: row !important;
+  gap: 0.35rem !important;
+}
+.request-actions button {
+  padding: 0.5rem 0.65rem;
+  font-size: 0.78rem;
+}
+.request-actions .decline {
+  background: #f3e1dc;
+  color: #8a382d;
+}
+.confirmation-message {
+  margin: 0;
+  color: #4e6258;
+  line-height: 1.5;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  margin-top: 1.25rem;
+}
+.modal-actions .cancel {
+  background: #edf1ed;
+  color: #365246;
+}
+.modal-actions .confirm-remove {
+  background: #a34646;
+}
+.activity {
+  padding: 1rem;
+  border: 1px solid #d9e6dc;
+  border-radius: 16px;
+  background: #fff;
+}
+.activity-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.activity-summary {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: start;
+  gap: 0.8rem;
+}
+.calendar {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  align-content: center;
+  border-radius: 13px;
+  background: #e4efe6;
+  color: #245e3b;
+}
+.calendar b {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+.calendar small {
+  margin-top: 0.15rem;
+  color: #39704d;
+  font-size: 0.62rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+.activity-content {
+  min-width: 0;
+}
+h3 {
+  margin: 0.65rem 0 0.35rem;
+}
+.details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  color: #60726a;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.reactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.9rem;
+}
+.reactions button {
+  padding: 0.5rem 0.7rem;
+  background: #edf4ee;
+  color: #365246;
+  font-size: 0.8rem;
+}
+.reactions button.active {
+  background: #f6dfc7;
+  color: #874a22;
+}
+@media (max-width: 480px) {
+  form {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  form button {
+    width: 100%;
+  }
+  .friend.request {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .request-actions {
+    width: 100%;
+    margin-left: 0;
+  }
+  .friend-status {
+    margin-left: auto;
+  }
+}

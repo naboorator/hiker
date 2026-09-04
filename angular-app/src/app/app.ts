@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { MockHikeStore } from './core/stores/mock-hike.store';
 
 @Component({
   imports: [RouterOutlet, TranslocoPipe],
@@ -10,6 +11,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 })
 export class App {
   private readonly transloco = inject(TranslocoService);
+  readonly store = inject(MockHikeStore);
   readonly activeLanguage = signal<'si' | 'en'>('en');
 
   constructor() {

@@ -1,0 +1,63 @@
+<main>
+  <app-header
+    [appName]="hikeStore.settings().appName"
+    [subtitle]="'friends.activityTitle' | transloco"
+  />
+  <section>
+    <h2>{{ 'friends.activityTitle' | transloco }}</h2>
+    @if (!store.loading() && !activities().length) {
+      <p class="empty">{{ 'friends.noActivities' | transloco }}</p>
+    }
+    <div class="feed">
+      @for (activity of activities(); track activity.id) {
+        <article class="activity">
+          <div class="activity-summary">
+            <div class="calendar" [attr.aria-label]="activity.date">
+              <b>{{ calendarDay(activity.date) }}</b>
+              <small>{{ calendarMonth(activity.date) }}</small>
+            </div>
+            <div class="activity-content">
+              <div class="activity-heading">
+                <span class="avatar" aria-hidden="true">{{
+                  activity.author.name.charAt(0).toUpperCase()
+                }}</span>
+                <strong>{{ activity.author.name }}</strong>
+              </div>
+              <h3>{{ activity.name }}</h3>
+              <div class="details">
+                <span>⏱ {{ duration(activity) }}</span>
+                @if (activity.activityType === 'hiking') {
+                  <span>↔ {{ length(activity.metres) }}</span>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="reactions">
+            <button
+              type="button"
+              [class.active]="activity.myReactions.includes('like')"
+              (click)="store.toggleReaction(activity, 'like')"
+            >
+              ♥ {{ 'friends.like' | transloco }} · {{ activity.likes }}
+            </button>
+            <button
+              type="button"
+              class="slap-button"
+              [class.active]="activity.myReactions.includes('slap')"
+              [attr.aria-pressed]="activity.myReactions.includes('slap')"
+              (click)="slap(activity)"
+            >
+              <img src="friend-slap-small.png" alt="" />
+              {{ 'friends.slap' | transloco }} · {{ activity.slaps }}
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+  @if (slapVisible()) {
+    <div class="slap-overlay" role="status" [attr.aria-label]="'friends.slapSent' | transloco">
+      <img src="friend-slap.png" alt="" />
+    </div>
+  }
+</main>

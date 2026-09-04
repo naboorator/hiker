@@ -1,6 +1,8 @@
 {
   "activityMonthList": {
     "activityCount": "{{ count }} activities",
-    "empty": "No activities recorded."
+    "empty": "No activities recorded.",
+    "likes": "{{ count }} likes",
+    "slaps": "{{ count }} slaps"
   }
 }

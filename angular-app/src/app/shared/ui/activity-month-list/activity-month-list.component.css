@@ -28,6 +28,67 @@ h2 {
 .entries em {
   font-style: normal;
 }
+.entries .likes {
+  position: relative;
+  flex: none;
+  padding: 0.25rem 0.45rem;
+  border-radius: 999px;
+  background: #f7e4df;
+  color: #a44747;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+.entries .slaps {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.18rem 0.42rem 0.18rem 0.28rem;
+  border-radius: 999px;
+  background: #e4efe6;
+  color: #245e3b;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+.entries .slaps img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+.entries .likes.has-likers:hover::after,
+.entries .likes.has-likers:focus-visible::after,
+.entries .slaps.has-slappers:hover::after,
+.entries .slaps.has-slappers:focus-visible::after {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 0.45rem);
+  z-index: 10;
+  width: max-content;
+  max-width: 220px;
+  padding: 0.5rem 0.65rem;
+  border-radius: 9px;
+  background: #253d33;
+  color: #fff;
+  box-shadow: 0 7px 18px #14271f44;
+  content: attr(data-liked-by);
+  font-size: 0.75rem;
+  font-weight: 650;
+  line-height: 1.35;
+  white-space: normal;
+}
+.entries .slaps.has-slappers:hover::after,
+.entries .slaps.has-slappers:focus-visible::after {
+  content: attr(data-slapped-by);
+}
+.entries .likes.has-likers:focus-visible {
+  outline: 2px solid #a4474770;
+  outline-offset: 2px;
+}
+.entries .slaps.has-slappers:focus-visible {
+  outline: 2px solid #245e3b70;
+  outline-offset: 2px;
+}
 .day {
   display: grid;
   grid-template-columns: 48px 1fr;

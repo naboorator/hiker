@@ -9,4 +9,8 @@ export interface Hike {
   metres: number;
   people: string[];
   createdAt: number;
+  likes?: number;
+  slaps?: number;
+  likedBy?: string[];
+  slappedBy?: string[];
 }

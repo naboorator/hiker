@@ -1,0 +1,30 @@
+<main class="auth-page">
+  <section class="auth-card">
+    <img src="hike-logo.png" alt="" />
+    <h1>{{ 'auth.loginTitle' | transloco }}</h1>
+    <p class="intro">{{ 'auth.loginDescription' | transloco }}</p>
+    @if (registrationSuccessful()) {
+      <p class="success" role="status">{{ 'auth.registrationSuccessful' | transloco }}</p>
+    }
+    <form (submit)="submit($event)">
+      <label>
+        {{ 'auth.email' | transloco }}
+        <input type="email" autocomplete="email" [formField]="loginForm.email" />
+      </label>
+      <label>
+        {{ 'auth.password' | transloco }}
+        <input type="password" autocomplete="current-password" [formField]="loginForm.password" />
+      </label>
+      @if (error()) {
+        <p class="error" role="alert">{{ error() }}</p>
+      }
+      <button type="submit" [disabled]="submitting()">
+        {{ (submitting() ? 'auth.loggingIn' : 'auth.login') | transloco }}
+      </button>
+    </form>
+    <p class="switch">
+      {{ 'auth.noAccount' | transloco }}
+      <a routerLink="/register">{{ 'auth.register' | transloco }}</a>
+    </p>
+  </section>
+</main>

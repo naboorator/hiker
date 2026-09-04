@@ -3,6 +3,9 @@
     "activityDone": "{{ count }} activity done",
     "noActivities": "0 activities",
     "openMenu": "Open menu",
-    "graphs": "Graphs"
+    "graphs": "Graphs",
+    "logout": "Log out",
+    "pendingFriendRequests": "{{ count }} pending",
+    "friendsActivities": "Friends activities"
   }
 }

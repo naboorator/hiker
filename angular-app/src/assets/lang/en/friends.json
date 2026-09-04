@@ -1,0 +1,30 @@
+{
+  "friends": {
+    "subtitle": "Friends",
+    "connectTitle": "Connect with a friend",
+    "connectDescription": "Enter the email address they used to register.",
+    "email": "Friend's email",
+    "emailPlaceholder": "friend@example.com",
+    "invalidEmail": "Please enter a valid email address.",
+    "connect": "Connect",
+    "connecting": "Connecting…",
+    "connectedTitle": "My friends",
+    "incomingTitle": "Friend requests",
+    "pendingTitle": "Sent requests",
+    "accept": "Accept",
+    "decline": "Decline",
+    "awaitingApproval": "Awaiting approval",
+    "cancelRequest": "Cancel request",
+    "statusPending": "Pending",
+    "statusAccepted": "Accepted",
+    "noFriends": "You have not connected with any friends yet.",
+    "remove": "Remove",
+    "removeTitle": "Remove friend?",
+    "removeConfirmation": "Are you sure you want to remove {{ name }} from your friends?",
+    "activityTitle": "Friends' activities",
+    "noActivities": "Your friends have no activities yet.",
+    "like": "Like",
+    "slap": "Slap",
+    "slapSent": "Motivational slap sent"
+  }
+}

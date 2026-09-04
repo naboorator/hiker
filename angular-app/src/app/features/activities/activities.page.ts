@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AppHeaderComponent } from '../../shared/ui/app-header/app-header.component';
@@ -33,6 +40,12 @@ export class ActivitiesPage {
   readonly pendingDelete = signal<string | null>(null);
   readonly names = computed(() => [...new Set(this.store.hikes().map((x) => x.name))]);
   readonly months = computed(() => groupMonths(this.store.hikes(), this.activeLanguage()));
+
+  constructor() {
+    void this.store.refreshHikes();
+    const refreshInterval = window.setInterval(() => void this.store.refreshHikes(), 5000);
+    inject(DestroyRef).onDestroy(() => window.clearInterval(refreshInterval));
+  }
   draft(h: Hike): HikeDraft {
     return {
       activityType: h.activityType,

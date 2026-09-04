@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AppHeaderComponent } from '../../shared/ui/app-header/app-header.component';
@@ -11,6 +18,7 @@ import type { ActivityDayGroup } from '../../core/interface/activity-day-group.i
 import type { HikeDraft } from '../../core/interface/hike-draft.interface';
 import type { Hike } from '../../core/interface/hike.interface';
 import { MockHikeStore } from '../../core/stores/mock-hike.store';
+import { ARNOLD_SCHWARZENEGGER_QUOTES } from '../../core/constants/arnold-quotes.constant';
 @Component({
   imports: [
     AppHeaderComponent,
@@ -33,8 +41,16 @@ export class HomePage {
   });
   readonly formOpen = signal(false);
   readonly weightModalOpen = signal(false);
+  readonly loginQuote = signal(history.state?.['loggedIn'] === true ? randomArnoldQuote() : null);
   readonly names = computed(() => [...new Set(this.store.hikes().map((x) => x.name))]);
   readonly month = computed(() => groupCurrent(this.store.hikes(), this.activeLanguage()));
+
+  constructor() {
+    if (!this.loginQuote()) return;
+    history.replaceState({ ...history.state, loggedIn: undefined }, '');
+    const timeoutId = window.setTimeout(() => this.loginQuote.set(null), 5000);
+    inject(DestroyRef).onDestroy(() => window.clearTimeout(timeoutId));
+  }
   format(m: number) {
     return m >= 60
       ? `${(m / 60).toFixed(1)} ${this.transloco.translate('common.hourShort')}`
@@ -45,6 +61,12 @@ export class HomePage {
     this.formOpen.set(false);
   }
 }
+
+function randomArnoldQuote(): string {
+  const index = Math.floor(Math.random() * ARNOLD_SCHWARZENEGGER_QUOTES.length);
+  return ARNOLD_SCHWARZENEGGER_QUOTES[index] as string;
+}
+
 function groupCurrent(hikes: Hike[], language: string) {
   type DayDraft = Omit<ActivityDayGroup, 'summary' | 'hikes'> & { hikes: Hike[] };
   const days = new Map<string, DayDraft>();

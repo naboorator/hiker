@@ -1,0 +1,41 @@
+<main class="auth-page">
+  <section class="auth-card">
+    <img src="hike-logo.png" alt="" />
+    <h1>{{ 'auth.registerTitle' | transloco }}</h1>
+    <p class="intro">{{ 'auth.registerDescription' | transloco }}</p>
+    <form (submit)="submit($event)">
+      <label
+        >{{ 'auth.name' | transloco }}<input autocomplete="name" [formField]="registerForm.name"
+      /></label>
+      <label
+        >{{ 'auth.email' | transloco
+        }}<input type="email" autocomplete="email" [formField]="registerForm.email"
+      /></label>
+      @if (registerForm.email().touched() && registerForm.email().invalid()) {
+        <p class="field-error">{{ 'auth.invalidEmail' | transloco }}</p>
+      }
+      <label
+        >{{ 'auth.password' | transloco
+        }}<input type="password" autocomplete="new-password" [formField]="registerForm.password"
+      /></label>
+      <label
+        >{{ 'auth.repeatPassword' | transloco
+        }}<input
+          type="password"
+          autocomplete="new-password"
+          [formField]="registerForm.repeatPassword"
+      /></label>
+      @if (error(); as errorMessage) {
+        <p class="error" role="alert">
+          {{ errorMessage.startsWith('auth.') ? (errorMessage | transloco) : errorMessage }}
+        </p>
+      }
+      <button type="submit" [disabled]="submitting()">
+        {{ (submitting() ? 'auth.registering' : 'auth.register') | transloco }}
+      </button>
+    </form>
+    <p class="switch">
+      {{ 'auth.haveAccount' | transloco }} <a routerLink="/login">{{ 'auth.login' | transloco }}</a>
+    </p>
+  </section>
+</main>

@@ -1,0 +1,131 @@
+<main>
+  <app-header
+    [appName]="hikeStore.settings().appName"
+    [subtitle]="'friends.subtitle' | transloco"
+  />
+
+  <section class="connect-card">
+    <div>
+      <h2>{{ 'friends.connectTitle' | transloco }}</h2>
+      <p>{{ 'friends.connectDescription' | transloco }}</p>
+    </div>
+    <form (submit)="connect($event)">
+      <label>
+        <span>{{ 'friends.email' | transloco }}</span>
+        <input
+          type="email"
+          autocomplete="email"
+          [placeholder]="'friends.emailPlaceholder' | transloco"
+          [formField]="friendForm.email"
+        />
+      </label>
+      <button type="submit" [disabled]="adding() || friendForm.email().invalid()">
+        {{ (adding() ? 'friends.connecting' : 'friends.connect') | transloco }}
+      </button>
+    </form>
+    @if (friendForm.email().touched() && friendForm.email().invalid()) {
+      <p class="field-error">{{ 'friends.invalidEmail' | transloco }}</p>
+    }
+    @if (store.error()) {
+      <p class="error" role="alert">{{ store.error() }}</p>
+    }
+  </section>
+
+  @if (store.incomingRequests().length) {
+    <section>
+      <h2>{{ 'friends.incomingTitle' | transloco }}</h2>
+      <div class="friend-list">
+        @for (request of store.incomingRequests(); track request.id) {
+          <article class="friend request">
+            <span class="avatar" aria-hidden="true">{{
+              request.user.name.charAt(0).toUpperCase()
+            }}</span>
+            <div>
+              <strong>{{ request.user.name }}</strong
+              ><small>{{ request.user.email }}</small>
+            </div>
+            <span class="friend-status pending">{{ 'friends.statusPending' | transloco }}</span>
+            <div class="request-actions">
+              <button type="button" (click)="store.acceptRequest(request.id)">
+                {{ 'friends.accept' | transloco }}
+              </button>
+              <button type="button" class="decline" (click)="store.removeRequest(request.id)">
+                {{ 'friends.decline' | transloco }}
+              </button>
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+  }
+
+  @if (store.outgoingRequests().length) {
+    <section>
+      <h2>{{ 'friends.pendingTitle' | transloco }}</h2>
+      <div class="friend-list">
+        @for (request of store.outgoingRequests(); track request.id) {
+          <article class="friend request">
+            <span class="avatar" aria-hidden="true">{{
+              request.user.name.charAt(0).toUpperCase()
+            }}</span>
+            <div>
+              <strong>{{ request.user.name }}</strong>
+              <small>{{ 'friends.awaitingApproval' | transloco }}</small>
+            </div>
+            <span class="friend-status pending">{{ 'friends.statusPending' | transloco }}</span>
+            <button type="button" class="remove" (click)="store.removeRequest(request.id)">
+              {{ 'friends.cancelRequest' | transloco }}
+            </button>
+          </article>
+        }
+      </div>
+    </section>
+  }
+
+  <section>
+    <h2>{{ 'friends.connectedTitle' | transloco }}</h2>
+    @if (!store.loading() && !store.friends().length) {
+      <p class="empty">{{ 'friends.noFriends' | transloco }}</p>
+    }
+    <div class="friend-list">
+      @for (friend of store.friends(); track friend.id) {
+        <article class="friend">
+          <span class="avatar" aria-hidden="true">{{ friend.name.charAt(0).toUpperCase() }}</span>
+          <div>
+            <strong>{{ friend.name }}</strong
+            ><small>{{ friend.email }}</small>
+          </div>
+          <span class="friend-status accepted">{{ 'friends.statusAccepted' | transloco }}</span>
+          <button type="button" class="remove" (click)="pendingFriendRemoval.set(friend)">
+            {{ 'friends.remove' | transloco }}
+          </button>
+        </article>
+      }
+    </div>
+  </section>
+
+  @if (pendingFriendRemoval(); as friend) {
+    <app-modal-dialog
+      [title]="'friends.removeTitle' | transloco"
+      [closeLabel]="'common.close' | transloco"
+      dialogRole="alertdialog"
+      width="420px"
+      [showCloseButton]="true"
+      [closeOnBackdrop]="true"
+      [closeOnEscape]="true"
+      (closed)="pendingFriendRemoval.set(null)"
+    >
+      <p class="confirmation-message">
+        {{ 'friends.removeConfirmation' | transloco: { name: friend.name } }}
+      </p>
+      <div class="modal-actions">
+        <button type="button" class="cancel" (click)="pendingFriendRemoval.set(null)">
+          {{ 'common.cancel' | transloco }}
+        </button>
+        <button type="button" class="confirm-remove" (click)="confirmFriendRemoval()">
+          {{ 'friends.remove' | transloco }}
+        </button>
+      </div>
+    </app-modal-dialog>
+  }
+</main>

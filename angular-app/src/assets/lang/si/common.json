@@ -1,6 +1,8 @@
 {
   "common": {
     "activities": "Aktivnosti",
+    "myActivities": "Moje aktivnosti",
+    "friends": "Prijatelji",
     "cancel": "Prekliči",
     "close": "Zapri",
     "delete": "Izbriši",
@@ -15,6 +17,8 @@
     "slovenian": "Slovenščina",
     "defaultAppName": "Moj pohodniški dnevnik",
     "defaultOwner": "Ti",
-    "unnamedHike": "Neimenovan pohod"
+    "unnamedHike": "Neimenovan pohod",
+    "apiUnavailable": "Storitev trenutno ni na voljo. Poskusi znova pozneje.",
+    "apiRequestFailed": "Nekaj je šlo narobe. API se ni pravilno odzval."
   }
 }

@@ -3,7 +3,6 @@
     "activityDone": "Opravljene aktivnosti: {{ count }}",
     "noActivities": "0 aktivnosti",
     "openMenu": "Odpri meni",
-    "graphs": "Grafi",
-    "todayMeal": "Današnji obrok"
+    "graphs": "Grafi"
   }
 }

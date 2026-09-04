@@ -1,7 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HikeApiService } from '../api/hike-api.service';
 import type { AppSettings } from '../interface/app-settings.interface';
-import type { DailyMeal } from '../interface/daily-meal.interface';
 import type { HikeDraft } from '../interface/hike-draft.interface';
 import type { Hike } from '../interface/hike.interface';
 import type { WeightEntry } from '../interface/weight-entry.interface';
@@ -14,7 +13,6 @@ export class MockHikeStore {
     ownerName: 'YourName(change in settings)',
   });
   readonly hikes = signal<Hike[]>([]);
-  readonly meals = signal<DailyMeal[]>([]);
   readonly weights = signal<WeightEntry[]>([]);
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
@@ -45,15 +43,13 @@ export class MockHikeStore {
   }
   async load(): Promise<void> {
     try {
-      const [settings, hikes, meals, weights] = await Promise.all([
+      const [settings, hikes, weights] = await Promise.all([
         this.api.loadSettings(),
         this.api.loadHikes(),
-        this.api.loadMeals(),
         this.api.loadWeights(),
       ]);
       this.settings.set(settings);
       this.hikes.set(hikes);
-      this.meals.set(meals);
       this.weights.set(weights);
     } catch {
       this.error.set('Could not load your hike data.');

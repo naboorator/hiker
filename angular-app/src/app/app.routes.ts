@@ -16,10 +16,6 @@ export const routes: Routes = [
     loadComponent: () => import('./features/settings/settings.page').then((m) => m.SettingsPage),
   },
   {
-    path: 'meals',
-    loadComponent: () => import('./features/meals/meals.page').then((m) => m.MealsPage),
-  },
-  {
     path: 'my-weight',
     loadComponent: () => import('./features/my-weight/my-weight.page').then((m) => m.MyWeightPage),
   },

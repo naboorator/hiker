@@ -3,7 +3,6 @@ export const translationFiles = [
   'home',
   'activities',
   'graphs',
-  'meals',
   'settings',
   'app-header',
   'hike-form',

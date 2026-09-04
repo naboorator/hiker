@@ -2,7 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { IndexedDbClient } from '../data/indexeddb/indexed-db.client';
 import type { AppSettings } from '../interface/app-settings.interface';
 import type { ActivityType } from '../interface/activity-type.type';
-import type { DailyMeal } from '../interface/daily-meal.interface';
 import type { HikeDraft } from '../interface/hike-draft.interface';
 import type { HikeExport } from '../interface/hike-export.interface';
 import type { Hike } from '../interface/hike.interface';
@@ -177,29 +176,5 @@ export class HikeApiService {
 
   deleteWeight(id: string): Promise<void> {
     return this.db.delete('weights', id);
-  }
-
-  async loadMeals(date = new Date().toISOString().slice(0, 10)): Promise<DailyMeal[]> {
-    const key = 'daily-meals-' + date,
-      stored = await this.db.get<StoredSetting>('settings', key);
-    if (
-      Array.isArray(stored?.value) &&
-      stored.value.every((meal) => (meal as DailyMeal).type?.startsWith('meals.'))
-    )
-      return stored.value as DailyMeal[];
-    const meals = [
-      {
-        type: 'meals.breakfast',
-        title: 'meals.proteinOats',
-        description: 'meals.proteinOatsDescription',
-      },
-      {
-        type: 'meals.dinner',
-        title: 'meals.salmonPlate',
-        description: 'meals.salmonPlateDescription',
-      },
-    ];
-    await this.db.put('settings', { key, value: meals });
-    return meals;
   }
 }

@@ -6,6 +6,7 @@ import { HikeFormComponent } from '../../shared/ui/hike-form/hike-form.component
 import { HikeListComponent } from '../../shared/ui/hike-list/hike-list.component';
 import { ActivityMonthListComponent } from '../../shared/ui/activity-month-list/activity-month-list.component';
 import { MyWeightComponent } from '../../shared/ui/my-weight/my-weight.component';
+import { ModalDialogComponent } from '../../shared/ui/modal-dialog/modal-dialog.component';
 import type { ActivityDayGroup } from '../../core/interface/activity-day-group.interface';
 import type { HikeDraft } from '../../core/interface/hike-draft.interface';
 import type { Hike } from '../../core/interface/hike.interface';
@@ -17,6 +18,7 @@ import { MockHikeStore } from '../../core/stores/mock-hike.store';
     HikeListComponent,
     ActivityMonthListComponent,
     MyWeightComponent,
+    ModalDialogComponent,
     TranslocoPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,

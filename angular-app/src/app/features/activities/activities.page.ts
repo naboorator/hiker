@@ -8,9 +8,16 @@ import type { Hike } from '../../core/interface/hike.interface';
 import type { MonthDraft } from '../../core/interface/month-draft.interface';
 import { ActivityMonthListComponent } from '../../shared/ui/activity-month-list/activity-month-list.component';
 import { HikeFormComponent } from '../../shared/ui/hike-form/hike-form.component';
+import { ModalDialogComponent } from '../../shared/ui/modal-dialog/modal-dialog.component';
 import { MockHikeStore } from '../../core/stores/mock-hike.store';
 @Component({
-  imports: [AppHeaderComponent, ActivityMonthListComponent, HikeFormComponent, TranslocoPipe],
+  imports: [
+    AppHeaderComponent,
+    ActivityMonthListComponent,
+    HikeFormComponent,
+    ModalDialogComponent,
+    TranslocoPipe,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './activities.page.html',
   styleUrl: './activities.page.css',

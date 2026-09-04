@@ -42,23 +42,17 @@
     [metres]="month().metres"
   />
   @if (weightModalOpen()) {
-    <div
-      class="weight-modal"
-      role="dialog"
-      aria-modal="true"
-      [attr.aria-label]="'myWeight.title' | transloco"
+    <app-modal-dialog
+      [title]="'myWeight.title' | transloco"
+      [closeLabel]="'myWeight.close' | transloco"
+      dialogRole="dialog"
+      width="520px"
+      [showCloseButton]="true"
+      [closeOnBackdrop]="true"
+      [closeOnEscape]="true"
+      (closed)="weightModalOpen.set(false)"
     >
-      <section class="weight-dialog">
-        <button
-          class="weight-close"
-          type="button"
-          (click)="weightModalOpen.set(false)"
-          [attr.aria-label]="'myWeight.close' | transloco"
-        >
-          ×
-        </button>
-        <app-my-weight (measurementSaved)="weightModalOpen.set(false)" />
-      </section>
-    </div>
+      <app-my-weight (measurementSaved)="weightModalOpen.set(false)" />
+    </app-modal-dialog>
   }
 </main>

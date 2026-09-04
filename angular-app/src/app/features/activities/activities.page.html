@@ -27,73 +27,69 @@
     />
   }
   @if (adding()) {
-    <div
-      class="modal"
-      role="dialog"
-      aria-modal="true"
-      [attr.aria-label]="'activities.addTitle' | transloco"
+    <app-modal-dialog
+      [title]="'activities.addTitle' | transloco"
+      [closeLabel]="'common.close' | transloco"
+      dialogRole="dialog"
+      width="520px"
+      [showCloseButton]="true"
+      [closeOnBackdrop]="true"
+      [closeOnEscape]="true"
+      (closed)="adding.set(false)"
     >
-      <section>
-        <button
-          class="close"
-          type="button"
-          (click)="adding.set(false)"
-          [attr.aria-label]="'common.close' | transloco"
-        >
-          ×
-        </button>
-        <h2>{{ 'activities.addTitle' | transloco }}</h2>
-        <app-hike-form
-          [ownerName]="store.settings().ownerName"
-          [hikeNames]="names()"
-          [defaultHikingName]="store.lastHikingName()"
-          [peopleSuggestions]="store.people()"
-          [defaultActivityType]="store.lastActivityType()"
-          [buttonText]="'activities.addActivity' | transloco"
-          (saved)="add($event)"
-          (cancelled)="adding.set(false)"
-        />
-      </section>
-    </div>
+      <app-hike-form
+        [ownerName]="store.settings().ownerName"
+        [hikeNames]="names()"
+        [defaultHikingName]="store.lastHikingName()"
+        [peopleSuggestions]="store.people()"
+        [defaultActivityType]="store.lastActivityType()"
+        [buttonText]="'activities.addActivity' | transloco"
+        (saved)="add($event)"
+        (cancelled)="adding.set(false)"
+      />
+    </app-modal-dialog>
   }
   @if (selected(); as hike) {
-    <div class="modal">
-      <section>
-        <button class="close" (click)="selected.set(null)">×</button>
-        <h2>{{ 'activities.editTitle' | transloco }}</h2>
-        <app-hike-form
-          [ownerName]="store.settings().ownerName"
-          [hikeNames]="names()"
-          [defaultHikingName]="store.lastHikingName()"
-          [peopleSuggestions]="store.people()"
-          [draft]="draft(hike)"
-          [buttonText]="'common.save' | transloco"
-          (saved)="save(hike.id, $event)"
-          (cancelled)="selected.set(null)"
-        />
-      </section>
-    </div>
+    <app-modal-dialog
+      [title]="'activities.editTitle' | transloco"
+      [closeLabel]="'common.close' | transloco"
+      dialogRole="dialog"
+      width="520px"
+      [showCloseButton]="true"
+      [closeOnBackdrop]="true"
+      [closeOnEscape]="true"
+      (closed)="selected.set(null)"
+    >
+      <app-hike-form
+        [ownerName]="store.settings().ownerName"
+        [hikeNames]="names()"
+        [defaultHikingName]="store.lastHikingName()"
+        [peopleSuggestions]="store.people()"
+        [draft]="draft(hike)"
+        [buttonText]="'common.save' | transloco"
+        (saved)="save(hike.id, $event)"
+        (cancelled)="selected.set(null)"
+      />
+    </app-modal-dialog>
   }
   @if (pendingDelete()) {
-    <div class="modal" role="alertdialog" aria-modal="true">
-      <section>
-        <button
-          class="close"
-          type="button"
-          (click)="pendingDelete.set(null)"
-          [attr.aria-label]="'common.close' | transloco"
-        >
-          ×
+    <app-modal-dialog
+      [title]="'activities.deleteTitle' | transloco"
+      [closeLabel]="'common.close' | transloco"
+      dialogRole="alertdialog"
+      width="420px"
+      [showCloseButton]="true"
+      [closeOnBackdrop]="true"
+      [closeOnEscape]="true"
+      (closed)="pendingDelete.set(null)"
+    >
+      <p>{{ 'activities.deleteConfirmation' | transloco }}</p>
+      <div class="actions">
+        <button (click)="pendingDelete.set(null)">{{ 'common.cancel' | transloco }}</button
+        ><button class="danger" (click)="confirmDelete()">
+          {{ 'common.delete' | transloco }}
         </button>
-        <h2>{{ 'activities.deleteTitle' | transloco }}</h2>
-        <p>{{ 'activities.deleteConfirmation' | transloco }}</p>
-        <div class="actions">
-          <button (click)="pendingDelete.set(null)">{{ 'common.cancel' | transloco }}</button
-          ><button class="danger" (click)="confirmDelete()">
-            {{ 'common.delete' | transloco }}
-          </button>
-        </div>
-      </section>
-    </div>
+      </div>
+    </app-modal-dialog>
   }
 </main>

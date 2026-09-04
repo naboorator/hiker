@@ -35,77 +35,63 @@
   </section>
 
   @if (editing()) {
-    <div
-      class="overlay"
-      role="dialog"
-      aria-modal="true"
-      [attr.aria-label]="'weightRecords.editTitle' | transloco"
+    <app-modal-dialog
+      [title]="'weightRecords.editTitle' | transloco"
+      [closeLabel]="'common.close' | transloco"
+      dialogRole="dialog"
+      width="440px"
+      [showCloseButton]="true"
+      [closeOnBackdrop]="true"
+      [closeOnEscape]="true"
+      (closed)="editing.set(null)"
     >
-      <section class="dialog">
-        <button
-          class="close"
-          type="button"
-          (click)="editing.set(null)"
-          [attr.aria-label]="'common.close' | transloco"
-        >
-          ×
-        </button>
-        <h2>{{ 'weightRecords.editTitle' | transloco }}</h2>
-        <form (submit)="saveEdit($event)">
-          <label>
-            {{ 'weightRecords.bodyWeight' | transloco }}
-            <span class="weight-input">
-              <input [formField]="editForm.weightKg" type="number" step="0.1" />
-              <span>kg</span>
-            </span>
-          </label>
-          <label>
-            {{ 'weightRecords.measurementDate' | transloco }}
-            <input [formField]="editForm.recordedOn" type="date" />
-          </label>
-          <div class="dialog-actions">
-            <button type="button" class="secondary" (click)="editing.set(null)">
-              {{ 'common.cancel' | transloco }}
-            </button>
-            <button type="submit">{{ 'common.save' | transloco }}</button>
-          </div>
-        </form>
-      </section>
-    </div>
+      <form (submit)="saveEdit($event)">
+        <label>
+          {{ 'weightRecords.bodyWeight' | transloco }}
+          <span class="weight-input">
+            <input [formField]="editForm.weightKg" type="number" step="0.1" />
+            <span>kg</span>
+          </span>
+        </label>
+        <label>
+          {{ 'weightRecords.measurementDate' | transloco }}
+          <input [formField]="editForm.recordedOn" type="date" />
+        </label>
+        <div class="dialog-actions">
+          <button type="button" class="secondary" (click)="editing.set(null)">
+            {{ 'common.cancel' | transloco }}
+          </button>
+          <button type="submit">{{ 'common.save' | transloco }}</button>
+        </div>
+      </form>
+    </app-modal-dialog>
   }
 
   @if (deleting(); as entry) {
-    <div
-      class="overlay"
-      role="alertdialog"
-      aria-modal="true"
-      [attr.aria-label]="'weightRecords.deleteTitle' | transloco"
+    <app-modal-dialog
+      [title]="'weightRecords.deleteTitle' | transloco"
+      [closeLabel]="'common.close' | transloco"
+      dialogRole="alertdialog"
+      width="440px"
+      [showCloseButton]="true"
+      [closeOnBackdrop]="true"
+      [closeOnEscape]="true"
+      (closed)="deleting.set(null)"
     >
-      <section class="dialog">
-        <button
-          class="close"
-          type="button"
-          (click)="deleting.set(null)"
-          [attr.aria-label]="'common.close' | transloco"
-        >
-          ×
+      <p>
+        {{
+          'weightRecords.deleteDescription'
+            | transloco: { weight: entry.weightKg, date: entry.recordedOn }
+        }}
+      </p>
+      <div class="dialog-actions">
+        <button type="button" class="secondary" (click)="deleting.set(null)">
+          {{ 'common.cancel' | transloco }}
         </button>
-        <h2>{{ 'weightRecords.deleteTitle' | transloco }}</h2>
-        <p>
-          {{
-            'weightRecords.deleteDescription'
-              | transloco: { weight: entry.weightKg, date: entry.recordedOn }
-          }}
-        </p>
-        <div class="dialog-actions">
-          <button type="button" class="secondary" (click)="deleting.set(null)">
-            {{ 'common.cancel' | transloco }}
-          </button>
-          <button type="button" class="delete" (click)="confirmDelete()">
-            {{ 'common.delete' | transloco }}
-          </button>
-        </div>
-      </section>
-    </div>
+        <button type="button" class="delete" (click)="confirmDelete()">
+          {{ 'common.delete' | transloco }}
+        </button>
+      </div>
+    </app-modal-dialog>
   }
 </main>

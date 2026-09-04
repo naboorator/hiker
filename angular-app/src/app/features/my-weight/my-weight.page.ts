@@ -4,9 +4,10 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import type { WeightEntry } from '../../core/interface/weight-entry.interface';
 import { MockHikeStore } from '../../core/stores/mock-hike.store';
 import { AppHeaderComponent } from '../../shared/ui/app-header/app-header.component';
+import { ModalDialogComponent } from '../../shared/ui/modal-dialog/modal-dialog.component';
 
 @Component({
-  imports: [AppHeaderComponent, FormField, TranslocoPipe],
+  imports: [AppHeaderComponent, FormField, ModalDialogComponent, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './my-weight.page.html',
   styleUrl: './my-weight.page.css',

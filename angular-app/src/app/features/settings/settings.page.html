@@ -31,25 +31,24 @@
     </button>
   </section>
   @if (confirmClear()) {
-    <div class="overlay" role="dialog" aria-modal="true">
-      <section class="dialog">
-        <button
-          class="x"
-          (click)="confirmClear.set(false)"
-          [attr.aria-label]="'common.close' | transloco"
-        >
-          ×
+    <app-modal-dialog
+      [title]="'settings.clearTitle' | transloco"
+      [closeLabel]="'common.close' | transloco"
+      dialogRole="alertdialog"
+      width="420px"
+      [showCloseButton]="true"
+      [closeOnBackdrop]="true"
+      [closeOnEscape]="true"
+      (closed)="confirmClear.set(false)"
+    >
+      <p>{{ 'settings.clearDescription' | transloco }}</p>
+      <div class="actions">
+        <button type="button" (click)="confirmClear.set(false)">
+          {{ 'common.cancel' | transloco }}</button
+        ><button type="button" class="danger" (click)="clear()">
+          {{ 'settings.clear' | transloco }}
         </button>
-        <h2>{{ 'settings.clearTitle' | transloco }}</h2>
-        <p>{{ 'settings.clearDescription' | transloco }}</p>
-        <div class="actions">
-          <button type="button" (click)="confirmClear.set(false)">
-            {{ 'common.cancel' | transloco }}</button
-          ><button type="button" class="danger" (click)="clear()">
-            {{ 'settings.clear' | transloco }}
-          </button>
-        </div>
-      </section>
-    </div>
+      </div>
+    </app-modal-dialog>
   }
 </main>

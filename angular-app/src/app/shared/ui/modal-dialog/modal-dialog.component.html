@@ -1,0 +1,24 @@
+<div
+  class="backdrop"
+  tabindex="-1"
+  (click)="closeFromBackdrop($event)"
+  (keydown.escape)="$event.stopPropagation(); closeFromEscape()"
+>
+  <section
+    class="dialog"
+    [attr.role]="dialogRole()"
+    aria-modal="true"
+    [attr.aria-label]="title()"
+    [style.--dialog-width]="width()"
+  >
+    <header>
+      <h2>{{ title() }}</h2>
+      @if (showCloseButton()) {
+        <button type="button" (click)="closed.emit()" [attr.aria-label]="closeLabel()">×</button>
+      }
+    </header>
+    <div class="content">
+      <ng-content />
+    </div>
+  </section>
+</div>

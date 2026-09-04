@@ -37,34 +37,6 @@ app-activity-month-list {
   margin: 0;
   color: #65776d;
 }
-.modal {
-  position: fixed;
-  inset: 0;
-  z-index: 8;
-  background: #10251a99;
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-}
-.modal section {
-  width: min(100%, 520px);
-  position: relative;
-  background: #fff;
-  border-radius: 22px;
-  padding: 1.2rem;
-}
-.modal h2 {
-  margin: 0;
-}
-.close {
-  position: absolute;
-  right: 1rem;
-  top: 1rem;
-  border: 0;
-  border-radius: 50%;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
 .actions {
   display: flex;
   justify-content: space-between;

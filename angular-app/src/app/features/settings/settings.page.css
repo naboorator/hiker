@@ -56,29 +56,6 @@ button,
   color: #245e3b;
   font-weight: 750;
 }
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: #10251a99;
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-  z-index: 5;
-}
-.dialog {
-  width: min(100%, 420px);
-  position: relative;
-}
-.x {
-  position: absolute;
-  right: 1rem;
-  top: 1rem;
-  border-radius: 50%;
-  padding: 0.2rem 0.55rem;
-  background: #edf1ed;
-  color: #486055;
-  font-size: 1.3rem;
-}
 .actions {
   display: flex;
   justify-content: space-between;

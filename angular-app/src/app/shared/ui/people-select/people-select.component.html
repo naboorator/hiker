@@ -2,7 +2,15 @@
   <span class="label">{{ 'peopleSelect.label' | transloco }}</span>
   <details class="select" #menu>
     <summary>
-      <span class="people-icon" aria-hidden="true">👥</span>
+      <span class="people-icon" aria-hidden="true">
+        <svg viewBox="0 0 32 32">
+          <circle class="person primary" cx="12" cy="10" r="4" />
+          <circle class="person secondary" cx="22" cy="12" r="3.5" />
+          <path class="body primary" d="M4 26c.5-6 3.2-9 8-9s7.5 3 8 9Z" />
+          <path class="body secondary" d="M17 26c.3-4.8 2.2-7.3 5.5-7.3S27.7 21.2 28 26Z" />
+          <path class="highlight" d="M8 24c.5-3 1.8-4.6 4-4.6" />
+        </svg>
+      </span>
       <strong>
         @if (selectedPeople().length) {
           {{ selectedPeople().join(', ') }}

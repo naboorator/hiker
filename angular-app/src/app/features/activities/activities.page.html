@@ -75,8 +75,16 @@
     </div>
   }
   @if (pendingDelete()) {
-    <div class="modal">
+    <div class="modal" role="alertdialog" aria-modal="true">
       <section>
+        <button
+          class="close"
+          type="button"
+          (click)="pendingDelete.set(null)"
+          [attr.aria-label]="'common.close' | transloco"
+        >
+          ×
+        </button>
         <h2>{{ 'activities.deleteTitle' | transloco }}</h2>
         <p>{{ 'activities.deleteConfirmation' | transloco }}</p>
         <div class="actions">

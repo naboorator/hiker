@@ -13,4 +13,6 @@ export interface Hike {
   slaps?: number;
   likedBy?: string[];
   slappedBy?: string[];
+  author?: { id: string; name: string };
+  myReactions?: ('like' | 'slap')[];
 }

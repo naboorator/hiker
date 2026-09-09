@@ -7,14 +7,18 @@ import {
   signal,
 } from '@angular/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { toSignal } from '@angular/core/rxjs-interop';
 import type { FriendActivity } from '../../core/interface/friend-activity.interface';
+import type { Hike } from '../../core/interface/hike.interface';
+import { groupActivitiesByMonth } from '../../core/utils/group-activities-by-month';
 import { FriendsStore } from '../../core/stores/friends.store';
 import { MockHikeStore } from '../../core/stores/mock-hike.store';
 import { AppHeaderComponent } from '../../shared/ui/app-header/app-header.component';
 import { AuthService } from '../../core/auth/auth.service';
+import { ActivityMonthListComponent } from '../../shared/ui/activity-month-list/activity-month-list.component';
 
 @Component({
-  imports: [AppHeaderComponent, TranslocoPipe],
+  imports: [AppHeaderComponent, ActivityMonthListComponent, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './friends-activities.page.html',
   styleUrl: './friends-activities.page.css',
@@ -24,11 +28,17 @@ export class FriendsActivitiesPage {
   readonly store = inject(FriendsStore);
   private readonly transloco = inject(TranslocoService);
   private readonly auth = inject(AuthService);
+  private readonly activeLanguage = toSignal(this.transloco.langChanges$, {
+    initialValue: this.transloco.getActiveLang(),
+  });
   readonly activities = computed(() => {
     const userId = this.auth.user()?.id;
     return this.store.activities().filter((activity) => activity.author.id !== userId);
   });
   readonly slapVisible = signal(false);
+  readonly months = computed(() =>
+    groupActivitiesByMonth(this.activities(), this.activeLanguage()),
+  );
   private slapTimeout?: number;
   private readonly destroyRef = inject(DestroyRef);
 
@@ -46,23 +56,11 @@ export class FriendsActivitiesPage {
     this.slapTimeout = window.setTimeout(() => this.slapVisible.set(false), 1700);
   }
 
-  duration(activity: FriendActivity): string {
-    const hours = Math.floor(activity.minutes / 60);
-    const minutes = activity.minutes % 60;
-    return hours ? `${hours} h ${minutes} min` : `${minutes} min`;
+  toggleLike(activity: Hike): void {
+    void this.store.toggleReaction(activity as FriendActivity, 'like');
   }
 
-  calendarDay(date: string): number {
-    return new Date(`${date}T12:00:00`).getDate();
-  }
-
-  calendarMonth(date: string): string {
-    return new Intl.DateTimeFormat(this.transloco.getActiveLang() === 'si' ? 'sl' : 'en', {
-      month: 'short',
-    }).format(new Date(`${date}T12:00:00`));
-  }
-
-  length(metres: number): string {
-    return metres >= 1000 ? `${(metres / 1000).toFixed(1)} km` : `${metres} m`;
+  giveSlap(activity: Hike): void {
+    void this.slap(activity as FriendActivity);
   }
 }

@@ -1,0 +1,282 @@
+.users-panel {
+  padding: 1.25rem;
+  text-align: left;
+}
+
+.title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.title-row h1 {
+  margin: 0;
+}
+
+.title-row > span {
+  color: #60726a;
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.search-form {
+  display: grid;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.search-form label {
+  color: #365246;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.search-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.search-controls input {
+  min-width: 0;
+  flex: 1;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid #cbdacf;
+  border-radius: 11px;
+  background: #fff;
+  color: #263c32;
+  font: inherit;
+}
+
+.search-controls input:focus {
+  border-color: #1f6a43;
+  outline: 2px solid rgb(31 106 67 / 18%);
+}
+
+.search-controls button {
+  padding: 0.65rem 0.8rem;
+  border: 0;
+  border-radius: 11px;
+  background: #1f6a43;
+  color: #fff;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.search-controls .reset-search {
+  background: #edf1ed;
+  color: #365246;
+}
+
+.state {
+  padding: 2rem 0;
+  text-align: center;
+}
+
+.state.error {
+  color: #a34646;
+}
+
+.user-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.user-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.8rem;
+  border: 1px solid #d9e6dc;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.avatar {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #e8f2e8, #cfe5d3);
+  color: #245e3b;
+  font-weight: 900;
+}
+
+.identity {
+  display: grid;
+  min-width: 0;
+  gap: 0.15rem;
+}
+
+.identity small {
+  overflow: hidden;
+  color: #60726a;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.role {
+  grid-column: 3;
+  grid-row: 1;
+  padding: 0.3rem 0.5rem;
+  border-radius: 999px;
+  background: #edf4ee;
+  color: #365246;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.status {
+  grid-column: 3;
+  grid-row: 2;
+  justify-self: end;
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.status.blocked {
+  color: #a34646;
+}
+
+.role.admin {
+  background: #f6dfc7;
+  color: #874a22;
+}
+
+time {
+  grid-column: 2;
+  color: #60726a;
+  font-size: 0.75rem;
+}
+
+.edit-user {
+  grid-column: 2;
+  grid-row: 3;
+  color: #1f6a43;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.user-actions {
+  display: flex;
+  grid-column: 3;
+  grid-row: 3;
+  gap: 0.35rem;
+  justify-self: end;
+}
+
+.user-actions button,
+.modal-actions button {
+  padding: 0.4rem 0.6rem;
+  border: 0;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.user-actions .block {
+  background: #f6dfc7;
+  color: #874a22;
+}
+
+.user-actions .delete,
+.modal-actions .confirm-delete {
+  background: #a34646;
+  color: #fff;
+}
+
+.user-actions button:disabled,
+.modal-actions button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.activity-warning {
+  color: #60726a;
+  font-size: 0.85rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.modal-actions button:first-child {
+  background: #edf1ed;
+  color: #365246;
+}
+
+.edit-user:hover,
+.edit-user:focus-visible {
+  text-decoration: underline;
+}
+
+time span {
+  color: #ef7d32;
+}
+
+.pagination {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.pagination span {
+  color: #60726a;
+  font-size: 0.82rem;
+  font-weight: 750;
+  text-align: center;
+}
+
+.pagination button {
+  border: 0;
+  border-radius: 11px;
+  padding: 0.65rem 0.8rem;
+  background: #1f6a43;
+  color: #fff;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.pagination button:last-child {
+  justify-self: end;
+}
+
+.pagination button:disabled {
+  background: #d9e1db;
+  color: #809087;
+  cursor: default;
+}
+
+@media (max-width: 520px) {
+  .search-controls {
+    flex-wrap: wrap;
+  }
+
+  .search-controls input {
+    flex-basis: 100%;
+  }
+
+  .pagination {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .pagination span {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+}

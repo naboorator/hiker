@@ -1,0 +1,73 @@
+<main>
+  <app-header
+    [appName]="store.settings().appName"
+    [subtitle]="'friends.compareWithFriend' | transloco"
+  />
+  <a class="back" routerLink="/friends">← {{ 'friends.dashboardTitle' | transloco }}</a>
+  <section class="comparison-controls">
+    <h1>{{ 'friends.compareWithFriend' | transloco }}</h1>
+    <p>{{ 'friends.comparisonInstructions' | transloco }}</p>
+    @if (friendsLoading()) {
+      <p class="empty" role="status">{{ 'friends.loadingFriends' | transloco }}</p>
+    } @else if (!friendsStore.friends().length) {
+      <p class="empty">{{ 'friends.noFriendsToCompare' | transloco }}</p>
+    } @else {
+      <div class="friend-select">
+        <span class="select-label">{{ 'friends.chooseFriends' | transloco }}</span>
+        <button
+          type="button"
+          class="select-trigger"
+          [attr.aria-expanded]="selectOpen()"
+          (click)="selectOpen.update((open) => !open)"
+        >
+          <span>{{ selectedNames() || ('friends.chooseFriendsPlaceholder' | transloco) }}</span>
+          <b aria-hidden="true">⌄</b>
+        </button>
+        @if (selectOpen()) {
+          <div class="select-options">
+            @for (friend of friendsStore.friends(); track friend.id) {
+              <label>
+                <input
+                  type="checkbox"
+                  [checked]="selectedFriendIds().includes(friend.id)"
+                  (change)="toggleFriend(friend.id, $any($event.target).checked)"
+                />
+                <span
+                  ><strong>{{ friend.name }}</strong
+                  ><small>{{ friend.email }}</small></span
+                >
+              </label>
+            }
+          </div>
+        }
+      </div>
+    }
+  </section>
+  @if (selectedFriendIds().length) {
+    <div class="month-picker" [attr.aria-label]="'friends.chooseMonth' | transloco">
+      <button
+        type="button"
+        (click)="changeMonth(-1)"
+        [attr.aria-label]="'friends.previousMonth' | transloco"
+      >
+        ‹
+      </button>
+      <strong>{{ monthLabel() }}</strong>
+      <button
+        type="button"
+        (click)="changeMonth(1)"
+        [disabled]="!canGoToNextMonth()"
+        [attr.aria-label]="'friends.nextMonth' | transloco"
+      >
+        ›
+      </button>
+    </div>
+  }
+  @if (loading()) {
+    <p class="state" role="status">{{ 'friends.loadingComparison' | transloco }}</p>
+  } @else if (loadFailed()) {
+    <p class="state error" role="alert">{{ 'friends.comparisonLoadError' | transloco }}</p>
+  } @else if (comparison().length) {
+    <app-friend-comparison-chart [series]="comparison()" [month]="selectedMonth()" />
+  }
+</main>

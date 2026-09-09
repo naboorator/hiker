@@ -14,6 +14,50 @@
     }
   </section>
   <section>
+    <h2>{{ 'settings.passwordTitle' | transloco }}</h2>
+    <p>{{ 'settings.passwordDescription' | transloco }}</p>
+    <form (submit)="changePassword($event)">
+      <label
+        >{{ 'settings.currentPassword' | transloco
+        }}<input
+          type="password"
+          autocomplete="current-password"
+          [class.input-error]="passwordError() === 'settings.currentPasswordIncorrect'"
+          [formField]="passwordForm.currentPassword"
+      /></label>
+      <label
+        >{{ 'settings.newPassword' | transloco
+        }}<input
+          type="password"
+          autocomplete="new-password"
+          [class.input-error]="
+            passwordError() === 'settings.passwordMismatch' ||
+            passwordError() === 'settings.passwordMustDiffer'
+          "
+          [formField]="passwordForm.newPassword"
+      /></label>
+      <label
+        >{{ 'settings.repeatNewPassword' | transloco
+        }}<input
+          type="password"
+          autocomplete="new-password"
+          [class.input-error]="passwordError() === 'settings.passwordMismatch'"
+          [formField]="passwordForm.repeatPassword"
+      /></label>
+      <button type="submit" [disabled]="changingPassword()">
+        {{
+          (changingPassword() ? 'settings.changingPassword' : 'settings.changePassword') | transloco
+        }}
+      </button>
+    </form>
+    @if (passwordStatus()) {
+      <p class="status" role="status">{{ passwordStatus() | transloco }}</p>
+    }
+    @if (passwordError()) {
+      <p class="status error" role="alert">{{ passwordError() | transloco }}</p>
+    }
+  </section>
+  <section>
     <h2>{{ 'settings.backupTitle' | transloco }}</h2>
     <p>{{ 'settings.backupDescription' | transloco }}</p>
     <div class="backup">

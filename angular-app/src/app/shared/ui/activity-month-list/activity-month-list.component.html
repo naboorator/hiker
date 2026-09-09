@@ -25,8 +25,11 @@
         <div class="entries">
           @for (hike of day.hikes; track hike.id) {
             <div>
-              <span
-                >{{ hike.name }} <em>· {{ hike.people.join(', ') }}</em></span
+              <span>
+                @if (hike.author) {
+                  <strong class="author">{{ hike.author.name }}</strong> ·
+                }
+                {{ hike.name }} <em>· {{ hike.people.join(', ') }}</em></span
               ><small>{{ format(hike.minutes) }} · {{ distance(hike.metres) }}</small>
               @if (showLikes()) {
                 <span
@@ -56,6 +59,26 @@
                     {{ hike.slaps }}
                   </span>
                 }
+              }
+              @if (showFriendReactions()) {
+                <span class="friend-reactions">
+                  <button
+                    type="button"
+                    [class.active]="hike.myReactions?.includes('like')"
+                    (click)="like.emit(hike)"
+                  >
+                    ♥ {{ 'friends.like' | transloco }} · {{ hike.likes ?? 0 }}
+                  </button>
+                  <button
+                    type="button"
+                    class="slap-reaction"
+                    [class.active]="hike.myReactions?.includes('slap')"
+                    (click)="slap.emit(hike)"
+                  >
+                    <img src="friend-slap-small.png" alt="" />
+                    {{ 'friends.slap' | transloco }} · {{ hike.slaps ?? 0 }}
+                  </button>
+                </span>
               }
               @if (allowEdits()) {
                 <aside>

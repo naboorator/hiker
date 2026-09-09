@@ -1,0 +1,119 @@
+<main>
+  <app-header [appName]="store.settings().appName" [subtitle]="'admin.usersSubtitle' | transloco" />
+  <a class="back" routerLink="/admin">← {{ 'admin.title' | transloco }}</a>
+  <section class="users-panel">
+    <div class="title-row">
+      <h1>{{ 'admin.users' | transloco }}</h1>
+      <span>{{ 'admin.userCount' | transloco: { count: total() } }}</span>
+    </div>
+    <form class="search-form" role="search" (submit)="$event.preventDefault(); search()">
+      <label for="user-search">{{ 'admin.searchUsersLabel' | transloco }}</label>
+      <div class="search-controls">
+        <input
+          id="user-search"
+          type="search"
+          [value]="searchTerm()"
+          [placeholder]="'admin.searchUsersPlaceholder' | transloco"
+          (input)="searchTerm.set($any($event.target).value)"
+        />
+        <button type="submit">{{ 'admin.search' | transloco }}</button>
+        @if (appliedSearch()) {
+          <button type="button" class="reset-search" (click)="resetSearch()">
+            {{ 'admin.resetSearch' | transloco }}
+          </button>
+        }
+      </div>
+    </form>
+    @if (loading()) {
+      <p class="state" role="status">{{ 'admin.loadingUsers' | transloco }}</p>
+    } @else if (loadFailed()) {
+      <p class="state error" role="alert">{{ 'admin.usersLoadError' | transloco }}</p>
+    } @else if (!users().length && appliedSearch()) {
+      <p class="state" role="status">{{ 'admin.noUsersFound' | transloco }}</p>
+    } @else {
+      <div class="user-list">
+        @for (user of users(); track user.id) {
+          <article class="user-card">
+            <span class="avatar" aria-hidden="true">{{ user.name.charAt(0).toUpperCase() }}</span>
+            <span class="identity">
+              <strong>{{ user.name }}</strong>
+              <small>{{ user.email }}</small>
+            </span>
+            <span class="role" [class.admin]="user.role === 'admin'">{{
+              (user.role === 'admin' ? 'admin.roleAdmin' : 'admin.roleUser') | transloco
+            }}</span>
+            @if (user.status === 'blocked') {
+              <span class="status blocked">{{ 'admin.statusBlocked' | transloco }}</span>
+            }
+            <time [attr.datetime]="user.createdAt">
+              <span aria-hidden="true">▣</span>
+              {{ registrationDate(user) }}
+            </time>
+            <a
+              class="edit-user"
+              [routerLink]="['/admin/users', user.id, 'edit']"
+              [attr.aria-label]="'admin.editUserNamed' | transloco: { name: user.name }"
+            >
+              ✎ {{ 'admin.edit' | transloco }}
+            </a>
+            @if (user.id !== auth.user()?.id) {
+              <span class="user-actions">
+                <button
+                  type="button"
+                  class="block"
+                  [disabled]="actionInProgress() === user.id"
+                  (click)="toggleBlocked(user)"
+                >
+                  {{ (user.status === 'blocked' ? 'admin.unblock' : 'admin.block') | transloco }}
+                </button>
+                <button type="button" class="delete" (click)="pendingDelete.set(user)">
+                  {{ 'common.delete' | transloco }}
+                </button>
+              </span>
+            }
+          </article>
+        }
+      </div>
+      <nav class="pagination" [attr.aria-label]="'admin.pagination' | transloco">
+        <button type="button" [disabled]="page() === 1" (click)="loadPage(page() - 1)">
+          ← {{ 'admin.previous' | transloco }}
+        </button>
+        <span>{{ 'admin.pageStatus' | transloco: { page: page(), total: totalPages() } }}</span>
+        <button type="button" [disabled]="page() === totalPages()" (click)="loadPage(page() + 1)">
+          {{ 'admin.next' | transloco }} →
+        </button>
+      </nav>
+    }
+    @if (actionError()) {
+      <p class="state error" role="alert">{{ 'admin.userActionError' | transloco }}</p>
+    }
+  </section>
+  @if (pendingDelete(); as user) {
+    <app-modal-dialog
+      [title]="'admin.deleteUserTitle' | transloco"
+      [closeLabel]="'common.close' | transloco"
+      dialogRole="alertdialog"
+      width="420px"
+      [showCloseButton]="true"
+      [closeOnBackdrop]="true"
+      [closeOnEscape]="true"
+      (closed)="pendingDelete.set(null)"
+    >
+      <p>{{ 'admin.deleteUserConfirmation' | transloco: { name: user.name } }}</p>
+      <p class="activity-warning">{{ 'admin.activitiesRemain' | transloco }}</p>
+      <div class="modal-actions">
+        <button type="button" (click)="pendingDelete.set(null)">
+          {{ 'common.cancel' | transloco }}
+        </button>
+        <button
+          type="button"
+          class="confirm-delete"
+          [disabled]="actionInProgress() === user.id"
+          (click)="confirmDelete()"
+        >
+          {{ 'common.delete' | transloco }}
+        </button>
+      </div>
+    </app-modal-dialog>
+  }
+</main>

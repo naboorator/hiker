@@ -6,12 +6,18 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { TranslocoHttpLoader } from './core/i18n/transloco-loader';
 import { authInterceptor } from './core/auth/auth.interceptor';
+import { provideSignalFormsConfig } from '@angular/forms/signals';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(withInterceptors([authInterceptor])),
     provideRouter(routes),
+    provideSignalFormsConfig({
+      classes: {
+        'field-invalid': ({ state }) => state().invalid() && state().touched(),
+      },
+    }),
     provideTransloco({
       config: {
         availableLangs: ['en', 'si'],

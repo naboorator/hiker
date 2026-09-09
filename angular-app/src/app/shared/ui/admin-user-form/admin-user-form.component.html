@@ -1,0 +1,33 @@
+<form (submit)="submit($event)">
+  <label>
+    {{ 'admin.name' | transloco }}
+    <input autocomplete="name" [formField]="userForm.name" />
+  </label>
+  <label>
+    {{ 'admin.email' | transloco }}
+    <input
+      type="email"
+      autocomplete="email"
+      [class.input-error]="emailInvalid()"
+      [formField]="userForm.email"
+    />
+  </label>
+  @if (userForm.email().touched() && userForm.email().invalid()) {
+    <p class="field-error">{{ 'admin.invalidEmail' | transloco }}</p>
+  }
+  <label>
+    {{ 'admin.role' | transloco }}
+    <select [formField]="userForm.role">
+      <option value="normal_user">{{ 'admin.roleUser' | transloco }}</option>
+      <option value="admin">{{ 'admin.roleAdmin' | transloco }}</option>
+    </select>
+  </label>
+  <div class="actions">
+    <button type="button" class="secondary" (click)="cancelled.emit()">
+      {{ 'common.cancel' | transloco }}
+    </button>
+    <button type="submit" [disabled]="userForm().invalid() || saving()">
+      {{ (saving() ? 'admin.saving' : 'common.save') | transloco }}
+    </button>
+  </div>
+</form>

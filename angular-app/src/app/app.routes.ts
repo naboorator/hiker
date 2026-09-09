@@ -1,5 +1,5 @@
 import type { Routes } from '@angular/router';
-import { authGuard, guestGuard } from './core/auth/auth.guard';
+import { adminGuard, authGuard, guestGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
   {
@@ -35,7 +35,23 @@ export const routes: Routes = [
   {
     path: 'friends',
     canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/friends-dashboard/friends-dashboard.page').then(
+        (m) => m.FriendsDashboardPage,
+      ),
+  },
+  {
+    path: 'friends/find',
+    canActivate: [authGuard],
     loadComponent: () => import('./features/friends/friends.page').then((m) => m.FriendsPage),
+  },
+  {
+    path: 'friends/compare',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/friend-comparison/friend-comparison.page').then(
+        (m) => m.FriendComparisonPage,
+      ),
   },
   {
     path: 'friends-activities',
@@ -59,6 +75,31 @@ export const routes: Routes = [
     path: 'my-weight',
     canActivate: [authGuard],
     loadComponent: () => import('./features/my-weight/my-weight.page').then((m) => m.MyWeightPage),
+  },
+  {
+    path: 'admin',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () => import('./features/admin/admin.page').then((m) => m.AdminPage),
+  },
+  {
+    path: 'admin/users',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () =>
+      import('./features/admin/users/admin-users.page').then((m) => m.AdminUsersPage),
+  },
+  {
+    path: 'admin/users/:id/edit',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () =>
+      import('./features/admin/users/edit/admin-user-edit.page').then((m) => m.AdminUserEditPage),
+  },
+  {
+    path: 'admin/activities',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () =>
+      import('./features/admin/activities/admin-activities.page').then(
+        (m) => m.AdminActivitiesPage,
+      ),
   },
   { path: '**', redirectTo: '' },
 ];

@@ -37,8 +37,13 @@
         ><a routerLink="/settings" routerLinkActive="active">{{ 'common.settings' | transloco }}</a
         ><a routerLink="/my-weight" routerLinkActive="active">{{
           'weightRecords.navigation' | transloco
-        }}</a
-        ><button type="button" class="logout" (click)="logout()">
+        }}</a>
+        @if (auth.user()?.role === 'admin') {
+          <a routerLink="/admin" routerLinkActive="active">{{
+            'appHeader.administration' | transloco
+          }}</a>
+        }
+        <button type="button" class="logout" (click)="logout()">
           {{ 'appHeader.logout' | transloco }}
         </button>
       </nav>

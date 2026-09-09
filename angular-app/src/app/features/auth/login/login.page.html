@@ -9,11 +9,21 @@
     <form (submit)="submit($event)">
       <label>
         {{ 'auth.email' | transloco }}
-        <input type="email" autocomplete="email" [formField]="loginForm.email" />
+        <input
+          type="email"
+          autocomplete="email"
+          [class.input-error]="!!error()"
+          [formField]="loginForm.email"
+        />
       </label>
       <label>
         {{ 'auth.password' | transloco }}
-        <input type="password" autocomplete="current-password" [formField]="loginForm.password" />
+        <input
+          type="password"
+          autocomplete="current-password"
+          [class.input-error]="!!error()"
+          [formField]="loginForm.password"
+        />
       </label>
       @if (error()) {
         <p class="error" role="alert">{{ error() }}</p>

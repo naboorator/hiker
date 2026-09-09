@@ -15,3 +15,15 @@ button,
 input {
   font: inherit;
 }
+
+input.field-invalid,
+select.field-invalid,
+textarea.field-invalid,
+.field-invalid,
+input.input-error,
+select.input-error,
+textarea.input-error,
+.input-error {
+  border-color: #c93f3f !important;
+  box-shadow: 0 0 0 2px rgb(201 63 63 / 18%);
+}

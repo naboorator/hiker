@@ -14,4 +14,5 @@ export const translationFiles = [
   'auth',
   'service-unavailable',
   'friends',
+  'admin',
 ] as const;

@@ -4,6 +4,7 @@ import { HikeApiService } from '../api/hike-api.service';
 import type { ActivityReactionType, FriendActivity } from '../interface/friend-activity.interface';
 import type { Friend } from '../interface/friend.interface';
 import type { FriendRequest } from '../interface/friend-request.interface';
+import type { FriendSearchResult } from '../interface/friend-search-result.interface';
 import { LogWrapper } from '../logging/log-wrapper.service';
 
 @Injectable({ providedIn: 'root' })
@@ -13,6 +14,8 @@ export class FriendsStore {
   readonly friends = signal<Friend[]>([]);
   readonly activities = signal<FriendActivity[]>([]);
   readonly requests = signal<FriendRequest[]>([]);
+  readonly searchResults = signal<FriendSearchResult[]>([]);
+  readonly searching = signal(false);
   readonly incomingRequests = computed(() =>
     this.requests().filter((request) => request.direction === 'incoming'),
   );
@@ -68,13 +71,35 @@ export class FriendsStore {
     this.friends.set([]);
     this.activities.set([]);
     this.requests.set([]);
+    this.searchResults.set([]);
     this.error.set('');
+  }
+
+  async searchUsers(search: string): Promise<void> {
+    if (!search) {
+      this.searchResults.set([]);
+      return;
+    }
+    this.searching.set(true);
+    this.error.set('');
+    try {
+      this.searchResults.set(await this.api.searchUsersForFriendship(search));
+    } catch (error) {
+      this.report(error);
+    } finally {
+      this.searching.set(false);
+    }
   }
 
   async addFriend(email: string): Promise<boolean> {
     try {
       const request = await this.api.addFriend(email);
       this.requests.update((requests) => [...requests, request]);
+      this.searchResults.update((results) =>
+        results.map((result) =>
+          result.id === request.user.id ? { ...result, connectionStatus: 'pending' } : result,
+        ),
+      );
       this.error.set('');
       return true;
     } catch (error) {

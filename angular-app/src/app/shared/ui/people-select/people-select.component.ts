@@ -27,7 +27,7 @@ export class PeopleSelectComponent {
   readonly selectionChange = output<string[]>();
 
   readonly options = computed(() => {
-    const names = [this.ownerName(), ...this.suggestions()]
+    const names = [this.ownerName(), ...this.suggestions(), ...this.selectedPeople()]
       .map((name) => name.trim())
       .filter(Boolean);
     return names.filter(
@@ -51,6 +51,13 @@ export class PeopleSelectComponent {
         ? selected.filter((person) => person.toLocaleLowerCase() !== name.toLocaleLowerCase())
         : [...selected, name],
     );
+  }
+
+  add(input: HTMLInputElement, event?: Event): void {
+    event?.preventDefault();
+    const name = input.value.trim();
+    if (name && !this.isSelected(name)) this.selectionChange.emit([...this.selectedPeople(), name]);
+    input.value = '';
   }
 
   @HostListener('document:click', ['$event'])

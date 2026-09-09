@@ -28,6 +28,35 @@ h2 {
 .entries em {
   font-style: normal;
 }
+.entries .author {
+  color: #245e3b;
+}
+.entries .friend-reactions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+.entries .friend-reactions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.55rem;
+  color: #365246;
+  font-size: 0.75rem;
+}
+.entries .friend-reactions button.active {
+  background: #f6dfc7;
+  color: #874a22;
+}
+.entries .friend-reactions .slap-reaction.active {
+  background: #dcefe1;
+  color: #245e3b;
+}
+.entries .friend-reactions img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
 .entries .likes {
   position: relative;
   flex: none;

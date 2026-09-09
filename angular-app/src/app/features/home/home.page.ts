@@ -14,11 +14,10 @@ import { HikeListComponent } from '../../shared/ui/hike-list/hike-list.component
 import { ActivityMonthListComponent } from '../../shared/ui/activity-month-list/activity-month-list.component';
 import { MyWeightComponent } from '../../shared/ui/my-weight/my-weight.component';
 import { ModalDialogComponent } from '../../shared/ui/modal-dialog/modal-dialog.component';
-import type { ActivityDayGroup } from '../../core/interface/activity-day-group.interface';
 import type { HikeDraft } from '../../core/interface/hike-draft.interface';
-import type { Hike } from '../../core/interface/hike.interface';
 import { MockHikeStore } from '../../core/stores/mock-hike.store';
 import { ARNOLD_SCHWARZENEGGER_QUOTES } from '../../core/constants/arnold-quotes.constant';
+import { groupCurrentMonthActivities, randomItem } from './home.helpers';
 @Component({
   imports: [
     AppHeaderComponent,
@@ -41,9 +40,15 @@ export class HomePage {
   });
   readonly formOpen = signal(false);
   readonly weightModalOpen = signal(false);
-  readonly loginQuote = signal(history.state?.['loggedIn'] === true ? randomArnoldQuote() : null);
+  readonly loginQuote = signal(
+    history.state?.['loggedIn'] === true
+      ? (randomItem(ARNOLD_SCHWARZENEGGER_QUOTES) ?? null)
+      : null,
+  );
   readonly names = computed(() => [...new Set(this.store.hikes().map((x) => x.name))]);
-  readonly month = computed(() => groupCurrent(this.store.hikes(), this.activeLanguage()));
+  readonly month = computed(() =>
+    groupCurrentMonthActivities(this.store.hikes(), this.activeLanguage()),
+  );
 
   constructor() {
     if (!this.loginQuote()) return;
@@ -60,45 +65,4 @@ export class HomePage {
     await this.store.addMockHike(d);
     this.formOpen.set(false);
   }
-}
-
-function randomArnoldQuote(): string {
-  const index = Math.floor(Math.random() * ARNOLD_SCHWARZENEGGER_QUOTES.length);
-  return ARNOLD_SCHWARZENEGGER_QUOTES[index] as string;
-}
-
-function groupCurrent(hikes: Hike[], language: string) {
-  type DayDraft = Omit<ActivityDayGroup, 'summary' | 'hikes'> & { hikes: Hike[] };
-  const days = new Map<string, DayDraft>();
-  for (const hike of hikes.filter((x) => x.date.startsWith(new Date().toISOString().slice(0, 7)))) {
-    let day = days.get(hike.date);
-    if (!day) {
-      const s = new Date(hike.date + 'T12:00:00');
-      day = {
-        date: hike.date,
-        day: s.getDate(),
-        month: new Intl.DateTimeFormat(language === 'si' ? 'sl' : 'en', { month: 'short' }).format(
-          s,
-        ),
-        hikes: [],
-        minutes: 0,
-        metres: 0,
-      };
-      days.set(hike.date, day);
-    }
-    day.hikes.push(hike);
-    day.minutes += hike.minutes;
-    day.metres += hike.metres;
-  }
-  const values = [...days.values()]
-    .sort((a, b) => b.date.localeCompare(a.date))
-    .map((day) => ({
-      ...day,
-      summary: day.hikes.length === 1 ? day.hikes[0].name : '',
-    }));
-  return {
-    days: values,
-    minutes: values.reduce((s, d) => s + d.minutes, 0),
-    metres: values.reduce((s, d) => s + d.metres, 0),
-  };
 }

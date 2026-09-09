@@ -1,0 +1,69 @@
+<section class="chart-card">
+  <div class="heading">
+    <h2>{{ 'friends.comparisonChartTitle' | transloco }}</h2>
+    <p>{{ 'friends.comparisonChartDescription' | transloco }}</p>
+  </div>
+  <div class="legend" [attr.aria-label]="'friends.comparisonLegend' | transloco">
+    @for (item of legend(); track item.userId) {
+      <span><i [style.background]="item.color"></i>{{ item.name }}</span>
+    }
+  </div>
+  <div class="chart-scroll">
+    <svg
+      [attr.viewBox]="'0 0 ' + chartWidth() + ' ' + chartHeight"
+      role="img"
+      [attr.aria-label]="'friends.comparisonChartDescription' | transloco"
+    >
+      @for (tick of ticks(); track tick.value) {
+        <line
+          class="grid"
+          [attr.x1]="plot.left"
+          [attr.x2]="chartWidth() - 24"
+          [attr.y1]="tick.y"
+          [attr.y2]="tick.y"
+        />
+        <text class="y-label" [attr.x]="plot.left - 9" [attr.y]="tick.y + 4">{{ tick.value }}</text>
+      }
+      @for (bar of bars(); track bar.key) {
+        <rect
+          class="bar"
+          [attr.x]="bar.x"
+          [attr.y]="bar.y"
+          [attr.width]="bar.width"
+          [attr.height]="bar.height"
+          [attr.fill]="bar.color"
+          tabindex="0"
+          [attr.aria-label]="
+            'friends.comparisonBarLabel'
+              | transloco: { name: bar.name, day: bar.day, count: bar.count }
+          "
+        >
+          <title>
+            {{
+              'friends.comparisonBarLabel'
+                | transloco: { name: bar.name, day: bar.day, count: bar.count }
+            }}
+          </title>
+        </rect>
+        @if (bar.count > 0) {
+          <text class="bar-value" [attr.x]="bar.x + bar.width / 2" [attr.y]="bar.y - 5">
+            {{ bar.count }}
+          </text>
+        }
+      }
+      @for (day of days(); track day; let index = $index) {
+        <text class="x-label" [attr.x]="dayX(index)" [attr.y]="plot.bottom + 21">{{ day }}</text>
+      }
+      <line
+        class="axis-line"
+        [attr.x1]="plot.left"
+        [attr.x2]="chartWidth() - 24"
+        [attr.y1]="plot.bottom"
+        [attr.y2]="plot.bottom"
+      />
+      <text class="axis-title" [attr.x]="16" [attr.y]="plot.top + 115">
+        {{ 'friends.activityCountAxis' | transloco }}
+      </text>
+    </svg>
+  </div>
+</section>

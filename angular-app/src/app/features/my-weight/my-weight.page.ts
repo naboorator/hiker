@@ -5,6 +5,7 @@ import type { WeightEntry } from '../../core/interface/weight-entry.interface';
 import { MockHikeStore } from '../../core/stores/mock-hike.store';
 import { AppHeaderComponent } from '../../shared/ui/app-header/app-header.component';
 import { ModalDialogComponent } from '../../shared/ui/modal-dialog/modal-dialog.component';
+import { formatDatePart, type DatePart } from '../../core/utils/date-format.helpers';
 
 @Component({
   imports: [AppHeaderComponent, FormField, ModalDialogComponent, TranslocoPipe],
@@ -32,6 +33,7 @@ export class MyWeightPage {
 
   async saveEdit(event: SubmitEvent): Promise<void> {
     event.preventDefault();
+    this.editForm().markAsTouched();
     const entry = this.editing();
     const { weightKg, recordedOn } = this.editModel();
     if (!entry || !recordedOn || weightKg < 20 || weightKg > 500) return;
@@ -46,14 +48,7 @@ export class MyWeightPage {
     this.deleting.set(null);
   }
 
-  formatDatePart(value: string, part: 'day' | 'month' | 'year'): string {
-    const locale = this.transloco.getActiveLang() === 'si' ? 'sl' : 'en';
-    const options: Intl.DateTimeFormatOptions =
-      part === 'day'
-        ? { day: 'numeric' }
-        : part === 'month'
-          ? { month: 'short' }
-          : { year: 'numeric' };
-    return new Intl.DateTimeFormat(locale, options).format(new Date(`${value}T12:00:00`));
+  formatDatePart(value: string, part: DatePart): string {
+    return formatDatePart(value, part, this.transloco.getActiveLang());
   }
 }

@@ -1,0 +1,38 @@
+<main>
+  <app-header [appName]="store.settings().appName" [subtitle]="'admin.subtitle' | transloco" />
+  <section>
+    <h1>{{ 'admin.title' | transloco }}</h1>
+    <p>{{ 'admin.description' | transloco }}</p>
+    <div class="admin-cards">
+      <a class="admin-card users" routerLink="/admin/users">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64">
+            <circle cx="25" cy="22" r="10" />
+            <path d="M8 52c1-13 7-19 17-19s16 6 17 19Z" />
+            <circle class="accent" cx="46" cy="25" r="7" />
+            <path class="accent" d="M38 51c.5-9 4-14 10-14s9.5 5 10 14Z" />
+          </svg>
+        </span>
+        <span>
+          <strong>{{ 'admin.users' | transloco }}</strong>
+          <small>{{ 'admin.usersDescription' | transloco }}</small>
+        </span>
+        <b aria-hidden="true">→</b>
+      </a>
+      <a class="admin-card activities" routerLink="/admin/activities">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64">
+            <path d="M13 47 27 18l9 17 6-10 10 22Z" />
+            <path class="accent line" d="m10 51 13-12 8 7 10-8 13 13" />
+            <circle class="accent" cx="47" cy="15" r="6" />
+          </svg>
+        </span>
+        <span>
+          <strong>{{ 'admin.activities' | transloco }}</strong>
+          <small>{{ 'admin.activitiesDescription' | transloco }}</small>
+        </span>
+        <b aria-hidden="true">→</b>
+      </a>
+    </div>
+  </section>
+</main>

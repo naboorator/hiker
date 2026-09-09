@@ -1,0 +1,16 @@
+.edit-panel {
+  text-align: left;
+}
+
+h1 {
+  margin-bottom: 1.25rem;
+}
+
+.error {
+  margin: 1rem 0 0;
+  padding: 0.75rem;
+  border-radius: 10px;
+  background: #fff0eb;
+  color: #8a382d;
+  font-size: 0.86rem;
+}

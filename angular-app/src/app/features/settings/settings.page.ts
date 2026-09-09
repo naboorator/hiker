@@ -1,10 +1,13 @@
 import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
-import { FormField, form, required } from '@angular/forms/signals';
+import { FormField, form, minLength, required } from '@angular/forms/signals';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import type { AppSettings } from '../../core/interface/app-settings.interface';
 import { MockHikeStore } from '../../core/stores/mock-hike.store';
 import { AppHeaderComponent } from '../../shared/ui/app-header/app-header.component';
 import { ModalDialogComponent } from '../../shared/ui/modal-dialog/modal-dialog.component';
+import type { ChangePasswordDraft } from '../../core/interface/change-password-draft.interface';
+import { HikeApiService } from '../../core/api/hike-api.service';
+import { passwordErrorTranslation } from './settings.helpers';
 @Component({
   imports: [AppHeaderComponent, FormField, ModalDialogComponent, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,12 +17,27 @@ import { ModalDialogComponent } from '../../shared/ui/modal-dialog/modal-dialog.
 export class SettingsPage {
   readonly store = inject(MockHikeStore);
   private readonly transloco = inject(TranslocoService);
+  private readonly api = inject(HikeApiService);
   readonly model = signal<AppSettings>({ ...this.store.settings() });
   readonly settingsForm = form(this.model, (schema) => {
     required(schema.appName);
     required(schema.ownerName);
   });
   readonly saved = signal(false);
+  readonly passwordModel = signal<ChangePasswordDraft>({
+    currentPassword: '',
+    newPassword: '',
+    repeatPassword: '',
+  });
+  readonly passwordForm = form(this.passwordModel, (schema) => {
+    required(schema.currentPassword);
+    required(schema.newPassword);
+    minLength(schema.newPassword, 8);
+    required(schema.repeatPassword);
+  });
+  readonly passwordStatus = signal('');
+  readonly passwordError = signal('');
+  readonly changingPassword = signal(false);
 
   constructor() {
     effect(() => this.model.set({ ...this.store.settings() }));
@@ -27,18 +45,50 @@ export class SettingsPage {
 
   async save(event: SubmitEvent): Promise<void> {
     event.preventDefault();
+    this.settingsForm().markAsTouched();
+    if (this.settingsForm().invalid()) return;
     await this.store.saveSettings(this.model());
     this.saved.set(true);
+  }
+
+  async changePassword(event: SubmitEvent): Promise<void> {
+    event.preventDefault();
+    this.passwordForm().markAsTouched();
+    this.passwordStatus.set('');
+    this.passwordError.set('');
+    const draft = this.passwordModel();
+    if (draft.newPassword.length < 8) {
+      this.passwordError.set('settings.passwordLength');
+      return;
+    }
+    if (draft.newPassword !== draft.repeatPassword) {
+      this.passwordError.set('settings.passwordMismatch');
+      return;
+    }
+    if (draft.currentPassword === draft.newPassword) {
+      this.passwordError.set('settings.passwordMustDiffer');
+      return;
+    }
+    this.changingPassword.set(true);
+    try {
+      await this.api.changePassword(draft);
+      this.passwordModel.set({ currentPassword: '', newPassword: '', repeatPassword: '' });
+      this.passwordStatus.set('settings.passwordChanged');
+    } catch (error) {
+      this.passwordError.set(passwordErrorTranslation(error));
+    } finally {
+      this.changingPassword.set(false);
+    }
   }
 
   readonly importStatus = signal('');
   readonly confirmClear = signal(false);
   async download(): Promise<void> {
-    const blob = new Blob([await this.store.exportHikes()], { type: 'application/json' }),
+    const blob = new Blob([await this.store.exportData()], { type: 'application/json' }),
       url = URL.createObjectURL(blob),
       link = document.createElement('a');
     link.href = url;
-    link.download = 'hike-log-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+    link.download = 'my-hike-backup-' + new Date().toISOString().slice(0, 10) + '.json';
     link.click();
     URL.revokeObjectURL(url);
   }
@@ -47,11 +97,12 @@ export class SettingsPage {
     if (!file) return;
     try {
       this.importStatus.set(this.transloco.translate('settings.importing'));
-      const result = await this.store.importHikes(file);
+      const result = await this.store.importData(file);
+      const skipped = result.skippedActivities + result.skippedWeights;
       this.importStatus.set(
         this.transloco.translate(
-          result.skipped ? 'settings.importSuccessWithSkipped' : 'settings.importSuccess',
-          result,
+          skipped ? 'settings.importSuccessWithSkipped' : 'settings.importSuccess',
+          { ...result, skipped },
         ),
       );
     } catch {

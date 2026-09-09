@@ -9,20 +9,31 @@
       /></label>
       <label
         >{{ 'auth.email' | transloco
-        }}<input type="email" autocomplete="email" [formField]="registerForm.email"
+        }}<input
+          type="email"
+          autocomplete="email"
+          [class.input-error]="error().toLowerCase().includes('email')"
+          [formField]="registerForm.email"
       /></label>
       @if (registerForm.email().touched() && registerForm.email().invalid()) {
         <p class="field-error">{{ 'auth.invalidEmail' | transloco }}</p>
       }
       <label
         >{{ 'auth.password' | transloco
-        }}<input type="password" autocomplete="new-password" [formField]="registerForm.password"
+        }}<input
+          type="password"
+          autocomplete="new-password"
+          [class.input-error]="
+            error() === 'auth.passwordMismatch' || error() === 'auth.passwordLength'
+          "
+          [formField]="registerForm.password"
       /></label>
       <label
         >{{ 'auth.repeatPassword' | transloco
         }}<input
           type="password"
           autocomplete="new-password"
+          [class.input-error]="error() === 'auth.passwordMismatch'"
           [formField]="registerForm.repeatPassword"
       /></label>
       @if (error(); as errorMessage) {

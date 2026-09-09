@@ -1,0 +1,43 @@
+<main>
+  <app-header
+    [appName]="store.settings().appName"
+    [subtitle]="'friends.dashboardSubtitle' | transloco"
+  />
+  <section>
+    <h1>{{ 'friends.dashboardTitle' | transloco }}</h1>
+    <p>{{ 'friends.dashboardDescription' | transloco }}</p>
+    <div class="dashboard-cards">
+      <a class="dashboard-card find" routerLink="/friends/find">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64">
+            <circle cx="25" cy="22" r="10" />
+            <path d="M8 51c1-13 7-19 17-19s16 6 17 19Z" />
+            <circle class="accent-line" cx="45" cy="22" r="9" />
+            <path class="accent-line" d="m52 29 7 7" />
+          </svg>
+        </span>
+        <span>
+          <strong>{{ 'friends.findFriends' | transloco }}</strong>
+          <small>{{ 'friends.findFriendsDescription' | transloco }}</small>
+        </span>
+        <b aria-hidden="true">→</b>
+      </a>
+      <a class="dashboard-card compare" routerLink="/friends/compare">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64">
+            <circle cx="19" cy="20" r="8" />
+            <path d="M7 45c1-11 5-16 12-16s11 5 12 16Z" />
+            <circle class="accent" cx="45" cy="20" r="8" />
+            <path class="accent" d="M33 45c1-11 5-16 12-16s11 5 12 16Z" />
+            <path class="accent-line" d="M18 53h28M32 49v8" />
+          </svg>
+        </span>
+        <span>
+          <strong>{{ 'friends.compareWithFriend' | transloco }}</strong>
+          <small>{{ 'friends.compareWithFriendDescription' | transloco }}</small>
+        </span>
+        <b aria-hidden="true">→</b>
+      </a>
+    </div>
+  </section>
+</main>

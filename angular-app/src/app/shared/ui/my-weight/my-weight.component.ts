@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, output, signal } from '@ang
 import { FormField, form, max, min, required } from '@angular/forms/signals';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { MockHikeStore } from '../../../core/stores/mock-hike.store';
+import { formatDatePart, type DatePart } from '../../../core/utils/date-format.helpers';
 
 @Component({
   selector: 'app-my-weight',
@@ -28,6 +29,7 @@ export class MyWeightComponent {
 
   async save(event: SubmitEvent): Promise<void> {
     event.preventDefault();
+    this.weightForm().markAsTouched();
     const { weightKg, recordedOn } = this.model();
     if (weightKg === null || !recordedOn || weightKg < 20 || weightKg > 500) return;
     await this.store.addWeight(weightKg, recordedOn);
@@ -36,14 +38,7 @@ export class MyWeightComponent {
     this.measurementSaved.emit();
   }
 
-  formatDatePart(value: string, part: 'day' | 'month' | 'year'): string {
-    const locale = this.transloco.getActiveLang() === 'si' ? 'sl' : 'en';
-    const options: Intl.DateTimeFormatOptions =
-      part === 'day'
-        ? { day: 'numeric' }
-        : part === 'month'
-          ? { month: 'short' }
-          : { year: 'numeric' };
-    return new Intl.DateTimeFormat(locale, options).format(new Date(`${value}T12:00:00`));
+  formatDatePart(value: string, part: DatePart): string {
+    return formatDatePart(value, part, this.transloco.getActiveLang());
   }
 }

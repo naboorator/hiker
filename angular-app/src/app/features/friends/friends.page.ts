@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { FormField, email, form, required } from '@angular/forms/signals';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { FriendsStore } from '../../core/stores/friends.store';
 import { MockHikeStore } from '../../core/stores/mock-hike.store';
@@ -8,7 +8,7 @@ import { ModalDialogComponent } from '../../shared/ui/modal-dialog/modal-dialog.
 import type { Friend } from '../../core/interface/friend.interface';
 
 @Component({
-  imports: [AppHeaderComponent, FormField, ModalDialogComponent, TranslocoPipe],
+  imports: [AppHeaderComponent, ModalDialogComponent, RouterLink, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './friends.page.html',
   styleUrl: './friends.page.css',
@@ -16,27 +16,49 @@ import type { Friend } from '../../core/interface/friend.interface';
 export class FriendsPage {
   readonly hikeStore = inject(MockHikeStore);
   readonly store = inject(FriendsStore);
-  readonly model = signal({ email: '' });
-  readonly friendForm = form(this.model, (schema) => {
-    required(schema.email);
-    email(schema.email);
-  });
-  readonly adding = signal(false);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  readonly searchTerm = signal(this.route.snapshot.queryParamMap.get('search')?.trim() ?? '');
+  readonly appliedSearch = signal(this.searchTerm());
+  readonly sendingRequest = signal<string | null>(null);
   readonly pendingFriendRemoval = signal<Friend | null>(null);
 
   constructor() {
     void this.store.load();
+    if (this.appliedSearch()) void this.store.searchUsers(this.appliedSearch());
   }
 
-  async connect(event: SubmitEvent): Promise<void> {
+  async search(event: SubmitEvent): Promise<void> {
     event.preventDefault();
-    if (this.friendForm.email().invalid()) return;
-    this.adding.set(true);
+    const search = this.searchTerm().trim();
+    this.searchTerm.set(search);
+    this.appliedSearch.set(search);
+    await this.updateSearchUrl(search);
+    await this.store.searchUsers(search);
+  }
+
+  async resetSearch(): Promise<void> {
+    this.searchTerm.set('');
+    this.appliedSearch.set('');
+    this.store.searchResults.set([]);
+    await this.updateSearchUrl('');
+  }
+
+  async sendFriendRequest(id: string, email: string): Promise<void> {
+    this.sendingRequest.set(id);
     try {
-      if (await this.store.addFriend(this.model().email)) this.model.set({ email: '' });
+      await this.store.addFriend(email);
     } finally {
-      this.adding.set(false);
+      this.sendingRequest.set(null);
     }
+  }
+
+  private async updateSearchUrl(search: string): Promise<void> {
+    await this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { search: search || null },
+      queryParamsHandling: 'merge',
+    });
   }
 
   async confirmFriendRemoval(): Promise<void> {

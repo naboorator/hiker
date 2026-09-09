@@ -3,117 +3,20 @@ main {
   margin: auto;
   padding: 1.5rem 1.1rem 3rem;
 }
+app-activity-month-list {
+  display: block;
+  margin-bottom: 1rem;
+}
 section {
-  padding: 1.1rem;
+  padding: 2rem 1rem;
   border-radius: 22px;
   background: #ffffffdf;
   box-shadow: 0 10px 26px #31584322;
-}
-h2 {
-  margin: 0 0 0.8rem;
-  font-size: 1.1rem;
+  text-align: center;
 }
 .empty {
-  color: #60726a;
-}
-.feed {
-  display: grid;
-  gap: 0.7rem;
-}
-.activity {
-  padding: 1rem;
-  border: 1px solid #d9e6dc;
-  border-radius: 16px;
-  background: #fff;
-}
-.activity-summary {
-  display: grid;
-  grid-template-columns: 52px minmax(0, 1fr);
-  align-items: start;
-  gap: 0.8rem;
-}
-.calendar {
-  display: grid;
-  width: 52px;
-  height: 52px;
-  place-items: center;
-  align-content: center;
-  border-radius: 13px;
-  background: #e4efe6;
-  color: #245e3b;
-}
-.calendar b {
-  font-size: 1.2rem;
-  line-height: 1;
-}
-.calendar small {
-  margin-top: 0.15rem;
-  color: #39704d;
-  font-size: 0.62rem;
-  font-weight: 850;
-  text-transform: uppercase;
-}
-.activity-content {
-  min-width: 0;
-}
-.activity-heading {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-}
-.avatar {
-  display: grid;
-  width: 34px;
-  height: 34px;
-  place-items: center;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #e18a3f, #b95e32);
-  color: #fff;
-  font-weight: 900;
-}
-h3 {
-  margin: 0.65rem 0 0.35rem;
-}
-.details {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  color: #60726a;
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-.reactions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  margin-top: 0.9rem;
-}
-.reactions button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.5rem 0.7rem;
-  border: 0;
-  border-radius: 11px;
-  background: #edf4ee;
-  color: #365246;
-  font: inherit;
-  font-size: 0.8rem;
-  font-weight: 750;
-  cursor: pointer;
-}
-.slap-button img {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-}
-.reactions button.active {
-  background: #f6dfc7;
-  color: #874a22;
-}
-.reactions .slap-button.active {
-  background: #dcefe1;
-  color: #245e3b;
+  margin: 0;
+  color: #65776d;
 }
 .slap-overlay {
   position: fixed;

@@ -5,6 +5,7 @@ import type { AppSettings } from '../interface/app-settings.interface';
 import type { HikeDraft } from '../interface/hike-draft.interface';
 import type { Hike } from '../interface/hike.interface';
 import type { WeightEntry } from '../interface/weight-entry.interface';
+import type { DataImportResult } from '../interface/data-import-result.interface';
 import { LogWrapper } from '../logging/log-wrapper.service';
 import { AuthService } from '../auth/auth.service';
 import { FriendsStore } from './friends.store';
@@ -33,6 +34,7 @@ export class MockHikeStore {
     ...new Set([
       this.settings().ownerName,
       ...this.friendsStore.friends().map((friend) => friend.name),
+      ...this.hikes().flatMap((hike) => hike.people),
     ]),
   ]);
   readonly lastActivityType = computed(() => {
@@ -178,13 +180,14 @@ export class MockHikeStore {
       this.weights.update((weights) => weights.filter((entry) => entry.id !== id));
     });
   }
-  async exportHikes(): Promise<string> {
-    return this.execute(async () => JSON.stringify(await this.api.exportHikes(), null, 2));
+  async exportData(): Promise<string> {
+    return this.execute(async () => JSON.stringify(await this.api.exportData(), null, 2));
   }
-  async importHikes(file: File): Promise<{ imported: number; skipped: number }> {
+  async importData(file: File): Promise<DataImportResult> {
     return this.execute(async () => {
-      const result = await this.api.importHikes(JSON.parse(await file.text()));
-      this.hikes.set(await this.api.loadHikes());
+      const result = await this.api.importData(JSON.parse(await file.text()));
+      await this.load();
+      if (result.settingsImported) this.auth.updateRegisteredName(this.settings().ownerName);
       return result;
     });
   }

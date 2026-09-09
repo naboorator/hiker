@@ -1,10 +1,10 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormField, email, form, required } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { AuthService } from '../../../core/auth/auth.service';
 import type { RegisterDraft } from '../../../core/interface/register-draft.interface';
+import { apiErrorMessage } from '../../../core/utils/api-error.helpers';
 
 @Component({
   imports: [FormField, RouterLink, TranslocoPipe],
@@ -28,6 +28,7 @@ export class RegisterPage {
 
   async submit(event: SubmitEvent): Promise<void> {
     event.preventDefault();
+    this.registerForm().markAsTouched();
     this.error.set('');
     if (this.registerForm.email().invalid()) {
       this.error.set('auth.invalidEmail');
@@ -46,15 +47,9 @@ export class RegisterPage {
       await this.auth.register(this.model());
       await this.router.navigate(['/login'], { state: { registered: true } });
     } catch (error) {
-      this.error.set(apiMessage(error));
+      this.error.set(apiErrorMessage(error, 'Unable to register. Please try again.'));
     } finally {
       this.submitting.set(false);
     }
   }
-}
-
-function apiMessage(error: unknown): string {
-  if (error instanceof HttpErrorResponse && typeof error.error?.error === 'string')
-    return error.error.error;
-  return 'Unable to register. Please try again.';
 }

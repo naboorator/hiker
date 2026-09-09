@@ -13,7 +13,7 @@ import { FriendsStore } from '../../../core/stores/friends.store';
 })
 export class AppHeaderComponent {
   readonly store = inject(MockHikeStore);
-  private readonly auth = inject(AuthService);
+  readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   readonly friendsStore = inject(FriendsStore);
   readonly appName = input.required<string>();

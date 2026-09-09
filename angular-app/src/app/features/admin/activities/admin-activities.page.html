@@ -1,0 +1,11 @@
+<main>
+  <app-header
+    [appName]="store.settings().appName"
+    [subtitle]="'admin.activitiesSubtitle' | transloco"
+  />
+  <a class="back" routerLink="/admin">← {{ 'admin.title' | transloco }}</a>
+  <section>
+    <h1>{{ 'admin.activities' | transloco }}</h1>
+    <p>{{ 'admin.empty' | transloco }}</p>
+  </section>
+</main>

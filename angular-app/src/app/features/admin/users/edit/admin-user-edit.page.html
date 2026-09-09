@@ -1,0 +1,29 @@
+<main>
+  <app-header
+    [appName]="store.settings().appName"
+    [subtitle]="'admin.editUserSubtitle' | transloco"
+  />
+  <a class="back" routerLink="/admin/users">← {{ 'admin.users' | transloco }}</a>
+  <section class="edit-panel">
+    <h1>{{ 'admin.editUser' | transloco }}</h1>
+    @if (loading()) {
+      <p role="status">{{ 'admin.loadingUser' | transloco }}</p>
+    } @else if (user(); as selectedUser) {
+      <app-admin-user-form
+        [user]="draft(selectedUser)"
+        [saving]="saving()"
+        [emailInvalid]="error().toLowerCase().includes('email')"
+        (saved)="save($event)"
+        (cancelled)="cancel()"
+      />
+    }
+    @if (error(); as errorMessage) {
+      <p class="error" role="alert">
+        {{ errorMessage.startsWith('admin.') ? (errorMessage | transloco) : errorMessage }}
+      </p>
+    }
+  </section>
+  @if (!loading() && user()) {
+    <app-admin-user-activities [userId]="userId" />
+  }
+</main>

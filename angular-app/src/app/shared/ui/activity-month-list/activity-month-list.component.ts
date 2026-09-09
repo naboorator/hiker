@@ -17,8 +17,11 @@ export class ActivityMonthListComponent {
   readonly metres = input.required<number>();
   readonly allowEdits = input(false);
   readonly showLikes = input(false);
+  readonly showFriendReactions = input(false);
   readonly edit = output<Hike>();
   readonly remove = output<string>();
+  readonly like = output<Hike>();
+  readonly slap = output<Hike>();
   format(minutes: number) {
     return minutes >= 60
       ? `${(minutes / 60).toFixed(1)} ${this.transloco.translate('common.hourShort')}`

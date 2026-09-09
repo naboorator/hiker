@@ -21,6 +21,17 @@
       <span class="chevron" aria-hidden="true">⌄</span>
     </summary>
     <div class="menu">
+      <div class="new-person">
+        <input
+          #newPerson
+          type="text"
+          [placeholder]="'peopleSelect.newPerson' | transloco"
+          (keydown.enter)="add(newPerson, $event)"
+        />
+        <button type="button" (click)="add(newPerson)">
+          {{ 'peopleSelect.add' | transloco }}
+        </button>
+      </div>
       <div class="options" role="listbox" aria-multiselectable="true">
         @for (name of options(); track name) {
           <button

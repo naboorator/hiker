@@ -6,6 +6,7 @@
     "graphs": "Graphs",
     "logout": "Log out",
     "pendingFriendRequests": "{{ count }} pending",
-    "friendsActivities": "Friends activities"
+    "friendsActivities": "Friends activities",
+    "administration": "Administration"
   }
 }

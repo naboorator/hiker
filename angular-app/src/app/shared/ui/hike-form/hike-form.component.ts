@@ -1,6 +1,6 @@
 import type { OnInit } from '@angular/core';
 import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
-import { FormField, form, required } from '@angular/forms/signals';
+import { FormField, form, min, required } from '@angular/forms/signals';
 import { TranslocoPipe } from '@jsverse/transloco';
 import type { ActivityType } from '../../../core/interface/activity-type.type';
 import type { HikeDraft } from '../../../core/interface/hike-draft.interface';
@@ -33,6 +33,9 @@ export class HikeFormComponent implements OnInit {
   readonly hikeForm = form(this.model, (s) => {
     required(s.name);
     required(s.date);
+    required(s.minutes);
+    min(s.minutes, 1);
+    min(s.metres, 0);
   });
   readonly sortedNames = () => [...new Set(this.hikeNames())].sort((a, b) => a.localeCompare(b));
   ngOnInit() {
@@ -70,14 +73,9 @@ export class HikeFormComponent implements OnInit {
   }
   submit(e: SubmitEvent) {
     e.preventDefault();
-    const allowedPeople = [this.ownerName(), ...this.peopleSuggestions()];
-    const selectedPeople = this.model().people.filter((person) =>
-      allowedPeople.some(
-        (allowedPerson) => allowedPerson.toLocaleLowerCase() === person.toLocaleLowerCase(),
-      ),
-    );
-    if (selectedPeople.length) {
-      const draft = { ...this.model(), people: selectedPeople };
+    this.hikeForm().markAsTouched();
+    if (this.hikeForm().valid() && this.model().people.length) {
+      const draft = this.model();
       this.saved.emit({
         ...draft,
         name: draft.activityType === 'fitness' ? 'Fitness' : draft.name,

@@ -6,6 +6,7 @@
     "graphs": "Grafi",
     "logout": "Odjava",
     "pendingFriendRequests": "Na čakanju: {{ count }}",
-    "friendsActivities": "Aktivnosti prijateljev"
+    "friendsActivities": "Aktivnosti prijateljev",
+    "administration": "Administracija"
   }
 }

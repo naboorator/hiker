@@ -3,28 +3,73 @@
     [appName]="hikeStore.settings().appName"
     [subtitle]="'friends.subtitle' | transloco"
   />
+  <a class="back" routerLink="/friends">← {{ 'friends.dashboardTitle' | transloco }}</a>
 
   <section class="connect-card">
     <div>
       <h2>{{ 'friends.connectTitle' | transloco }}</h2>
-      <p>{{ 'friends.connectDescription' | transloco }}</p>
+      <p>{{ 'friends.searchDescription' | transloco }}</p>
     </div>
-    <form (submit)="connect($event)">
+    <form role="search" (submit)="search($event)">
       <label>
-        <span>{{ 'friends.email' | transloco }}</span>
+        <span>{{ 'friends.searchLabel' | transloco }}</span>
         <input
-          type="email"
-          autocomplete="email"
-          [placeholder]="'friends.emailPlaceholder' | transloco"
-          [formField]="friendForm.email"
+          type="search"
+          [value]="searchTerm()"
+          [placeholder]="'friends.searchPlaceholder' | transloco"
+          (input)="searchTerm.set($any($event.target).value)"
         />
       </label>
-      <button type="submit" [disabled]="adding() || friendForm.email().invalid()">
-        {{ (adding() ? 'friends.connecting' : 'friends.connect') | transloco }}
+      <button type="submit" [disabled]="store.searching() || !searchTerm().trim()">
+        {{ (store.searching() ? 'friends.searching' : 'friends.search') | transloco }}
       </button>
+      @if (appliedSearch()) {
+        <button type="button" class="reset-search" (click)="resetSearch()">
+          {{ 'friends.resetSearch' | transloco }}
+        </button>
+      }
     </form>
-    @if (friendForm.email().touched() && friendForm.email().invalid()) {
-      <p class="field-error">{{ 'friends.invalidEmail' | transloco }}</p>
+    @if (appliedSearch() && !store.searching() && !store.searchResults().length && !store.error()) {
+      <p class="empty search-empty">{{ 'friends.noSearchResults' | transloco }}</p>
+    }
+    @if (store.searchResults().length) {
+      <div class="friend-list search-results">
+        @for (user of store.searchResults(); track user.id) {
+          <article class="friend">
+            <span class="avatar" aria-hidden="true">{{ user.name.charAt(0).toUpperCase() }}</span>
+            <div>
+              <strong>{{ user.name }}</strong
+              ><small>{{ user.email }}</small>
+            </div>
+            @if (user.connectionStatus === 'none') {
+              <button
+                type="button"
+                class="send-request"
+                [disabled]="sendingRequest() === user.id"
+                (click)="sendFriendRequest(user.id, user.email)"
+              >
+                {{
+                  (sendingRequest() === user.id ? 'friends.sendingRequest' : 'friends.sendRequest')
+                    | transloco
+                }}
+              </button>
+            } @else {
+              <span
+                class="friend-status"
+                [class.accepted]="user.connectionStatus === 'accepted'"
+                [class.pending]="user.connectionStatus === 'pending'"
+              >
+                {{
+                  (user.connectionStatus === 'accepted'
+                    ? 'friends.statusAccepted'
+                    : 'friends.statusPending'
+                  ) | transloco
+                }}
+              </span>
+            }
+          </article>
+        }
+      </div>
     }
     @if (store.error()) {
       <p class="error" role="alert">{{ store.error() }}</p>

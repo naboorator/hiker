@@ -5,14 +5,21 @@ import { IndexedDbClient } from '../data/indexeddb/indexed-db.client';
 import type { AppSettings } from '../interface/app-settings.interface';
 import type { ActivityType } from '../interface/activity-type.type';
 import type { HikeDraft } from '../interface/hike-draft.interface';
-import type { HikeExport } from '../interface/hike-export.interface';
+import type { DataExport } from '../interface/data-export.interface';
+import type { DataImportResult } from '../interface/data-import-result.interface';
 import type { Hike } from '../interface/hike.interface';
 import type { WeightEntry } from '../interface/weight-entry.interface';
 import { LogWrapper } from '../logging/log-wrapper.service';
 import { AuthService } from '../auth/auth.service';
 import type { Friend } from '../interface/friend.interface';
 import type { FriendRequest } from '../interface/friend-request.interface';
+import type { FriendSearchResult } from '../interface/friend-search-result.interface';
+import type { FriendComparisonSeries } from '../interface/friend-comparison-series.interface';
 import type { ActivityReactionType, FriendActivity } from '../interface/friend-activity.interface';
+import type { AdminUser } from '../interface/admin-user.interface';
+import type { PaginatedResponse } from '../interface/paginated-response.interface';
+import type { AdminUserDraft } from '../interface/admin-user-draft.interface';
+import type { ChangePasswordDraft } from '../interface/change-password-draft.interface';
 
 type StoredSetting = { key: string; value: unknown };
 type StoredHike = Partial<Hike> & { id: string; distance?: number; created?: number };
@@ -73,62 +80,16 @@ export class HikeApiService {
     await firstValueFrom(this.http.put<AppSettings>(`${apiUrl}/settings`, settings));
   }
 
-  async exportHikes(): Promise<HikeExport> {
-    return { version: 1, exportedAt: new Date().toISOString(), hikes: await this.loadHikes() };
+  async changePassword(draft: ChangePasswordDraft): Promise<void> {
+    await firstValueFrom(this.http.put<void>(`${apiUrl}/account/password`, draft));
   }
 
-  async importHikes(payload: unknown): Promise<{ imported: number; skipped: number }> {
-    const candidate = Array.isArray(payload) ? payload : (payload as Partial<HikeExport>)?.hikes;
-    if (!Array.isArray(candidate)) throw new Error('Invalid backup file');
-    const existing = await this.loadHikes();
-    let imported = 0;
-    let skipped = 0;
-    for (const raw of candidate) {
-      if (!raw || typeof raw !== 'object') {
-        skipped++;
-        continue;
-      }
-      const item = raw as Partial<Hike> & { distance?: number };
-      const date = item.date;
-      const activityType = this.activityType(item.activityType);
-      const metres = activityType === 'hiking' ? Number(item.metres ?? item.distance ?? 0) : 0;
-      if (
-        !item.name?.trim() ||
-        !date ||
-        !/^\d{4}-\d{2}-\d{2}$/.test(date) ||
-        !Number.isFinite(Number(item.minutes))
-      ) {
-        skipped++;
-        continue;
-      }
-      if (
-        existing.some(
-          (hike) =>
-            hike.activityType === activityType &&
-            hike.name === item.name &&
-            hike.date === date &&
-            hike.minutes === Number(item.minutes) &&
-            hike.metres === metres,
-        )
-      ) {
-        skipped++;
-        continue;
-      }
-      const hike = await this.saveHike({
-        activityType,
-        name: item.name,
-        date,
-        minutes: Number(item.minutes),
-        metres,
-        people:
-          Array.isArray(item.people) && item.people.length
-            ? item.people.map(String)
-            : [defaults.ownerName],
-      });
-      existing.push(hike);
-      imported++;
-    }
-    return { imported, skipped };
+  async exportData(): Promise<DataExport> {
+    return firstValueFrom(this.http.get<DataExport>(`${apiUrl}/backup`));
+  }
+
+  async importData(payload: unknown): Promise<DataImportResult> {
+    return firstValueFrom(this.http.post<DataImportResult>(`${apiUrl}/backup/import`, payload));
   }
 
   async clearHikes(): Promise<void> {
@@ -168,6 +129,25 @@ export class HikeApiService {
     return firstValueFrom(this.http.get<FriendRequest[]>(`${apiUrl}/friends/requests`));
   }
 
+  async searchUsersForFriendship(search: string): Promise<FriendSearchResult[]> {
+    return firstValueFrom(
+      this.http.get<FriendSearchResult[]>(`${apiUrl}/friends/search`, {
+        params: { search },
+      }),
+    );
+  }
+
+  async loadFriendComparison(
+    friendIds: string[],
+    month: string,
+  ): Promise<FriendComparisonSeries[]> {
+    return firstValueFrom(
+      this.http.get<FriendComparisonSeries[]>(`${apiUrl}/friends/comparison`, {
+        params: { friendIds: friendIds.join(','), month },
+      }),
+    );
+  }
+
   async addFriend(email: string): Promise<FriendRequest> {
     return firstValueFrom(this.http.post<FriendRequest>(`${apiUrl}/friends`, { email }));
   }
@@ -197,6 +177,47 @@ export class HikeApiService {
   async removeActivityReaction(activityId: string, type: ActivityReactionType): Promise<void> {
     await firstValueFrom(
       this.http.delete(`${apiUrl}/friends/activities/${activityId}/reactions/${type}`),
+    );
+  }
+
+  async loadAdminUsers(
+    page: number,
+    pageSize = 10,
+    search = '',
+  ): Promise<PaginatedResponse<AdminUser>> {
+    return firstValueFrom(
+      this.http.get<PaginatedResponse<AdminUser>>(`${apiUrl}/admin/users`, {
+        params: { page, pageSize, search },
+      }),
+    );
+  }
+
+  async loadAdminUser(id: string): Promise<AdminUser> {
+    return firstValueFrom(this.http.get<AdminUser>(`${apiUrl}/admin/users/${id}`));
+  }
+
+  async updateAdminUser(id: string, draft: AdminUserDraft): Promise<AdminUser> {
+    return firstValueFrom(this.http.put<AdminUser>(`${apiUrl}/admin/users/${id}`, draft));
+  }
+
+  async setAdminUserBlocked(id: string, blocked: boolean): Promise<AdminUser> {
+    const action = blocked ? 'block' : 'unblock';
+    return firstValueFrom(this.http.put<AdminUser>(`${apiUrl}/admin/users/${id}/${action}`, {}));
+  }
+
+  async deleteAdminUser(id: string): Promise<void> {
+    await firstValueFrom(this.http.delete<void>(`${apiUrl}/admin/users/${id}`));
+  }
+
+  async loadAdminUserActivities(
+    id: string,
+    page: number,
+    pageSize = 10,
+  ): Promise<PaginatedResponse<Hike>> {
+    return firstValueFrom(
+      this.http.get<PaginatedResponse<Hike>>(`${apiUrl}/admin/users/${id}/activities`, {
+        params: { page, pageSize },
+      }),
     );
   }
 

@@ -5,6 +5,16 @@ import type { ChartDay } from '../../core/interface/chart-day.interface';
 import type { WeightChartPoint } from '../../core/interface/weight-chart-point.interface';
 import { MockHikeStore } from '../../core/stores/mock-hike.store';
 import { AppHeaderComponent } from '../../shared/ui/app-header/app-header.component';
+import { applicationLocale, monthParts, toMonthKey } from '../../core/utils/date-format.helpers';
+import { GRAPH_CHART_HEIGHT, GRAPH_CHART_WIDTH, GRAPH_PLOT } from './graphs.constants';
+import {
+  activityAxisMaximum,
+  chartXPosition,
+  chartYPosition,
+  formatWeight,
+  formatWeightDate,
+  timeAxisMaximum,
+} from './graphs.helpers';
 
 @Component({
   imports: [AppHeaderComponent, TranslocoPipe],
@@ -18,25 +28,26 @@ export class GraphsPage {
     initialValue: this.transloco.getActiveLang(),
   });
   private readonly today = new Date();
-  private readonly currentMonth = this.toMonthKey(this.today.getFullYear(), this.today.getMonth());
+  private readonly currentMonth = toMonthKey(this.today.getFullYear(), this.today.getMonth());
 
   readonly store = inject(MockHikeStore);
   readonly selectedMonth = signal(this.currentMonth);
-  readonly chartWidth = 760;
-  readonly chartHeight = 300;
-  readonly plot = { left: 58, right: 700, top: 20, bottom: 242 } as const;
+  readonly chartWidth = GRAPH_CHART_WIDTH;
+  readonly chartHeight = GRAPH_CHART_HEIGHT;
+  readonly plot = GRAPH_PLOT;
 
   readonly monthLabel = computed(() => {
-    const { year, monthIndex } = this.monthParts();
-    return new Intl.DateTimeFormat(this.locale(), { month: 'long', year: 'numeric' }).format(
-      new Date(year, monthIndex, 1),
-    );
+    const { year, monthIndex } = monthParts(this.selectedMonth());
+    return new Intl.DateTimeFormat(applicationLocale(this.activeLanguage()), {
+      month: 'long',
+      year: 'numeric',
+    }).format(new Date(year, monthIndex, 1));
   });
 
   readonly canGoToNextMonth = computed(() => this.selectedMonth() < this.currentMonth);
 
   readonly days = computed<ChartDay[]>(() => {
-    const { year, monthIndex } = this.monthParts();
+    const { year, monthIndex } = monthParts(this.selectedMonth());
     const numberOfDays = new Date(year, monthIndex + 1, 0).getDate();
     const totals = new Map<number, { minutes: number; activityCount: number }>();
 
@@ -56,33 +67,31 @@ export class GraphsPage {
       minutes: totals.get(index + 1)?.minutes ?? 0,
       activityCount: totals.get(index + 1)?.activityCount ?? 0,
     }));
-    const yMaximum = this.yMaximumFor(values.map(({ minutes }) => minutes));
-    const activityMaximum = this.activityMaximumFor(
-      values.map(({ activityCount }) => activityCount),
-    );
+    const yMaximum = timeAxisMaximum(values.map(({ minutes }) => minutes));
+    const activityMaximum = activityAxisMaximum(values.map(({ activityCount }) => activityCount));
 
     return values.map((value) => ({
       ...value,
-      x: this.xPosition(value.day, numberOfDays),
-      y: this.yPosition(value.minutes, yMaximum),
-      activityY: this.yPosition(value.activityCount, activityMaximum),
+      x: chartXPosition(value.day, numberOfDays, this.plot),
+      y: chartYPosition(value.minutes, yMaximum, this.plot),
+      activityY: chartYPosition(value.activityCount, activityMaximum, this.plot),
     }));
   });
 
-  readonly yMaximum = computed(() => this.yMaximumFor(this.days().map(({ minutes }) => minutes)));
+  readonly yMaximum = computed(() => timeAxisMaximum(this.days().map(({ minutes }) => minutes)));
   readonly yTicks = computed(() =>
     Array.from({ length: 5 }, (_, index) => {
       const minutes = (this.yMaximum() / 4) * index;
-      return { minutes, y: this.yPosition(minutes, this.yMaximum()) };
+      return { minutes, y: chartYPosition(minutes, this.yMaximum(), this.plot) };
     }).reverse(),
   );
   readonly activityMaximum = computed(() =>
-    this.activityMaximumFor(this.days().map(({ activityCount }) => activityCount)),
+    activityAxisMaximum(this.days().map(({ activityCount }) => activityCount)),
   );
   readonly activityTicks = computed(() =>
     Array.from({ length: 5 }, (_, index) => {
       const count = (this.activityMaximum() / 4) * index;
-      return { count, y: this.yPosition(count, this.activityMaximum()) };
+      return { count, y: chartYPosition(count, this.activityMaximum(), this.plot) };
     }).reverse(),
   );
   readonly timeLinePoints = computed(() =>
@@ -150,9 +159,9 @@ export class GraphsPage {
   });
 
   changeMonth(offset: number): void {
-    const { year, monthIndex } = this.monthParts();
+    const { year, monthIndex } = monthParts(this.selectedMonth());
     const target = new Date(year, monthIndex + offset, 1);
-    const monthKey = this.toMonthKey(target.getFullYear(), target.getMonth());
+    const monthKey = toMonthKey(target.getFullYear(), target.getMonth());
     if (monthKey <= this.currentMonth) this.selectedMonth.set(monthKey);
   }
 
@@ -178,53 +187,16 @@ export class GraphsPage {
 
   weightPointLabel(point: WeightChartPoint): string {
     return this.transloco.translate('graphs.weightPointValue', {
-      date: this.formatWeightDate(point.recordedOn),
-      weight: this.formatWeight(point.weightKg),
+      date: formatWeightDate(point.recordedOn, this.activeLanguage()),
+      weight: formatWeight(point.weightKg, this.activeLanguage()),
     });
   }
 
   formatWeightDate(date: string): string {
-    return new Intl.DateTimeFormat(this.locale(), {
-      day: 'numeric',
-      month: 'short',
-      year: '2-digit',
-    }).format(new Date(`${date}T12:00:00`));
+    return formatWeightDate(date, this.activeLanguage());
   }
 
   formatWeight(weightKg: number): string {
-    return `${new Intl.NumberFormat(this.locale(), { maximumFractionDigits: 1 }).format(weightKg)} kg`;
-  }
-
-  private monthParts(): { year: number; monthIndex: number } {
-    const [year, month] = this.selectedMonth().split('-').map(Number);
-    return { year, monthIndex: month - 1 };
-  }
-
-  private locale(): string {
-    return this.activeLanguage() === 'si' ? 'sl' : 'en';
-  }
-
-  private toMonthKey(year: number, monthIndex: number): string {
-    return `${year}-${String(monthIndex + 1).padStart(2, '0')}`;
-  }
-
-  private xPosition(day: number, numberOfDays: number): number {
-    const width = this.plot.right - this.plot.left;
-    return this.plot.left + ((day - 1) / Math.max(1, numberOfDays - 1)) * width;
-  }
-
-  private yPosition(minutes: number, maximum: number): number {
-    const height = this.plot.bottom - this.plot.top;
-    return this.plot.bottom - (minutes / maximum) * height;
-  }
-
-  private yMaximumFor(values: number[]): number {
-    const maximum = Math.max(0, ...values);
-    return Math.max(60, Math.ceil(maximum / 30) * 30);
-  }
-
-  private activityMaximumFor(values: number[]): number {
-    const maximum = Math.max(0, ...values);
-    return Math.max(4, Math.ceil(maximum / 4) * 4);
+    return formatWeight(weightKg, this.activeLanguage());
   }
 }

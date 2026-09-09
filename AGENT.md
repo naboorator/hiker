@@ -1,164 +1,126 @@
-# Hike Log — Angular migration guide
+# My Hike development guide
 
-## Current state
+## Repository structure
 
-The application is an Angular standalone application in `angular-app/`.
-It uses signals, Signal Forms, `HikeApiService`, and browser IndexedDB.
-The legacy static implementation is retained only as a historical reference.
+This repository contains two TypeScript applications and a MariaDB environment:
 
-## Product scope to preserve
+- `angular-app/` — standalone Angular frontend.
+- `api/` — Express API backed by MariaDB.
+- `docker-compose.yml` — local MariaDB service.
+- `api/migrations/` — database schema migrations; do not store seed data here.
+- `api/resource/{resource}/{get,post,put,delete}.ts` — HTTP resource handlers.
+- `api/core/` — authentication, database, validation, errors, and repositories.
+- `api/interface/` — API domain interfaces, one interface per file.
+- `api/scripts/` — seeds and integration/authorization tests.
 
-The Angular app must retain these existing capabilities:
+Frontend code is organized as follows:
 
-- Home dashboard with today's hikes, daily/monthly summaries, a compact
-  circular add button, add-hike success feedback, and an optional add form.
-- Hike fields: name, date (today by default, never future), minutes, metres,
-  and one or more people.
-- A configurable owner name, selectable people suggestions, reusable hike-name
-  suggestions, and at least one person required per hike.
-- All activities page grouped by year, month, and day, with daily/monthly
-  totals, edit, and delete actions.
-- Graphs for time by day, cumulative time, and cumulative distance.
-- Settings for log name, owner name, background keyword, background interval,
-  import, export-before-clear, and clear-all confirmation.
-- Today’s meal view with two persisted daily meals.
-- Browser-local persistence using IndexedDB, including merging imported data.
-
-## Architecture rules
-
-### Angular approach
-
-- Use the latest stable Angular version available when implementation begins.
-- Use standalone components and Angular's modern control-flow syntax.
-- Use signals for local UI state, derived values, view models, and store state.
-- Use Signal Forms for every form. Do not introduce Reactive Forms or
-  template-driven forms.
-- Prefer computed, linkedSignal, and small signal-based stores over manual
-  subscriptions.
-- Keep routing lazy where it improves route isolation.
-
-### Components must stay light and dumb
-
-- Page components compose a layout, select data from a store/facade, and wire
-  user actions. They must not contain IndexedDB or HTTP code.
-- Reusable UI components receive data through input() and notify parents with
-  output(). They do not fetch, mutate storage, or own business rules.
-- Put formatting helpers and small presentational calculations in shared pure
-  utilities or pipes.
-- Keep dialog components focused on fields and outputs; the parent/facade owns
-  persistence, validation orchestration, and navigation.
-
-### Data access
-
-- No component may inject or call HttpClient directly.
-- All persistence access must go through an API-facing service, initially named
-  HikeApiService.
-- HikeApiService is the only client-facing boundary for hikes, settings,
-  meals, import, and export. It may use IndexedDB in phase 2.
-- If a remote backend is added later, replace the service implementation or
-  its internal adapter without changing components, stores, or route pages.
-- Keep storage details behind repositories/adapters, for example
-  IndexedDbHikeRepository and IndexedDbSettingsRepository.
-
-### State and models
-
-- Define shared typed models for Hike, HikeDraft, AppSettings, DailyMeal, and
-  import/export payloads.
-- Use a focused feature store/facade for each route area. Stores expose
-  read-only signals and intent methods such as addHike, updateHike, removeHike,
-  and load.
-- Keep validation rules in form schemas and domain helpers, not in templates.
-- Persist dates as ISO date strings (YYYY-MM-DD) and keep the existing
-  minutes/metres units internally.
-
-## Target feature structure
-
-    src/app/
+    angular-app/src/app/
       core/
-        api/hike-api.service.ts
-        data/indexeddb/
-        models/
-        utils/
-      shared/
-        ui/
-        formatters/
-      features/
-        home/
-        activities/
-        graphs/
-        settings/
-        meals/
-      app.routes.ts
+        api/          # the only HTTP boundary used by frontend state
+        auth/         # session service and route guards
+        constants/    # exported immutable configuration and fixed values
+        data/         # local migration adapters only
+        i18n/         # Transloco configuration and loaders
+        interface/    # shared interfaces, one interface per file
+        logging/      # replaceable application logger
+        stores/       # state, persistence orchestration, and business actions
+        utils/        # pure helper functions
+      shared/ui/      # reusable presentational components
+      features/       # lazy-loaded route pages
 
-Suggested shared UI components:
+Translations live in `angular-app/public/assets/lang/{language}/`. Repeated text
+belongs in `common.json`; feature-specific text belongs in that feature's JSON
+file.
 
-- AppShellComponent and AppMenuComponent
-- PageHeaderComponent
-- HikeFormComponent
-- PeoplePickerComponent
-- HikeListComponent and HikeDayGroupComponent
-- CalendarDateBadgeComponent
-- MonthlySummaryComponent
-- ConfirmDialogComponent, ImportDialogComponent, and EditHikeDialogComponent
-- ToastComponent
-- graph presentation components
+## Current product architecture
 
-## Phase 1 — layouts and components
+- All application pages except login, registration, and service-unavailable are
+  authenticated. Administrator routes also use the administrator guard.
+- The frontend reads and writes data through `HikeApiService`; components must
+  never inject `HttpClient` or access MariaDB/IndexedDB directly.
+- The API validates Bearer tokens and scopes resources to the authenticated
+  user. Cross-user mutation is forbidden unless an endpoint explicitly permits
+  an administrator operation.
+- MariaDB is the source of truth. IndexedDB code exists only for migration of
+  earlier browser data and must not be used for new features.
+- Import/export uses the protected `/api/backup` and `/api/backup/import`
+  endpoints and supports only the current version 2 format.
 
-Phase 1 builds the Angular shell and all visual components with mock signal
-data. Do not connect IndexedDB, import/export files, remote APIs, or real
-application data in this phase.
+## Component and reuse rules
 
-1. Create the Angular project and configure standalone routing, global styles,
-   and the shared app shell.
-2. Define the shared TypeScript models and static mock data only.
-3. Build the routes: Home, Activities, Graphs, Settings, and Today’s meal.
-4. Build all layouts and dumb UI components listed above.
-5. Implement visual interaction states with local signals only:
-   form open/close, dialogs, menus, empty states, inline errors, and toasts.
-6. Create Signal Form schemas using mock models so the form markup and
-   validation presentation are ready for real data.
-7. Match the current mobile-first visual design, including background treatment,
-   cards, menu, form fields, tags, summaries, and charts.
-8. Verify that every route works with mock data and that components have no
-   direct storage or HTTP dependencies.
+- Design components for reuse. Before adding feature-specific markup, check
+  whether an existing component in `shared/ui/` can be configured or extended.
+- Route pages compose reusable components, select store data, and forward user
+  actions. They should contain as little presentation and business logic as
+  possible.
+- Reusable UI components receive configuration through `input()` and communicate
+  through `output()`. They do not fetch or persist their own data unless the
+  component is explicitly a feature container.
+- Keep reusable modal chrome in `ModalDialogComponent` and project feature
+  content into it.
+- Do not duplicate activity lists, forms, people selectors, date badges,
+  formatting logic, or modal layouts between features.
+- Use standalone components, signals, computed signals, modern Angular control
+  flow, OnPush change detection, and Signal Forms.
+- Every invalid form control must be visually identified with the shared red
+  error border. Mark controls as touched after an unsuccessful submit so the
+  error state becomes visible. Cross-field validation must highlight every
+  control involved; for example, a password mismatch highlights both the new
+  password and repeated-password controls.
 
-Phase 1 exit criteria:
+## Helpers, constants, and component classes
 
-- All routes render their finished layout.
-- Forms and dialogs have the intended visual states using Signal Forms.
-- Components communicate only through inputs, outputs, and feature facades.
-- No production data is read or written.
+- Component/page classes contain only Angular bindings, injected dependencies,
+  signals/computed state, lifecycle hooks, and event/action handlers.
+- Put pure transformations, calculations, formatting, mapping, parsing, and
+  validation helpers in separate `*.helpers.ts` files. Use `core/utils/` when a
+  helper is shared across features and an adjacent helper file when it is local
+  to one feature.
+- Put fixed values, chart dimensions, color palettes, static options, and other
+  immutable configuration in `*.constants.ts` or `core/constants/`.
+- Do not declare free-standing helper functions or configuration constants at
+  the bottom of a component/page file.
+- Event handlers may remain methods because templates and Angular lifecycle APIs
+  call them. They should delegate calculations and transformations to helpers.
+- Helpers must be pure whenever practical and must not inject Angular services.
 
-## Phase 2 — connected data
+## API rules
 
-1. Implement HikeApiService and IndexedDB repositories using the existing
-   database shape and browser-local persistence behavior.
-2. Replace mock stores with feature facades connected to HikeApiService.
-3. Load and persist hikes, settings, and daily meals.
-4. Connect add, edit, delete, grouping, totals, suggestions, owner handling,
-   and graphs to real signals.
-5. Implement import merge, export, clear confirmation, success/error progress,
-   and persisted background settings.
-6. Validate data migration from existing browser entries, including legacy
-   owner values such as You.
-7. Add focused tests for API services, stores, form/domain helpers, and critical
-   user flows.
+- Keep handlers grouped under `api/resource/{resource}/` by HTTP method.
+- Whenever the API changes, update `api/openapi.yaml` in the same change so it
+  exactly matches the implemented endpoints, authentication requirements,
+  parameters, request bodies, response schemas, status codes, and errors.
+- Validate all external input before database access.
+- Use parameterized SQL and transactions for multi-step writes.
+- Ownership checks come from the authenticated token, never a client-provided
+  user ID. Preserve the explicit administrator exception where required.
+- Store passwords only as secure hashes. Blocked and deleted users cannot log in.
+- Keep reusable database and domain behavior in `api/core/`, not duplicated in
+  endpoint handlers.
 
-## Implemented shared UI
+## Quality checks
 
-- `AppHeaderComponent` contains the shared logo, status badge, and menu.
-- `HikeFormComponent` is reused for adding and editing hikes. It accepts
-  `draft` and `buttonText` inputs and emits a `HikeDraft` through `saved`.
-- `ActivityMonthListComponent` renders a grouped calendar-style month and has
-  an `allowEdits` input with edit/delete outputs.
+- Every new Angular component, page, service, store, guard, interceptor, or
+  helper function must include corresponding unit tests in the same change.
+  Tests must cover its public behavior and important success, validation, and
+  error paths; a creation-only smoke test is not sufficient when the unit has
+  behavior of its own.
+- Whenever existing frontend behavior changes, update or extend its unit tests
+  so they verify the new behavior and prevent regressions.
 
-## Quality checks for every later change
+After frontend changes run from `angular-app/`:
 
-- Keep mobile layout usable without horizontal scrolling.
-- Use accessible labels, focus states, keyboard actions, and live regions for
-  success/error feedback.
-- Do not duplicate persistence logic between routes.
-- Do not move formatting, fetching, or business rules into presentational
-  components.
-- Do not add new capabilities unless requested.
+    npm run format
+    npm run lint
+    npm run test:ci
+    npx ngc --noEmit -p tsconfig.app.json
+
+After API changes run from `api/`:
+
+    npm run typecheck
+    npm run build
+    npm run test:authorization
+
+Also run `git diff --check`. Preserve mobile usability, accessible names,
+keyboard behavior, focus states, and translated user-facing text.

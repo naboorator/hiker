@@ -1,0 +1,23 @@
+services:
+  mariadb:
+    image: mariadb:11.8
+    container_name: my-hike-mariadb
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: my_hike
+      MARIADB_USER: my_hike
+      MARIADB_PASSWORD: my_hike_dev_password
+      MARIADB_ROOT_PASSWORD: my_hike_root_dev_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - my-hike-mariadb-data:/var/lib/mysql
+      - ./api/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  my-hike-mariadb-data:

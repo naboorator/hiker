@@ -1,30 +1,39 @@
 import { authenticatedUserId } from '../../core/auth.js';
-import { database } from '../../core/json-database.js';
-import { reactionTargetsActivity } from '../../core/activity-reaction.js';
+import { database } from '../../core/database.js';
+import { attachPeople, reactionSummaries } from '../../core/activity-repository.js';
 export function registerFriendActivityGetRoutes(router) {
     router.get('/friends/activities', async (_request, response) => {
         const userId = authenticatedUserId(response);
-        const data = await database.read();
-        const friendIds = new Set(data.friendConnections.flatMap((connection) => connection.userIds.includes(userId) && connection.status !== 'pending'
-            ? connection.userIds.filter((candidate) => candidate !== userId)
-            : []));
-        const users = new Map(data.users.map((user) => [user.id, user]));
-        response.json(data.activities
-            .filter((activity) => activity.userId !== userId && friendIds.has(activity.userId))
-            .sort((a, b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt)
-            .map((activity) => {
-            const reactions = data.activityReactions.filter((reaction) => reactionTargetsActivity(reaction, activity, data.activities));
-            return {
-                ...activity,
-                author: {
-                    id: activity.userId,
-                    name: users.get(activity.userId)?.name ?? 'Unknown user',
-                },
-                likes: reactions.filter((reaction) => reaction.type === 'like').length,
-                myReactions: reactions
-                    .filter((reaction) => reaction.userId === userId)
-                    .map((reaction) => reaction.type),
-            };
-        }));
+        const rows = await database.query(`SELECT a.id, a.user_id AS userId, a.activity_type AS activityType, a.name,
+              CAST(a.activity_date AS CHAR) AS date, a.minutes, a.metres,
+              a.created_at AS createdAt, u.name AS authorName
+         FROM activities a
+         JOIN users u ON u.id = a.user_id
+         JOIN friend_connections f
+           ON f.status = 'accepted'
+          AND ((f.user_id_1 = ? AND f.user_id_2 = a.user_id)
+            OR (f.user_id_2 = ? AND f.user_id_1 = a.user_id))
+        WHERE a.user_id <> ?
+        ORDER BY a.activity_date DESC, a.created_at DESC`, [userId, userId, userId]);
+        const activities = await attachPeople(rows);
+        const ids = activities.map(({ id }) => id);
+        const summaries = await reactionSummaries(ids);
+        const myReactionRows = ids.length
+            ? await database.query(`SELECT activity_id AS activityId, reaction_type AS type
+             FROM activity_reactions
+            WHERE user_id = ? AND activity_id IN (${ids.map(() => '?').join(', ')})`, [userId, ...ids])
+            : [];
+        const myReactions = new Map();
+        for (const reaction of myReactionRows) {
+            const types = myReactions.get(reaction.activityId) ?? [];
+            types.push(reaction.type);
+            myReactions.set(reaction.activityId, types);
+        }
+        response.json(activities.map(({ authorName, ...activity }) => ({
+            ...activity,
+            author: { id: activity.userId, name: authorName },
+            ...summaries.get(activity.id),
+            myReactions: myReactions.get(activity.id) ?? [],
+        })));
     });
 }

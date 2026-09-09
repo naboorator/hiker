@@ -1,27 +1,35 @@
 import { randomUUID } from 'node:crypto';
-import { database } from '../../core/json-database.js';
+import { database, withTransaction } from '../../core/database.js';
 import { weightInput } from '../../core/validation.js';
 import { authenticatedUserId } from '../../core/auth.js';
+import { toSqlDateTime } from '../../core/sql-date.js';
 export function registerWeightPostRoutes(router) {
     router.post('/weights/migrate', async (request, response) => {
         const userId = authenticatedUserId(response);
         const candidates = Array.isArray(request.body) ? request.body : [];
-        const result = await database.update((data) => {
+        const result = await withTransaction(async (connection) => {
             let imported = 0;
             let skipped = 0;
             for (const candidate of candidates) {
                 const source = candidate;
-                if (!source.id || data.weights.some(({ id, userId: ownerId }) => id === source.id && ownerId === userId)) {
+                if (!source.id) {
                     skipped++;
                     continue;
                 }
                 const input = weightInput(source);
-                data.weights.push({
-                    ...input,
-                    id: source.id,
+                const existing = await connection.query('SELECT id FROM weights WHERE id = ?', [source.id]);
+                if (existing.length) {
+                    skipped++;
+                    continue;
+                }
+                await connection.query(`INSERT INTO weights (id, user_id, weight_kg, recorded_on, created_at)
+           VALUES (?, ?, ?, ?, ?)`, [
+                    source.id,
                     userId,
-                    createdAt: source.createdAt ?? new Date().toISOString(),
-                });
+                    input.weightKg,
+                    input.recordedOn,
+                    toSqlDateTime(source.createdAt ?? new Date()),
+                ]);
                 imported++;
             }
             return { imported, skipped };
@@ -37,7 +45,8 @@ export function registerWeightPostRoutes(router) {
             userId,
             createdAt: new Date().toISOString(),
         };
-        await database.update((data) => data.weights.push(weight));
+        await database.query(`INSERT INTO weights (id, user_id, weight_kg, recorded_on, created_at)
+       VALUES (?, ?, ?, ?, ?)`, [weight.id, weight.userId, weight.weightKg, weight.recordedOn, toSqlDateTime(weight.createdAt)]);
         response.status(201).json(weight);
     });
 }

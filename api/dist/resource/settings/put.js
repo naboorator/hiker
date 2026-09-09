@@ -1,4 +1,4 @@
-import { database } from '../../core/json-database.js';
+import { withTransaction } from '../../core/database.js';
 import { settingsInput } from '../../core/validation.js';
 import { authenticatedUserId } from '../../core/auth.js';
 import { HttpError } from '../../core/http-error.js';
@@ -6,26 +6,17 @@ export function registerSettingsPutRoutes(router) {
     router.put('/settings', async (request, response) => {
         const userId = authenticatedUserId(response);
         const settings = settingsInput(request.body);
-        await database.update((data) => {
-            const user = data.users.find((candidate) => candidate.id === userId);
+        await withTransaction(async (connection) => {
+            const [user] = await connection.query('SELECT name FROM users WHERE id = ? FOR UPDATE', [userId]);
             if (!user)
                 throw new HttpError(404, 'User not found');
-            const previousName = user.name;
-            user.name = settings.ownerName;
-            if (previousName.toLocaleLowerCase() !== settings.ownerName.toLocaleLowerCase()) {
-                for (const activity of data.activities) {
-                    const renamedPeople = activity.people.map((person) => person.toLocaleLowerCase() === previousName.toLocaleLowerCase()
-                        ? settings.ownerName
-                        : person);
-                    activity.people = renamedPeople.filter((person, index) => renamedPeople.findIndex((candidate) => candidate.toLocaleLowerCase() === person.toLocaleLowerCase()) === index);
-                }
-            }
-            const index = data.settings.findIndex((entry) => entry.userId === userId);
-            const stored = { ...settings, userId };
-            if (index < 0)
-                data.settings.push(stored);
-            else
-                data.settings[index] = stored;
+            await connection.query('UPDATE users SET name = ? WHERE id = ?', [settings.ownerName, userId]);
+            if (user.name.toLocaleLowerCase() !== settings.ownerName.toLocaleLowerCase())
+                await connection.query(`UPDATE activity_people
+              SET person_name = ?
+            WHERE LOWER(person_name) = LOWER(?)`, [settings.ownerName, user.name]);
+            await connection.query(`INSERT INTO settings (user_id, app_name, owner_name) VALUES (?, ?, ?)
+         ON DUPLICATE KEY UPDATE app_name = VALUES(app_name), owner_name = VALUES(owner_name)`, [userId, settings.appName, settings.ownerName]);
         });
         response.json(settings);
     });

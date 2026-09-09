@@ -1,4 +1,5 @@
 export type UserRole = 'normal_user' | 'admin';
+export type UserStatus = 'active' | 'blocked' | 'deleted';
 
 export interface User {
   id: string;
@@ -6,6 +7,7 @@ export interface User {
   email: string;
   passwordHash: string;
   role: UserRole;
+  status: UserStatus;
   createdAt: string;
 }
 

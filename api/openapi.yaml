@@ -1,0 +1,1335 @@
+openapi: 3.0.3
+info:
+  title: My Hike API
+  version: 1.0.0
+  description: |
+    REST API for My Hike. Except for registration, login, health, and this
+    document, endpoints require a JWT access token in the Authorization header.
+    Administrator endpoints additionally require the `admin` role.
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+tags:
+  - name: System
+  - name: Authentication
+  - name: Activities
+  - name: Weights
+  - name: Settings
+  - name: Friends
+  - name: Friend activities
+  - name: Backup
+  - name: Administration
+paths:
+  /health:
+    get:
+      tags: [System]
+      summary: Check API and database health
+      operationId: getHealth
+      security: []
+      responses:
+        "200":
+          description: API and database are available
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+        "500":
+          $ref: "#/components/responses/ServerError"
+  /openapi.yaml:
+    get:
+      tags: [System]
+      summary: Download this OpenAPI document
+      operationId: getOpenApiDocument
+      security: []
+      responses:
+        "200":
+          description: OpenAPI YAML document
+          content:
+            application/yaml:
+              schema:
+                type: string
+  /api/auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register a user
+      operationId: registerUser
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "201":
+          description: User registered
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [user]
+                properties:
+                  user:
+                    $ref: "#/components/schemas/PublicUser"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          description: Email is already registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /api/auth/login:
+    post:
+      tags: [Authentication]
+      summary: Log in and obtain an access token
+      operationId: loginUser
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /api/account/password:
+    put:
+      tags: [Authentication]
+      summary: Change the authenticated user's password
+      description: The current password must be correct and the new password must be different.
+      operationId: changePassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePasswordRequest"
+      responses:
+        "204":
+          description: Password changed successfully
+        "400":
+          description: Invalid input, incorrect current password, matching passwords, or reused password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/activities:
+    get:
+      tags: [Activities]
+      summary: List the authenticated user's activities
+      operationId: listActivities
+      parameters:
+        - $ref: "#/components/parameters/DateQuery"
+        - $ref: "#/components/parameters/MonthQuery"
+      responses:
+        "200":
+          description: Activities ordered newest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Activity"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      tags: [Activities]
+      summary: Create an activity
+      operationId: createActivity
+      requestBody:
+        $ref: "#/components/requestBodies/ActivityInput"
+      responses:
+        "201":
+          description: Activity created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Activity"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/activities/{id}:
+    parameters:
+      - $ref: "#/components/parameters/IdPath"
+    get:
+      tags: [Activities]
+      summary: Get an activity owned by the user; administrators may read any activity
+      operationId: getActivity
+      responses:
+        "200":
+          description: Activity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Activity"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [Activities]
+      summary: Update an owned activity; administrators may update any activity
+      operationId: updateActivity
+      requestBody:
+        $ref: "#/components/requestBodies/ActivityInput"
+      responses:
+        "200":
+          description: Updated activity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Activity"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [Activities]
+      summary: Delete an owned activity; administrators may delete any activity
+      operationId: deleteActivity
+      responses:
+        "204":
+          description: Activity deleted
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/activities/migrate:
+    post:
+      tags: [Activities]
+      summary: Migrate browser activities into the authenticated account
+      operationId: migrateActivities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/ActivityMigrationItem"
+      responses:
+        "200":
+          description: Migration counts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MigrationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/weights:
+    get:
+      tags: [Weights]
+      summary: List the authenticated user's weight measurements
+      operationId: listWeights
+      responses:
+        "200":
+          description: Weight measurements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Weight"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      tags: [Weights]
+      summary: Record body weight
+      operationId: createWeight
+      requestBody:
+        $ref: "#/components/requestBodies/WeightInput"
+      responses:
+        "201":
+          description: Weight recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Weight"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/weights/{id}:
+    parameters:
+      - $ref: "#/components/parameters/IdPath"
+    get:
+      tags: [Weights]
+      summary: Get an owned weight measurement; administrators may read any measurement
+      operationId: getWeight
+      responses:
+        "200":
+          description: Weight measurement
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Weight"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [Weights]
+      summary: Update an owned weight measurement; administrators may update any measurement
+      operationId: updateWeight
+      requestBody:
+        $ref: "#/components/requestBodies/WeightInput"
+      responses:
+        "200":
+          description: Updated weight measurement
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Weight"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [Weights]
+      summary: Delete an owned weight measurement; administrators may delete any measurement
+      operationId: deleteWeight
+      responses:
+        "204":
+          description: Weight measurement deleted
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/weights/migrate:
+    post:
+      tags: [Weights]
+      summary: Migrate browser weight records into the authenticated account
+      operationId: migrateWeights
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/WeightMigrationItem"
+      responses:
+        "200":
+          description: Migration counts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MigrationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/settings:
+    get:
+      tags: [Settings]
+      summary: Get settings for the authenticated user
+      operationId: getSettings
+      responses:
+        "200":
+          description: Settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Settings"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    put:
+      tags: [Settings]
+      summary: Update settings and registered user name
+      operationId: updateSettings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Settings"
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Settings"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/friends:
+    get:
+      tags: [Friends]
+      summary: List accepted friends
+      operationId: listFriends
+      responses:
+        "200":
+          description: Accepted friends
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PublicUser"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      tags: [Friends]
+      summary: Send a friend request by exact email address
+      operationId: createFriendRequest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: friend@example.com
+      responses:
+        "201":
+          description: Friend request created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FriendRequest"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Connection or request already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /api/friends/search:
+    get:
+      tags: [Friends]
+      summary: Search active users by partial name or exact email
+      operationId: searchFriends
+      parameters:
+        - name: search
+          in: query
+          required: true
+          schema:
+            type: string
+            maxLength: 320
+      responses:
+        "200":
+          description: Up to 20 matching users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FriendSearchResult"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/friends/requests:
+    get:
+      tags: [Friends]
+      summary: List incoming and outgoing pending friend requests
+      operationId: listFriendRequests
+      responses:
+        "200":
+          description: Pending requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FriendRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/friends/requests/{requestId}:
+    delete:
+      tags: [Friends]
+      summary: Reject or cancel a pending friend request
+      operationId: deleteFriendRequest
+      parameters:
+        - $ref: "#/components/parameters/RequestIdPath"
+      responses:
+        "204":
+          description: Request removed
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/friends/requests/{requestId}/accept:
+    put:
+      tags: [Friends]
+      summary: Accept an incoming friend request
+      operationId: acceptFriendRequest
+      parameters:
+        - $ref: "#/components/parameters/RequestIdPath"
+      responses:
+        "200":
+          description: Accepted friend connection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FriendConnection"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/friends/{friendId}:
+    delete:
+      tags: [Friends]
+      summary: Remove an accepted friend
+      operationId: deleteFriend
+      parameters:
+        - name: friendId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Friend removed
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/friends/comparison:
+    get:
+      tags: [Friends]
+      summary: Compare daily activity counts with accepted friends
+      operationId: compareFriendActivities
+      parameters:
+        - name: friendIds
+          in: query
+          description: Comma-separated friend UUIDs; maximum 50
+          schema:
+            type: string
+        - $ref: "#/components/parameters/MonthQuery"
+      responses:
+        "200":
+          description: Current user and selected friend series
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FriendComparisonSeries"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /api/friends/activities:
+    get:
+      tags: [Friend activities]
+      summary: List activities belonging only to accepted friends
+      operationId: listFriendActivities
+      responses:
+        "200":
+          description: Friend activities ordered newest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FriendActivity"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/friends/activities/{activityId}/reactions:
+    post:
+      tags: [Friend activities]
+      summary: Add a like or slap to an accepted friend's activity
+      operationId: createActivityReaction
+      parameters:
+        - $ref: "#/components/parameters/ActivityIdPath"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReactionInput"
+      responses:
+        "200":
+          description: Reaction already existed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityReaction"
+        "201":
+          description: Reaction created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityReaction"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/friends/activities/{activityId}/reactions/{type}:
+    delete:
+      tags: [Friend activities]
+      summary: Remove the user's reaction from a friend's activity
+      operationId: deleteActivityReaction
+      parameters:
+        - $ref: "#/components/parameters/ActivityIdPath"
+        - $ref: "#/components/parameters/ReactionTypePath"
+      responses:
+        "204":
+          description: Reaction removed
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/backup:
+    get:
+      tags: [Backup]
+      summary: Export the authenticated user's current data
+      operationId: exportBackup
+      responses:
+        "200":
+          description: Version 2 backup
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Backup"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/backup/import:
+    post:
+      tags: [Backup]
+      summary: Merge a version 2 backup into the authenticated user's data
+      operationId: importBackup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Backup"
+      responses:
+        "200":
+          description: Import counts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackupImportResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/admin/users:
+    get:
+      tags: [Administration]
+      summary: List users with backend pagination
+      description: Administrator role required.
+      operationId: listAdminUsers
+      parameters:
+        - $ref: "#/components/parameters/PageQuery"
+        - $ref: "#/components/parameters/PageSizeQuery"
+        - name: search
+          in: query
+          schema:
+            type: string
+            maxLength: 320
+      responses:
+        "200":
+          description: Paginated users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedUsers"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /api/admin/users/{id}:
+    parameters:
+      - $ref: "#/components/parameters/IdPath"
+    get:
+      tags: [Administration]
+      summary: Get a user as administrator
+      operationId: getAdminUser
+      responses:
+        "200":
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUser"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [Administration]
+      summary: Update a user's name, email, and role
+      operationId: updateAdminUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminUserInput"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUser"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Email is already registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      tags: [Administration]
+      summary: Soft-delete a user while preserving activities
+      operationId: deleteAdminUser
+      responses:
+        "204":
+          description: User deleted; activities preserved
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/admin/users/{id}/activities:
+    get:
+      tags: [Administration]
+      summary: List a user's activities with backend pagination
+      operationId: listAdminUserActivities
+      parameters:
+        - $ref: "#/components/parameters/IdPath"
+        - $ref: "#/components/parameters/PageQuery"
+        - $ref: "#/components/parameters/PageSizeQuery"
+      responses:
+        "200":
+          description: Paginated activities
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedActivities"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/admin/users/{id}/block:
+    put:
+      tags: [Administration]
+      summary: Block a user
+      operationId: blockAdminUser
+      parameters:
+        - $ref: "#/components/parameters/IdPath"
+      responses:
+        "200":
+          description: Blocked user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUser"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/admin/users/{id}/unblock:
+    put:
+      tags: [Administration]
+      summary: Unblock a user
+      operationId: unblockAdminUser
+      parameters:
+        - $ref: "#/components/parameters/IdPath"
+      responses:
+        "200":
+          description: Active user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUser"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    IdPath:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    RequestIdPath:
+      name: requestId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    ActivityIdPath:
+      name: activityId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    ReactionTypePath:
+      name: type
+      in: path
+      required: true
+      schema:
+        $ref: "#/components/schemas/ReactionType"
+    DateQuery:
+      name: date
+      in: query
+      schema:
+        type: string
+        format: date
+    MonthQuery:
+      name: month
+      in: query
+      schema:
+        type: string
+        pattern: '^\d{4}-(0[1-9]|1[0-2])$'
+        example: "2026-09"
+    PageQuery:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PageSizeQuery:
+      name: pageSize
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 10
+  requestBodies:
+    ActivityInput:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ActivityInput"
+    WeightInput:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/WeightInput"
+  responses:
+    BadRequest:
+      description: Invalid input
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: Missing, invalid, expired, or deleted-user token
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Forbidden:
+      description: The authenticated user is not allowed to perform this action
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Resource not found or not owned by the authenticated user
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    ServerError:
+      description: Unexpected server or database error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+    Health:
+      type: object
+      required: [status, database]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+        database:
+          type: string
+          enum: [available]
+    UserRole:
+      type: string
+      enum: [normal_user, admin]
+    UserStatus:
+      type: string
+      enum: [active, blocked, deleted]
+    PublicUser:
+      type: object
+      required: [id, name, email, role]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          $ref: "#/components/schemas/UserRole"
+    AdminUser:
+      allOf:
+        - $ref: "#/components/schemas/PublicUser"
+        - type: object
+          required: [status, createdAt]
+          properties:
+            status:
+              $ref: "#/components/schemas/UserStatus"
+            createdAt:
+              type: string
+              format: date-time
+    AdminUserInput:
+      type: object
+      required: [name, email, role]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          $ref: "#/components/schemas/UserRole"
+    RegisterRequest:
+      type: object
+      required: [name, email, password, repeatPassword]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 8
+        repeatPassword:
+          type: string
+          format: password
+          minLength: 8
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 8
+    ChangePasswordRequest:
+      type: object
+      required: [currentPassword, newPassword, repeatPassword]
+      properties:
+        currentPassword:
+          type: string
+          format: password
+          minLength: 1
+        newPassword:
+          type: string
+          format: password
+          minLength: 8
+        repeatPassword:
+          type: string
+          format: password
+          minLength: 8
+    AuthResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+          description: JWT access token valid for seven days
+        user:
+          $ref: "#/components/schemas/PublicUser"
+    ActivityType:
+      type: string
+      enum: [hiking, fitness]
+    ActivityInput:
+      type: object
+      required: [activityType, name, date, minutes, metres, people]
+      properties:
+        activityType:
+          $ref: "#/components/schemas/ActivityType"
+        name:
+          type: string
+          description: Ignored and stored as Fitness when activityType is fitness
+        date:
+          type: string
+          format: date
+        minutes:
+          type: number
+          minimum: 0
+        metres:
+          type: number
+          minimum: 0
+          description: Ignored and stored as zero for fitness activities
+        people:
+          type: array
+          minItems: 1
+          items:
+            type: string
+    ActivityMigrationItem:
+      allOf:
+        - $ref: "#/components/schemas/ActivityInput"
+        - type: object
+          required: [id]
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: number
+              format: double
+    Activity:
+      allOf:
+        - $ref: "#/components/schemas/ActivityMigrationItem"
+        - type: object
+          required: [userId, likes, likedBy, slaps, slappedBy]
+          properties:
+            userId:
+              type: string
+              format: uuid
+            likes:
+              type: integer
+              minimum: 0
+            likedBy:
+              type: array
+              items:
+                type: string
+            slaps:
+              type: integer
+              minimum: 0
+            slappedBy:
+              type: array
+              items:
+                type: string
+    WeightInput:
+      type: object
+      required: [weightKg, recordedOn]
+      properties:
+        weightKg:
+          type: number
+          format: double
+          minimum: 20
+          maximum: 500
+        recordedOn:
+          type: string
+          format: date
+    WeightMigrationItem:
+      allOf:
+        - $ref: "#/components/schemas/WeightInput"
+        - type: object
+          required: [id]
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+    Weight:
+      allOf:
+        - $ref: "#/components/schemas/WeightMigrationItem"
+        - type: object
+          required: [userId]
+          properties:
+            userId:
+              type: string
+              format: uuid
+    Settings:
+      type: object
+      required: [appName, ownerName]
+      properties:
+        appName:
+          type: string
+        ownerName:
+          type: string
+    ReactionType:
+      type: string
+      enum: [like, slap]
+    ReactionInput:
+      type: object
+      required: [type]
+      properties:
+        type:
+          $ref: "#/components/schemas/ReactionType"
+    ActivityReaction:
+      type: object
+      required: [activityId, activityOwnerId, userId, type, createdAt]
+      properties:
+        activityId:
+          type: string
+          format: uuid
+        activityOwnerId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        type:
+          $ref: "#/components/schemas/ReactionType"
+        createdAt:
+          type: string
+          format: date-time
+    FriendSearchResult:
+      allOf:
+        - $ref: "#/components/schemas/PublicUser"
+        - type: object
+          required: [connectionStatus]
+          properties:
+            connectionStatus:
+              type: string
+              enum: [none, pending, accepted]
+    FriendRequest:
+      type: object
+      required: [id, direction, user, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        direction:
+          type: string
+          enum: [incoming, outgoing]
+        user:
+          $ref: "#/components/schemas/PublicUser"
+        createdAt:
+          type: string
+          format: date-time
+    FriendConnection:
+      type: object
+      required: [id, userIds, requesterId, status, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        userIds:
+          type: array
+          minItems: 2
+          maxItems: 2
+          items:
+            type: string
+            format: uuid
+        requesterId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [accepted]
+        createdAt:
+          type: string
+          format: date-time
+    FriendComparisonDay:
+      type: object
+      required: [date, activityCount]
+      properties:
+        date:
+          type: string
+          format: date
+        activityCount:
+          type: integer
+          minimum: 0
+    FriendComparisonSeries:
+      type: object
+      required: [userId, name, isCurrentUser, days]
+      properties:
+        userId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        isCurrentUser:
+          type: boolean
+        days:
+          type: array
+          items:
+            $ref: "#/components/schemas/FriendComparisonDay"
+    FriendActivity:
+      allOf:
+        - $ref: "#/components/schemas/Activity"
+        - type: object
+          required: [author, myReactions]
+          properties:
+            author:
+              type: object
+              required: [id, name]
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                name:
+                  type: string
+            myReactions:
+              type: array
+              items:
+                $ref: "#/components/schemas/ReactionType"
+    MigrationResult:
+      type: object
+      required: [imported, skipped]
+      properties:
+        imported:
+          type: integer
+          minimum: 0
+        skipped:
+          type: integer
+          minimum: 0
+    Backup:
+      type: object
+      required: [version, exportedAt, settings, activities, weights]
+      properties:
+        version:
+          type: integer
+          enum: [2]
+        exportedAt:
+          type: string
+          format: date-time
+        settings:
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/Settings"
+        activities:
+          type: array
+          items:
+            $ref: "#/components/schemas/Activity"
+        weights:
+          type: array
+          items:
+            $ref: "#/components/schemas/Weight"
+    BackupImportResult:
+      type: object
+      required:
+        - importedActivities
+        - skippedActivities
+        - importedWeights
+        - skippedWeights
+        - settingsImported
+      properties:
+        importedActivities:
+          type: integer
+          minimum: 0
+        skippedActivities:
+          type: integer
+          minimum: 0
+        importedWeights:
+          type: integer
+          minimum: 0
+        skippedWeights:
+          type: integer
+          minimum: 0
+        settingsImported:
+          type: boolean
+    PaginatedUsers:
+      allOf:
+        - $ref: "#/components/schemas/PaginationMetadata"
+        - type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/AdminUser"
+    PaginatedActivities:
+      allOf:
+        - $ref: "#/components/schemas/PaginationMetadata"
+        - type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Activity"
+    PaginationMetadata:
+      type: object
+      required: [page, pageSize, total, totalPages]
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        pageSize:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+        totalPages:
+          type: integer
+          minimum: 1
+security:
+  - bearerAuth: []

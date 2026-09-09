@@ -1,25 +1,33 @@
-import { database } from '../../core/json-database.js';
+import { withTransaction } from '../../core/database.js';
 import { HttpError } from '../../core/http-error.js';
 import { activityInput } from '../../core/validation.js';
-import { authenticatedUserId } from '../../core/auth.js';
-import { activityLikeSummary } from '../../core/activity-reaction.js';
+import { authenticatedUserId, isAdministrator } from '../../core/auth.js';
+import { activitiesWithReactionSummaries, loadActivities, replaceActivityPeople } from '../../core/activity-repository.js';
 export function registerActivityPutRoutes(router) {
     router.put('/activities/:id', async (request, response) => {
         const userId = authenticatedUserId(response);
+        const administrator = isAdministrator(response);
         const input = activityInput(request.body);
-        const activity = await database.update((data) => {
-            const index = data.activities.findIndex(({ id, userId: ownerId }) => id === request.params['id'] && ownerId === userId);
-            if (index < 0)
+        const id = request.params['id'] ?? '';
+        await withTransaction(async (connection) => {
+            const result = await connection.query(`UPDATE activities
+            SET activity_type = ?, name = ?, activity_date = ?, minutes = ?, metres = ?
+          WHERE id = ?${administrator ? '' : ' AND user_id = ?'}`, [
+                input.activityType,
+                input.name,
+                input.date,
+                input.minutes,
+                input.metres ?? 0,
+                id,
+                ...(administrator ? [] : [userId]),
+            ]);
+            if (!result.affectedRows)
                 throw new HttpError(404, 'Activity not found');
-            const current = data.activities[index];
-            const updated = { ...current, ...input, metres: input.metres ?? 0 };
-            data.activities[index] = updated;
-            return updated;
+            await replaceActivityPeople(connection, id, input.people);
         });
-        const data = await database.read();
-        response.json({
-            ...activity,
-            ...activityLikeSummary(activity, data),
-        });
+        const [activity] = await loadActivities(administrator ? null : userId, { id });
+        if (!activity)
+            throw new HttpError(404, 'Activity not found');
+        response.json((await activitiesWithReactionSummaries([activity]))[0]);
     });
 }

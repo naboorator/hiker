@@ -1,35 +1,47 @@
 # My Hike API
 
-Standalone TypeScript API backed by `db.json`. The Angular application uses this API for all current reads and writes. On its first successful connection, it copies legacy IndexedDB data through the idempotent migration endpoints.
+The API stores data in MariaDB. It no longer reads or writes `db.json`.
 
-## Run
+## Local database
+
+From the repository root:
+
+```bash
+docker compose up -d mariadb
+docker compose ps
+```
+
+The first container startup applies the SQL files from `api/migrations` in filename order.
+The development connection defaults are documented in `.env.example` and match
+`docker-compose.yml`.
+
+To recreate an empty database and run all migrations again:
+
+```bash
+docker compose down -v
+docker compose up -d mariadb
+```
+
+This removes the local database volume and all data in it.
+
+## API
+
+Use Node.js 22 or newer, then run:
 
 ```bash
 npm install
 npm run dev
 ```
 
-The server listens on `http://localhost:3000` by default. Set `PORT` to override it. Set a strong, private `JWT_SECRET` outside local development; access tokens are valid for seven days.
+`GET /health` checks both the HTTP server and its MariaDB connection.
 
-All `/api` endpoints except registration and login require an `Authorization: Bearer <token>` header. Passwords are stored only as bcrypt hashes, and resource responses are scoped to the authenticated user.
+The OpenAPI 3.0 description is stored in [`openapi.yaml`](./openapi.yaml) and is also available
+from `GET /openapi.yaml`. Swagger, Postman, and other OpenAPI-compatible clients can import
+`http://localhost:3000/openapi.yaml` directly.
 
-## Endpoints
+All `/api` endpoints except registration and login require an `Authorization: Bearer <token>`
+header. Passwords are stored only as bcrypt hashes, and resource responses are scoped to the
+authenticated user.
 
-- `GET /health`
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `GET|PUT /api/settings`
-- `GET|POST /api/activities`
-- `POST /api/activities/migrate`
-- `GET|PUT|DELETE /api/activities/:id`
-- `GET|POST /api/weights`
-- `POST /api/weights/migrate`
-- `GET|PUT|DELETE /api/weights/:id`
-- `GET|POST /api/friends`
-- `DELETE /api/friends/:friendId`
-- `GET /api/friends/requests`
-- `PUT /api/friends/requests/:requestId/accept`
-- `DELETE /api/friends/requests/:requestId`
-- `GET /api/friends/activities`
-- `POST /api/friends/activities/:activityId/reactions`
-- `DELETE /api/friends/activities/:activityId/reactions/:type`
+See [MARIADB_MIGRATION_PLAN.md](./MARIADB_MIGRATION_PLAN.md) for the schema decisions and rollout
+plan.

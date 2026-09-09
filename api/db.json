@@ -51,6 +51,19 @@
       "id": "9553957d-e4e9-406f-9794-6ca21820500a",
       "userId": "7c0ea6a3-8f95-4721-aed3-807a02c7a058",
       "createdAt": 1788558544433
+    },
+    {
+      "activityType": "hiking",
+      "name": "Sprehod po polju",
+      "date": "2026-09-05",
+      "minutes": 45,
+      "metres": 4500,
+      "people": [
+        "Zoran"
+      ],
+      "id": "d95f7a03-e342-41d9-930e-d44c0c358a5d",
+      "userId": "7c0ea6a3-8f95-4721-aed3-807a02c7a058",
+      "createdAt": 1788638174307
     }
   ],
   "weights": [
@@ -60,6 +73,13 @@
       "id": "5d365dfc-d298-41b3-9c99-c49e974005b1",
       "userId": "7c0ea6a3-8f95-4721-aed3-807a02c7a058",
       "createdAt": "2026-09-04T21:42:15.873Z"
+    },
+    {
+      "weightKg": 80,
+      "recordedOn": "2026-09-06",
+      "id": "66a3a4d9-d19e-46a5-9134-227262c6f8ab",
+      "userId": "7c0ea6a3-8f95-4721-aed3-807a02c7a058",
+      "createdAt": "2026-09-06T08:54:10.943Z"
     }
   ],
   "friendConnections": [
@@ -76,13 +96,6 @@
   ],
   "activityReactions": [
     {
-      "activityId": "a50f01c7-8edd-4e97-85d3-433339da346e",
-      "activityOwnerId": "5bcf2f29-69ad-446f-b88e-4391741dfd19",
-      "userId": "7c0ea6a3-8f95-4721-aed3-807a02c7a058",
-      "type": "like",
-      "createdAt": "2026-09-04T21:45:03.437Z"
-    },
-    {
       "activityId": "9553957d-e4e9-406f-9794-6ca21820500a",
       "activityOwnerId": "7c0ea6a3-8f95-4721-aed3-807a02c7a058",
       "userId": "5bcf2f29-69ad-446f-b88e-4391741dfd19",
@@ -90,18 +103,25 @@
       "createdAt": "2026-09-04T21:49:35.466Z"
     },
     {
-      "activityId": "a50f01c7-8edd-4e97-85d3-433339da346e",
-      "activityOwnerId": "5bcf2f29-69ad-446f-b88e-4391741dfd19",
-      "userId": "7c0ea6a3-8f95-4721-aed3-807a02c7a058",
-      "type": "slap",
-      "createdAt": "2026-09-04T22:01:44.167Z"
-    },
-    {
       "activityId": "9553957d-e4e9-406f-9794-6ca21820500a",
       "activityOwnerId": "7c0ea6a3-8f95-4721-aed3-807a02c7a058",
       "userId": "5bcf2f29-69ad-446f-b88e-4391741dfd19",
       "type": "slap",
       "createdAt": "2026-09-04T22:04:41.925Z"
+    },
+    {
+      "activityId": "a50f01c7-8edd-4e97-85d3-433339da346e",
+      "activityOwnerId": "5bcf2f29-69ad-446f-b88e-4391741dfd19",
+      "userId": "7c0ea6a3-8f95-4721-aed3-807a02c7a058",
+      "type": "like",
+      "createdAt": "2026-09-05T20:02:44.066Z"
+    },
+    {
+      "activityId": "a50f01c7-8edd-4e97-85d3-433339da346e",
+      "activityOwnerId": "5bcf2f29-69ad-446f-b88e-4391741dfd19",
+      "userId": "7c0ea6a3-8f95-4721-aed3-807a02c7a058",
+      "type": "slap",
+      "createdAt": "2026-09-05T20:02:45.564Z"
     }
   ]
 }

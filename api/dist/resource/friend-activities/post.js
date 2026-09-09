@@ -1,36 +1,31 @@
 import { authenticatedUserId } from '../../core/auth.js';
-import { database } from '../../core/json-database.js';
+import { database } from '../../core/database.js';
 import { HttpError } from '../../core/http-error.js';
-import { reactionTargetsActivity } from '../../core/activity-reaction.js';
 export function registerFriendActivityPostRoutes(router) {
     router.post('/friends/activities/:activityId/reactions', async (request, response) => {
         const userId = authenticatedUserId(response);
         const activityId = request.params['activityId'] ?? '';
         const type = request.body?.type;
-        if (type !== 'like')
-            throw new HttpError(400, 'Reaction must be like');
-        const created = await database.update((data) => {
-            const friendIds = new Set(data.friendConnections.flatMap((connection) => connection.userIds.includes(userId) && connection.status !== 'pending'
-                ? connection.userIds.filter((candidate) => candidate !== userId)
-                : []));
-            const activity = data.activities.find((candidate) => candidate.id === activityId && friendIds.has(candidate.userId));
-            if (!activity)
-                throw new HttpError(404, 'Activity not found');
-            const existing = data.activityReactions.find((reaction) => reaction.userId === userId &&
-                reaction.type === type &&
-                reactionTargetsActivity(reaction, activity, data.activities));
-            if (existing)
-                return existing;
-            const reaction = {
-                activityId,
-                activityOwnerId: activity.userId,
-                userId,
-                type: type,
-                createdAt: new Date().toISOString(),
-            };
-            data.activityReactions.push(reaction);
-            return reaction;
-        });
-        response.status(201).json(created);
+        if (type !== 'like' && type !== 'slap')
+            throw new HttpError(400, 'Reaction must be like or slap');
+        const [activity] = await database.query(`SELECT a.user_id AS userId
+         FROM activities a
+         JOIN friend_connections f
+           ON f.status = 'accepted'
+          AND ((f.user_id_1 = ? AND f.user_id_2 = a.user_id)
+            OR (f.user_id_2 = ? AND f.user_id_1 = a.user_id))
+        WHERE a.id = ? AND a.user_id <> ?`, [userId, userId, activityId, userId]);
+        if (!activity)
+            throw new HttpError(404, 'Activity not found');
+        const reaction = {
+            activityId,
+            activityOwnerId: activity.userId,
+            userId,
+            type: type,
+            createdAt: new Date().toISOString(),
+        };
+        const result = await database.query(`INSERT IGNORE INTO activity_reactions (activity_id, user_id, reaction_type)
+       VALUES (?, ?, ?)`, [activityId, userId, type]);
+        response.status(result.affectedRows ? 201 : 200).json(reaction);
     });
 }

@@ -28,13 +28,11 @@ The deployed API layout uses `dist/server.js`; Passenger must therefore use
 environment variables in the hosting control panel before the first deploy. The
 API does not automatically load a `.env` file.
 
-## First release
+## Deploying
 
-Create the remote branch from the version that should be deployed:
+Push the version that should be deployed to `develop`:
 
 ```bash
-git switch -c release
-git push -u origin release
+git switch develop
+git push -u origin develop
 ```
-
-Later deployments only require merging or pushing changes to `release`.

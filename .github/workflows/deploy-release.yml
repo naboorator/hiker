@@ -1,4 +1,4 @@
-name: Deploy release
+name: Deploy develop
 
 on:
   push:
@@ -55,6 +55,22 @@ jobs:
         run: |
           npm run typecheck
           npm run build:zip
+
+      - name: Validate deployment configuration
+        env:
+          API_PATH: ${{ secrets.API_PATH }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          FRONTEND_PATH: ${{ secrets.FRONTEND_PATH }}
+        run: |
+          : "${DEPLOY_HOST:?Missing GitHub Actions secret: DEPLOY_HOST}"
+          : "${DEPLOY_USER:?Missing GitHub Actions secret: DEPLOY_USER}"
+          : "${DEPLOY_SSH_KEY:?Missing GitHub Actions secret: DEPLOY_SSH_KEY}"
+          : "${DEPLOY_SSH_KNOWN_HOSTS:?Missing GitHub Actions secret: DEPLOY_SSH_KNOWN_HOSTS}"
+          : "${FRONTEND_PATH:?Missing GitHub Actions secret: FRONTEND_PATH}"
+          : "${API_PATH:?Missing GitHub Actions secret: API_PATH}"
 
       - name: Configure deployment SSH key
         env:

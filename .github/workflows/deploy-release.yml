@@ -64,6 +64,7 @@ jobs:
           DEPLOY_SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           FRONTEND_PATH: ${{ secrets.FRONTEND_PATH }}
+          REMOTE_NODE_BIN: ${{ secrets.REMOTE_NODE_BIN }}
         run: |
           : "${DEPLOY_HOST:?Missing GitHub Actions secret: DEPLOY_HOST}"
           : "${DEPLOY_USER:?Missing GitHub Actions secret: DEPLOY_USER}"
@@ -71,6 +72,7 @@ jobs:
           : "${DEPLOY_SSH_KNOWN_HOSTS:?Missing GitHub Actions secret: DEPLOY_SSH_KNOWN_HOSTS}"
           : "${FRONTEND_PATH:?Missing GitHub Actions secret: FRONTEND_PATH}"
           : "${API_PATH:?Missing GitHub Actions secret: API_PATH}"
+          : "${REMOTE_NODE_BIN:?Missing GitHub Actions secret: REMOTE_NODE_BIN}"
 
       - name: Configure deployment SSH key
         env:
@@ -105,6 +107,7 @@ jobs:
           API_PATH: ${{ secrets.API_PATH }}
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          REMOTE_NODE_BIN: ${{ secrets.REMOTE_NODE_BIN }}
         run: |
           rsync -az api/dist api/package.json api/package-lock.json api/migrations api/openapi.yaml api/.env.example "$DEPLOY_USER@$DEPLOY_HOST:$API_PATH/"
-          ssh "$DEPLOY_USER@$DEPLOY_HOST" "cd '$API_PATH' && npm ci --omit=dev && mkdir -p tmp && touch tmp/restart.txt"
+          ssh "$DEPLOY_USER@$DEPLOY_HOST" "export PATH='$REMOTE_NODE_BIN':\$PATH && node --version && npm --version && cd '$API_PATH' && npm ci --omit=dev && mkdir -p tmp && touch tmp/restart.txt"

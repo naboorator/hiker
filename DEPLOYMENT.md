@@ -15,6 +15,14 @@ Configure these under **Repository settings → Secrets and variables → Action
 - `DEPLOY_SSH_KNOWN_HOSTS` — trusted SSH host-key line for the server.
 - `FRONTEND_PATH` — absolute document-root path for `hiker.divader.si`.
 - `API_PATH` — absolute Passenger application root for `hiker-api.divader.si`.
+- `REMOTE_NODE_BIN` — absolute directory containing the server's `node` and `npm`
+  executables, without the executable name itself.
+
+Find `REMOTE_NODE_BIN` after logging in to the server:
+
+```bash
+dirname "$(command -v npm)"
+```
 
 Generate the known-hosts value on a trusted machine and verify its fingerprint
 with the hosting provider before saving it:

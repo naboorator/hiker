@@ -1,0 +1,94 @@
+name: Deploy release
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            angular-app/package-lock.json
+            api/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: angular-app
+        run: npm ci
+
+      - name: Verify frontend
+        working-directory: angular-app
+        run: |
+          npm run format:check
+          npm run lint
+          npm run test:ci
+
+      - name: Build frontend
+        working-directory: angular-app
+        run: npx ng build --configuration production
+
+      - name: Install API dependencies
+        working-directory: api
+        run: npm ci
+
+      - name: Verify and build API
+        working-directory: api
+        run: |
+          npm run typecheck
+          npm run build:zip
+
+      - name: Configure deployment SSH key
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$DEPLOY_SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Prepare deployment directories
+        env:
+          API_PATH: ${{ secrets.API_PATH }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          FRONTEND_PATH: ${{ secrets.FRONTEND_PATH }}
+        run: |
+          ssh "$DEPLOY_USER@$DEPLOY_HOST" "mkdir -p '$FRONTEND_PATH' '$API_PATH'"
+
+      - name: Deploy frontend
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          FRONTEND_PATH: ${{ secrets.FRONTEND_PATH }}
+        run: |
+          rsync -az angular-app/dist/angular-app/browser/ "$DEPLOY_USER@$DEPLOY_HOST:$FRONTEND_PATH/"
+
+      - name: Deploy API
+        env:
+          API_PATH: ${{ secrets.API_PATH }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          rsync -az api/dist api/package.json api/package-lock.json api/migrations api/openapi.yaml api/.env.example "$DEPLOY_USER@$DEPLOY_HOST:$API_PATH/"
+          ssh "$DEPLOY_USER@$DEPLOY_HOST" "cd '$API_PATH' && npm ci --omit=dev && mkdir -p tmp && touch tmp/restart.txt"

@@ -5,8 +5,9 @@ import type { AuthResponse } from '../interface/auth-response.interface';
 import type { AuthUser } from '../interface/auth-user.interface';
 import type { LoginDraft } from '../interface/login-draft.interface';
 import type { RegisterDraft } from '../interface/register-draft.interface';
+import { environment } from '../../../environments/environment';
 
-const apiUrl = 'http://localhost:3000/api/auth';
+const apiUrl = `${environment.apiOrigin}/api/auth`;
 export const tokenStorageKey = 'my-hike-access-token';
 const userStorageKey = 'my-hike-user';
 

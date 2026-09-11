@@ -20,12 +20,13 @@ import type { AdminUser } from '../interface/admin-user.interface';
 import type { PaginatedResponse } from '../interface/paginated-response.interface';
 import type { AdminUserDraft } from '../interface/admin-user-draft.interface';
 import type { ChangePasswordDraft } from '../interface/change-password-draft.interface';
+import { environment } from '../../../environments/environment';
 
 type StoredSetting = { key: string; value: unknown };
 type StoredHike = Partial<Hike> & { id: string; distance?: number; created?: number };
 
-const apiUrl = 'http://localhost:3000/api';
-const healthUrl = 'http://localhost:3000/health';
+const apiUrl = `${environment.apiOrigin}/api`;
+const healthUrl = `${environment.apiOrigin}/health`;
 const migrationKey = 'api-db-json-migration-v3';
 const previousMigrationKeyPrefix = 'api-db-json-migration-v2-';
 const defaults: AppSettings = { appName: 'My hike log', ownerName: 'You' };

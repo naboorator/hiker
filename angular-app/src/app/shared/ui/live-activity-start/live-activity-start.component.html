@@ -1,0 +1,15 @@
+<div class="start-form">
+  <app-activity-type-select [value]="activityType()" (valueChange)="activityType.set($event)" />
+  <p class="gps-notice">
+    <span aria-hidden="true">⌖</span>
+    {{ 'liveActivity.foregroundWarning' | transloco }}
+  </p>
+  <div class="actions">
+    <button type="button" class="secondary" (click)="cancelled.emit()">
+      {{ 'common.cancel' | transloco }}
+    </button>
+    <button type="button" class="primary" (click)="started.emit(activityType())">
+      {{ 'liveActivity.start' | transloco }}
+    </button>
+  </div>
+</div>

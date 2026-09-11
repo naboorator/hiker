@@ -1,0 +1,24 @@
+{
+  "liveActivity": {
+    "start": "Začni aktivnost",
+    "stop": "Končaj aktivnost",
+    "finish": "Dokončaj aktivnost",
+    "startTitle": "Začni aktivnost",
+    "finishTitle": "Dokončaj aktivnost",
+    "inProgress": "Aktivnost poteka",
+    "trackedDistance": "Izmerjena razdalja",
+    "foregroundWarning": "Za čim natančnejšo razdaljo pusti to stran odprto in zaslon aktiven. Mobilni brskalniki lahko prekinejo GPS, ko je telefon zaklenjen ali je brskalnik v ozadju.",
+    "discardTitle": "Želiš zavreči spremljano aktivnost?",
+    "discardMessage": "Izmerjeni čas in lokacijski vzorci bodo trajno odstranjeni.",
+    "storageError": "Aktivnosti ni bilo mogoče shraniti v tej napravi. Sprosti prostor brskalnika in poskusi znova.",
+    "location": {
+      "pending": "Čakanje na GPS-lokacijo …",
+      "active": "GPS-sledenje lokaciji je aktivno",
+      "weak-signal": "GPS-signal je trenutno preslab za natančen izračun razdalje",
+      "background-limited": "GPS je bil prekinjen, ko je bila aplikacija v ozadju",
+      "denied": "Dovoljenje za lokacijo je zavrnjeno; merjenje časa se nadaljuje",
+      "unavailable": "Sledenje lokaciji ni na voljo; merjenje časa se nadaljuje",
+      "error": "GPS se ni pravilno odzval; merjenje časa se nadaljuje"
+    }
+  }
+}

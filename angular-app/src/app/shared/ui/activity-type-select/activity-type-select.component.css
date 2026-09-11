@@ -1,0 +1,123 @@
+:host {
+  display: block;
+}
+.activity-type {
+  display: grid;
+  gap: 0.35rem;
+  color: #587062;
+  font-size: 0.85rem;
+  font-weight: 750;
+}
+.activity-select {
+  position: relative;
+}
+.activity-select summary {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 48px;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid #cfdcd0;
+  border-radius: 12px;
+  background: #fff;
+  color: #15251f;
+  cursor: pointer;
+  list-style: none;
+}
+.activity-select summary::-webkit-details-marker {
+  display: none;
+}
+.activity-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid #ffffffb8;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px #173e2b24;
+}
+.activity-icon.hiking {
+  background: linear-gradient(145deg, #fff4d8, #ffd493);
+}
+.activity-icon.fitness {
+  background: linear-gradient(145deg, #dcefe1, #a8cfad);
+}
+.activity-icon svg {
+  width: 31px;
+  height: 31px;
+}
+.activity-icon .sun {
+  fill: #ff7a12;
+}
+.activity-icon .mountain-back {
+  fill: #075237;
+}
+.activity-icon .mountain-front {
+  fill: #3f8950;
+}
+.activity-icon .trail {
+  fill: none;
+  stroke: #fff4d8;
+  stroke-linecap: round;
+  stroke-width: 2.5;
+}
+.activity-icon .bar,
+.activity-icon .weight {
+  fill: none;
+  stroke-linecap: round;
+}
+.activity-icon .bar {
+  stroke: #ff7a12;
+  stroke-width: 4;
+}
+.activity-icon .weight.outer {
+  stroke: #3f8950;
+  stroke-width: 4;
+}
+.activity-icon .weight.inner {
+  stroke: #075237;
+  stroke-width: 5;
+}
+.chevron {
+  color: #587062;
+  font-size: 1.2rem;
+  transition: transform 0.2s ease;
+}
+.activity-select[open] .chevron {
+  transform: rotate(180deg);
+}
+.activity-options {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  left: 0;
+  z-index: 3;
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.35rem;
+  border: 1px solid #dbe5de;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 12px 28px #19382b30;
+}
+.activity-options button {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.7rem;
+  border: 0;
+  border-radius: 10px;
+  padding: 0.5rem;
+  background: transparent;
+  color: #245e3b;
+  font: inherit;
+  font-weight: 750;
+  text-align: left;
+  cursor: pointer;
+}
+.activity-options button:hover,
+.activity-options button[aria-selected='true'] {
+  background: #edf5ee;
+}

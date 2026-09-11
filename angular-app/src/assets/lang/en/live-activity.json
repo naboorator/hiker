@@ -1,0 +1,24 @@
+{
+  "liveActivity": {
+    "start": "Start activity",
+    "stop": "Stop activity",
+    "finish": "Finish activity",
+    "startTitle": "Start an activity",
+    "finishTitle": "Complete activity",
+    "inProgress": "Activity in progress",
+    "trackedDistance": "Tracked distance",
+    "foregroundWarning": "For the most accurate distance, keep this page open and your screen active. Mobile browsers may pause GPS when the phone is locked or the browser is in the background.",
+    "discardTitle": "Discard tracked activity?",
+    "discardMessage": "The tracked time and location samples will be permanently removed.",
+    "storageError": "The activity could not be stored on this device. Free some browser storage and try again.",
+    "location": {
+      "pending": "Waiting for GPS location…",
+      "active": "GPS location tracking is active",
+      "weak-signal": "GPS signal is currently too weak for an accurate distance",
+      "background-limited": "GPS was interrupted while the app was in the background",
+      "denied": "Location permission was denied; time tracking continues",
+      "unavailable": "Location tracking is unavailable; time tracking continues",
+      "error": "GPS did not respond correctly; time tracking continues"
+    }
+  }
+}

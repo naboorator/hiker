@@ -77,14 +77,36 @@ h2 {
   margin: 0;
   font-size: 1.1rem;
 }
-.plus {
-  width: 58px;
-  height: 58px;
+.start-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   border: 0;
-  border-radius: 50%;
+  border-radius: 12px;
+  padding: 0.7rem 0.9rem;
   background: #1f6a43;
   color: #fff;
-  font-size: 2.5rem;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+.stopped-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.discard-link {
+  border: 0;
+  background: transparent;
+  color: #a34646;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+.live-error {
+  margin: 0.8rem 0 0;
+  color: #a34646;
+  font-size: 0.86rem;
 }
 .stats {
   display: grid;
@@ -122,4 +144,28 @@ h2 {
   color: #705719;
   font-size: 0.88rem;
   line-height: 1.45;
+}
+.discard-message {
+  margin: 0 0 1rem;
+  color: #587062;
+  line-height: 1.5;
+}
+.discard-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+.discard-actions button {
+  border: 0;
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  background: #e4efe6;
+  color: #245e3b;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+.discard-actions .danger {
+  background: #b84435;
+  color: #fff;
 }

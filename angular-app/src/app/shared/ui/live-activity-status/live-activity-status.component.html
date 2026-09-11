@@ -1,0 +1,27 @@
+<article class="tracker" aria-live="polite">
+  <div class="tracker-heading">
+    <div>
+      <span class="eyebrow">{{ 'liveActivity.inProgress' | transloco }}</span>
+      <strong>{{ elapsed() }}</strong>
+    </div>
+    <span class="pulse" aria-hidden="true"></span>
+  </div>
+  <p class="location" [class.warning]="activity().locationTracking === 'background-limited'">
+    <span aria-hidden="true">⌖</span>
+    {{ locationKey() | transloco }}
+  </p>
+  @if (activity().locationTracking === 'active') {
+    <div class="distance">
+      <span>{{ 'liveActivity.trackedDistance' | transloco }}</span>
+      <strong>{{ distance() }}</strong>
+    </div>
+  }
+  <div class="actions">
+    <button type="button" class="discard" (click)="discardRequested.emit()">
+      {{ 'common.discard' | transloco }}
+    </button>
+    <button type="button" class="stop" (click)="stopped.emit()">
+      <span aria-hidden="true"></span>{{ 'liveActivity.stop' | transloco }}
+    </button>
+  </div>
+</article>

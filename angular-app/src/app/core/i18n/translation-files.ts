@@ -15,4 +15,5 @@ export const translationFiles = [
   'service-unavailable',
   'friends',
   'admin',
+  'live-activity',
 ] as const;

@@ -1,0 +1,70 @@
+import { describe, expect, it } from 'vitest';
+import type { LiveActivityLocation } from '../interface/live-activity-location.interface';
+import {
+  canAppendLocation,
+  distanceBetweenLocations,
+  formatTrackedDistance,
+  trackedDistance,
+} from './geo-distance.helpers';
+
+const point = (longitude: number, recordedAt: string, segment = 0): LiveActivityLocation => ({
+  latitude: 46.0569,
+  longitude,
+  accuracy: 10,
+  recordedAt,
+  segment,
+});
+
+describe('geo distance helpers', () => {
+  it('calculates Haversine distance in metres', () => {
+    expect(distanceBetweenLocations(point(14.5058, ''), point(14.5188, ''))).toBeCloseTo(1_003, -1);
+  });
+
+  it('rejects inaccurate and impossibly fast samples', () => {
+    expect(
+      canAppendLocation(
+        undefined,
+        { ...point(14.5058, '2026-09-10T10:00:00Z'), accuracy: 200 },
+        'hiking',
+      ),
+    ).toBe(false);
+    expect(
+      canAppendLocation(
+        point(14.5058, '2026-09-10T10:00:00Z'),
+        point(14.5188, '2026-09-10T10:00:01Z'),
+        'hiking',
+      ),
+    ).toBe(false);
+  });
+
+  it('uses a stricter accuracy profile for fitness', () => {
+    const location = { ...point(14.5058, '2026-09-10T10:00:00Z'), accuracy: 30 };
+    expect(canAppendLocation(undefined, location, 'hiking')).toBe(true);
+    expect(canAppendLocation(undefined, location, 'fitness')).toBe(false);
+  });
+
+  it('ignores GPS jitter below the activity movement threshold', () => {
+    expect(
+      canAppendLocation(
+        point(14.5058, '2026-09-10T10:00:00Z'),
+        point(14.50581, '2026-09-10T10:00:10Z'),
+        'hiking',
+      ),
+    ).toBe(false);
+  });
+
+  it('does not connect points from separate foreground segments', () => {
+    const locations = [
+      point(14.5058, '2026-09-10T10:00:00Z', 0),
+      point(14.5068, '2026-09-10T10:01:00Z', 0),
+      point(14.5188, '2026-09-10T10:02:00Z', 1),
+    ];
+    expect(trackedDistance(locations)).toBeGreaterThan(70);
+    expect(trackedDistance(locations)).toBeLessThan(100);
+  });
+
+  it('formats tracked distance in metres and kilometres', () => {
+    expect(formatTrackedDistance(248.6)).toBe('249 m');
+    expect(formatTrackedDistance(1_234)).toBe('1.23 km');
+  });
+});

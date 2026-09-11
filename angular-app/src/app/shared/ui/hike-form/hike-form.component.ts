@@ -4,10 +4,11 @@ import { FormField, form, min, required } from '@angular/forms/signals';
 import { TranslocoPipe } from '@jsverse/transloco';
 import type { ActivityType } from '../../../core/interface/activity-type.type';
 import type { HikeDraft } from '../../../core/interface/hike-draft.interface';
+import { ActivityTypeSelectComponent } from '../activity-type-select/activity-type-select.component';
 import { PeopleSelectComponent } from '../people-select/people-select.component';
 @Component({
   selector: 'app-hike-form',
-  imports: [FormField, TranslocoPipe, PeopleSelectComponent],
+  imports: [FormField, TranslocoPipe, PeopleSelectComponent, ActivityTypeSelectComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './hike-form.component.html',
   styleUrl: './hike-form.component.css',
@@ -20,6 +21,7 @@ export class HikeFormComponent implements OnInit {
   readonly defaultActivityType = input<ActivityType>('hiking');
   readonly draft = input<HikeDraft | null>(null);
   readonly buttonText = input('Add activity');
+  readonly submitting = input(false);
   readonly saved = output<HikeDraft>();
   readonly cancelled = output<void>();
   readonly model = signal<HikeDraft>({
@@ -57,11 +59,10 @@ export class HikeFormComponent implements OnInit {
   setPeople(people: string[]): void {
     this.model.update((draft) => ({ ...draft, people }));
   }
-  selectActivityType(activityType: string): void {
-    if (activityType !== 'hiking' && activityType !== 'fitness') return;
+  selectActivityType(activityType: ActivityType): void {
     this.model.update((draft) => ({
       ...draft,
-      activityType: activityType as ActivityType,
+      activityType,
       name:
         activityType === 'fitness'
           ? 'Fitness'
@@ -74,7 +75,7 @@ export class HikeFormComponent implements OnInit {
   submit(e: SubmitEvent) {
     e.preventDefault();
     this.hikeForm().markAsTouched();
-    if (this.hikeForm().valid() && this.model().people.length) {
+    if (!this.submitting() && this.hikeForm().valid() && this.model().people.length) {
       const draft = this.model();
       this.saved.emit({
         ...draft,

@@ -10,6 +10,7 @@ import { AuthService } from './core/auth/auth.service';
 import { LogWrapper } from './core/logging/log-wrapper.service';
 import { FriendsStore } from './core/stores/friends.store';
 import { MockHikeStore } from './core/stores/mock-hike.store';
+import { LiveActivityStore } from './core/stores/live-activity.store';
 import { ActivitiesPage } from './features/activities/activities.page';
 import { AdminActivitiesPage } from './features/admin/activities/admin-activities.page';
 import { AdminPage } from './features/admin/admin.page';
@@ -36,6 +37,9 @@ import { HikeListComponent } from './shared/ui/hike-list/hike-list.component';
 import { ModalDialogComponent } from './shared/ui/modal-dialog/modal-dialog.component';
 import { MyWeightComponent } from './shared/ui/my-weight/my-weight.component';
 import { PeopleSelectComponent } from './shared/ui/people-select/people-select.component';
+import { ActivityTypeSelectComponent } from './shared/ui/activity-type-select/activity-type-select.component';
+import { LiveActivityStartComponent } from './shared/ui/live-activity-start/live-activity-start.component';
+import { LiveActivityStatusComponent } from './shared/ui/live-activity-status/live-activity-status.component';
 
 interface ComponentCase {
   name: string;
@@ -87,6 +91,31 @@ const componentCases: ComponentCase[] = [
     inputs: { series: [], month: '2026-09' },
   },
   { name: 'HikeFormComponent', component: HikeFormComponent, inputs: { ownerName: 'User' } },
+  {
+    name: 'ActivityTypeSelectComponent',
+    component: ActivityTypeSelectComponent,
+    inputs: { value: 'hiking' },
+  },
+  { name: 'LiveActivityStartComponent', component: LiveActivityStartComponent },
+  {
+    name: 'LiveActivityStatusComponent',
+    component: LiveActivityStatusComponent,
+    inputs: {
+      activity: {
+        version: 1,
+        id: 'live-1',
+        userId: 'user-1',
+        activityType: 'hiking',
+        status: 'tracking',
+        startedAt: '2026-09-10T10:00:00Z',
+        stoppedAt: null,
+        locationTracking: 'active',
+        currentSegment: 0,
+        locations: [],
+        completionDraft: null,
+      },
+    },
+  },
   { name: 'HikeListComponent', component: HikeListComponent, inputs: { hikes: [] } },
   {
     name: 'ModalDialogComponent',
@@ -157,6 +186,20 @@ describe('Angular components', () => {
             login: vi.fn(),
             register: vi.fn(),
             logout: vi.fn(),
+          },
+        },
+        {
+          provide: LiveActivityStore,
+          useValue: {
+            activity: signal(null),
+            error: signal(null),
+            start: vi.fn(),
+            stop: vi.fn(),
+            draft: vi.fn(),
+            markSaving: vi.fn(),
+            saveFailed: vi.fn(),
+            completeSave: vi.fn(),
+            discard: vi.fn(),
           },
         },
         {

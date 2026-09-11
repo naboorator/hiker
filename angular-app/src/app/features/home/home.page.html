@@ -12,23 +12,32 @@
   <section>
     <div class="top">
       <h2>{{ 'home.todayHikes' | transloco }}</h2>
-      <button class="plus" type="button" (click)="formOpen.set(true)" [hidden]="formOpen()">
-        +
-      </button>
+      @if (!liveActivity.activity()) {
+        <button class="start-button" type="button" (click)="startModalOpen.set(true)">
+          <span aria-hidden="true">▶</span>{{ 'liveActivity.start' | transloco }}
+        </button>
+      } @else if (liveActivity.activity()?.status === 'stopped') {
+        <div class="stopped-actions">
+          <button class="discard-link" type="button" (click)="discardModalOpen.set(true)">
+            {{ 'common.discard' | transloco }}
+          </button>
+          <button class="start-button" type="button" (click)="reopenCompletion()">
+            {{ 'liveActivity.finish' | transloco }}
+          </button>
+        </div>
+      }
     </div>
-    @if (formOpen()) {
-      <app-hike-form
-        [ownerName]="store.settings().ownerName"
-        [hikeNames]="names()"
-        [defaultHikingName]="store.lastHikingName()"
-        [peopleSuggestions]="store.people()"
-        [defaultActivityType]="store.lastActivityType()"
-        (saved)="save($event)"
-        (cancelled)="formOpen.set(false)"
+    @if (liveActivity.activity()?.status === 'tracking') {
+      <app-live-activity-status
+        [activity]="liveActivity.activity()!"
+        (stopped)="stop()"
+        (discardRequested)="discardModalOpen.set(true)"
       />
-    } @else {
-      <app-hike-list [hikes]="store.todayHikes()" (remove)="store.removeMockHike($event)" />
     }
+    @if (liveActivity.error() && !startModalOpen()) {
+      <p class="live-error" role="alert">{{ liveActivity.error()! | transloco }}</p>
+    }
+    <app-hike-list [hikes]="store.todayHikes()" (remove)="store.removeMockHike($event)" />
   </section>
   <div class="stats">
     <article>
@@ -63,6 +72,73 @@
       (closed)="weightModalOpen.set(false)"
     >
       <app-my-weight (measurementSaved)="weightModalOpen.set(false)" />
+    </app-modal-dialog>
+  }
+  @if (startModalOpen()) {
+    <app-modal-dialog
+      [title]="'liveActivity.startTitle' | transloco"
+      [closeLabel]="'common.close' | transloco"
+      dialogRole="dialog"
+      width="520px"
+      [showCloseButton]="true"
+      [closeOnBackdrop]="true"
+      [closeOnEscape]="true"
+      (closed)="startModalOpen.set(false)"
+    >
+      <app-live-activity-start
+        [defaultActivityType]="store.lastActivityType()"
+        (started)="start($event)"
+        (cancelled)="startModalOpen.set(false)"
+      />
+      @if (liveActivity.error()) {
+        <p class="live-error" role="alert">{{ liveActivity.error()! | transloco }}</p>
+      }
+    </app-modal-dialog>
+  }
+  @if (completionModalOpen() && completionDraft(); as draft) {
+    <app-modal-dialog
+      [title]="'liveActivity.finishTitle' | transloco"
+      [closeLabel]="'common.close' | transloco"
+      dialogRole="dialog"
+      width="620px"
+      [showCloseButton]="true"
+      [closeOnBackdrop]="false"
+      [closeOnEscape]="false"
+      (closed)="closeCompletion()"
+    >
+      <app-hike-form
+        [ownerName]="store.settings().ownerName"
+        [hikeNames]="names()"
+        [defaultHikingName]="store.lastHikingName()"
+        [peopleSuggestions]="store.people()"
+        [draft]="draft"
+        [buttonText]="'common.save' | transloco"
+        [submitting]="liveActivity.activity()?.status === 'saving'"
+        (saved)="save($event)"
+        (cancelled)="closeCompletion()"
+      />
+    </app-modal-dialog>
+  }
+  @if (discardModalOpen()) {
+    <app-modal-dialog
+      [title]="'liveActivity.discardTitle' | transloco"
+      [closeLabel]="'common.close' | transloco"
+      dialogRole="alertdialog"
+      width="460px"
+      [showCloseButton]="true"
+      [closeOnBackdrop]="true"
+      [closeOnEscape]="true"
+      (closed)="discardModalOpen.set(false)"
+    >
+      <p class="discard-message">{{ 'liveActivity.discardMessage' | transloco }}</p>
+      <div class="discard-actions">
+        <button type="button" (click)="discardModalOpen.set(false)">
+          {{ 'common.cancel' | transloco }}
+        </button>
+        <button type="button" class="danger" (click)="discard()">
+          {{ 'common.discard' | transloco }}
+        </button>
+      </div>
     </app-modal-dialog>
   }
 </main>

@@ -2,7 +2,7 @@
 -- Compatible MariaDB/MySQL structure. No table data is included.
 -- Import this file after selecting the target database.
 
-SET NAMES utf8mb4;
+SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 SET @OLD_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -32,7 +32,7 @@ CREATE TABLE `settings` (
   `app_name` varchar(150) NOT NULL,
   `owner_name` varchar(150) NOT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `activities` (
   `id` char(36) NOT NULL,
@@ -45,14 +45,14 @@ CREATE TABLE `activities` (
   `created_at` bigint unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_activities_user_date` (`user_id`, `activity_date`, `created_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `activity_people` (
   `activity_id` char(36) NOT NULL,
   `position` smallint unsigned NOT NULL,
   `person_name` varchar(150) NOT NULL,
   PRIMARY KEY (`activity_id`, `position`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `weights` (
   `id` char(36) NOT NULL,
@@ -62,7 +62,7 @@ CREATE TABLE `weights` (
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_weights_user_recorded` (`user_id`, `recorded_on`, `created_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `friend_connections` (
   `id` char(36) NOT NULL,
@@ -75,7 +75,7 @@ CREATE TABLE `friend_connections` (
   UNIQUE KEY `uq_friend_pair` (`user_id_1`, `user_id_2`),
   KEY `idx_friend_user_2` (`user_id_2`, `status`),
   KEY `fk_friend_requester` (`requester_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `activity_reactions` (
   `activity_id` char(36) NOT NULL,
@@ -85,7 +85,7 @@ CREATE TABLE `activity_reactions` (
   PRIMARY KEY (`activity_id`, `user_id`, `reaction_type`),
   KEY `idx_reactions_activity_created` (`activity_id`, `reaction_type`, `created_at`),
   KEY `fk_reactions_user` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 ALTER TABLE `settings`
   ADD CONSTRAINT `fk_settings_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;

@@ -1,6 +1,8 @@
--- My Hike MariaDB schema-only dump
--- Compatible MariaDB/MySQL structure. No table data is included.
--- Import this file after selecting the target database.
+-- My Hike production schema-only import
+-- Target: MariaDB 10.11.19 or newer, including servers whose default charset is latin1.
+-- Contains all required tables and no users, activities, or other table records.
+-- Import this file only after selecting the intended empty target database.
+-- WARNING: existing My Hike tables are dropped before the empty structure is created.
 
 SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 SET @OLD_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;

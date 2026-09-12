@@ -37,6 +37,11 @@ The deployed API layout uses `dist/server.js`; Passenger must therefore use
 environment variables in the hosting control panel before the first deploy. The
 API does not automatically load a `.env` file.
 
+The API deployment uploads only `dist/`, `package.json`, and `package-lock.json`.
+The production dependencies are installed into `node_modules/` on the server,
+and Passenger uses `tmp/restart.txt` for restarts. The build copies
+`openapi.yaml` into `dist/`, where the compiled server expects it.
+
 ## Deploying
 
 Push the version that should be deployed to `develop`:

@@ -109,5 +109,5 @@ jobs:
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           REMOTE_NODE_ACTIVATE: ${{ secrets.REMOTE_NODE_ACTIVATE }}
         run: |
-          rsync -az --info=progress2 --timeout=60 -e "ssh -o BatchMode=yes -o ConnectTimeout=20 -o ServerAliveInterval=15 -o ServerAliveCountMax=4" api/dist api/package.json api/package-lock.json api/migrations api/openapi.yaml api/.env.example "$DEPLOY_USER@$DEPLOY_HOST:$API_PATH/"
+          rsync -az --info=progress2 --timeout=60 -e "ssh -o BatchMode=yes -o ConnectTimeout=20 -o ServerAliveInterval=15 -o ServerAliveCountMax=4" api/dist api/package.json api/package-lock.json "$DEPLOY_USER@$DEPLOY_HOST:$API_PATH/"
           ssh -o BatchMode=yes -o ConnectTimeout=20 -o ServerAliveInterval=15 -o ServerAliveCountMax=4 "$DEPLOY_USER@$DEPLOY_HOST" "test -r '$REMOTE_NODE_ACTIVATE' || { echo 'REMOTE_NODE_ACTIVATE does not point to a readable activation script'; exit 1; }; . '$REMOTE_NODE_ACTIVATE' && node --version && npm --version && cd '$API_PATH' && timeout 300 npm ci --omit=dev --no-audit --no-fund --prefer-offline && mkdir -p tmp && touch tmp/restart.txt"

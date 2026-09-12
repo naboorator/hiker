@@ -64,7 +64,7 @@ jobs:
           DEPLOY_SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           FRONTEND_PATH: ${{ secrets.FRONTEND_PATH }}
-          REMOTE_NODE_BIN: ${{ secrets.REMOTE_NODE_BIN }}
+          REMOTE_NODE_ACTIVATE: ${{ secrets.REMOTE_NODE_ACTIVATE }}
         run: |
           : "${DEPLOY_HOST:?Missing GitHub Actions secret: DEPLOY_HOST}"
           : "${DEPLOY_USER:?Missing GitHub Actions secret: DEPLOY_USER}"
@@ -72,7 +72,7 @@ jobs:
           : "${DEPLOY_SSH_KNOWN_HOSTS:?Missing GitHub Actions secret: DEPLOY_SSH_KNOWN_HOSTS}"
           : "${FRONTEND_PATH:?Missing GitHub Actions secret: FRONTEND_PATH}"
           : "${API_PATH:?Missing GitHub Actions secret: API_PATH}"
-          : "${REMOTE_NODE_BIN:?Missing GitHub Actions secret: REMOTE_NODE_BIN}"
+          : "${REMOTE_NODE_ACTIVATE:?Missing GitHub Actions secret: REMOTE_NODE_ACTIVATE}"
 
       - name: Configure deployment SSH key
         env:
@@ -107,7 +107,7 @@ jobs:
           API_PATH: ${{ secrets.API_PATH }}
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
-          REMOTE_NODE_BIN: ${{ secrets.REMOTE_NODE_BIN }}
+          REMOTE_NODE_ACTIVATE: ${{ secrets.REMOTE_NODE_ACTIVATE }}
         run: |
           rsync -az --info=progress2 --timeout=60 -e "ssh -o BatchMode=yes -o ConnectTimeout=20 -o ServerAliveInterval=15 -o ServerAliveCountMax=4" api/dist api/package.json api/package-lock.json api/migrations api/openapi.yaml api/.env.example "$DEPLOY_USER@$DEPLOY_HOST:$API_PATH/"
-          ssh -o BatchMode=yes -o ConnectTimeout=20 -o ServerAliveInterval=15 -o ServerAliveCountMax=4 "$DEPLOY_USER@$DEPLOY_HOST" "test -x '$REMOTE_NODE_BIN/node' || { echo 'REMOTE_NODE_BIN does not contain an executable node file'; exit 1; }; test -x '$REMOTE_NODE_BIN/npm' || { echo 'REMOTE_NODE_BIN does not contain an executable npm file'; exit 1; }; export PATH='$REMOTE_NODE_BIN':\$PATH; '$REMOTE_NODE_BIN/node' --version; '$REMOTE_NODE_BIN/npm' --version; cd '$API_PATH' && timeout 300 '$REMOTE_NODE_BIN/npm' ci --omit=dev --no-audit --no-fund --prefer-offline && mkdir -p tmp && touch tmp/restart.txt"
+          ssh -o BatchMode=yes -o ConnectTimeout=20 -o ServerAliveInterval=15 -o ServerAliveCountMax=4 "$DEPLOY_USER@$DEPLOY_HOST" "test -r '$REMOTE_NODE_ACTIVATE' || { echo 'REMOTE_NODE_ACTIVATE does not point to a readable activation script'; exit 1; }; . '$REMOTE_NODE_ACTIVATE' && node --version && npm --version && cd '$API_PATH' && timeout 300 npm ci --omit=dev --no-audit --no-fund --prefer-offline && mkdir -p tmp && touch tmp/restart.txt"

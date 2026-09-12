@@ -15,13 +15,14 @@ Configure these under **Repository settings → Secrets and variables → Action
 - `DEPLOY_SSH_KNOWN_HOSTS` — trusted SSH host-key line for the server.
 - `FRONTEND_PATH` — absolute document-root path for `hiker.divader.si`.
 - `API_PATH` — absolute Passenger application root for `hiker-api.divader.si`.
-- `REMOTE_NODE_BIN` — absolute directory containing the server's `node` and `npm`
-  executables, without the executable name itself.
+- `REMOTE_NODE_ACTIVATE` — absolute path to the cPanel Node virtual environment
+  activation script.
 
-Find `REMOTE_NODE_BIN` after logging in to the server:
+For example, when cPanel displays
+`source /home/example/nodevenv/api.example.com/24/bin/activate`, configure:
 
-```bash
-dirname "$(command -v npm)"
+```text
+REMOTE_NODE_ACTIVATE=/home/example/nodevenv/api.example.com/24/bin/activate
 ```
 
 Generate the known-hosts value on a trusted machine and verify its fingerprint

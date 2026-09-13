@@ -7,6 +7,7 @@
     "finishTitle": "Dokončaj aktivnost",
     "inProgress": "Aktivnost poteka",
     "trackedDistance": "Izmerjena razdalja",
+    "retryLocation": "Poskusi GPS znova",
     "foregroundWarning": "Za čim natančnejšo razdaljo pusti to stran odprto in zaslon aktiven. Mobilni brskalniki lahko prekinejo GPS, ko je telefon zaklenjen ali je brskalnik v ozadju.",
     "discardTitle": "Želiš zavreči spremljano aktivnost?",
     "discardMessage": "Izmerjeni čas in lokacijski vzorci bodo trajno odstranjeni.",

@@ -57,6 +57,12 @@ strong {
   color: #153f2a;
   font-size: 1.25rem;
 }
+.retry-location {
+  justify-self: start;
+  border: 1px solid #b84435;
+  background: #fff;
+  color: #9b3529;
+}
 .actions {
   display: flex;
   justify-content: space-between;

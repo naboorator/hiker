@@ -7,6 +7,7 @@
     "finishTitle": "Complete activity",
     "inProgress": "Activity in progress",
     "trackedDistance": "Tracked distance",
+    "retryLocation": "Try GPS again",
     "foregroundWarning": "For the most accurate distance, keep this page open and your screen active. Mobile browsers may pause GPS when the phone is locked or the browser is in the background.",
     "discardTitle": "Discard tracked activity?",
     "discardMessage": "The tracked time and location samples will be permanently removed.",

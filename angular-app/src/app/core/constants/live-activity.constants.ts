@@ -22,3 +22,8 @@ export const LIVE_ACTIVITY_GEOLOCATION_OPTIONS: PositionOptions = {
   maximumAge: 10_000,
   timeout: 20_000,
 };
+
+export const LIVE_ACTIVITY_INITIAL_GEOLOCATION_OPTIONS: PositionOptions = {
+  ...LIVE_ACTIVITY_GEOLOCATION_OPTIONS,
+  maximumAge: 0,
+};

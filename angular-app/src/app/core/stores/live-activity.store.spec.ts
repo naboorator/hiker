@@ -75,6 +75,15 @@ describe('LiveActivityStore', () => {
     expect(store.activity()?.locationTracking).toBe('weak-signal');
   });
 
+  it('restarts GPS in a new segment when the user retries location tracking', () => {
+    store.start('hiking', '2026-09-10T10:00:00Z');
+    geolocation.start.mockClear();
+    store.retryGeolocation();
+    expect(store.activity()?.currentSegment).toBe(1);
+    expect(store.activity()?.locationTracking).toBe('pending');
+    expect(geolocation.start).toHaveBeenCalledOnce();
+  });
+
   it('preserves state after a failed save and removes it after success', () => {
     store.start('fitness', '2026-09-10T10:00:00Z');
     store.stop('2026-09-10T10:30:00Z');

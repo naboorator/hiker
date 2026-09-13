@@ -44,4 +44,25 @@ describe('LiveActivityStatusComponent', () => {
     expect(fixture.componentInstance.locationKey()).toBe('liveActivity.location.active');
     expect(fixture.componentInstance.distance()).toMatch(/^77 m$/);
   });
+
+  it('offers a GPS retry after location permission is denied', () => {
+    TestBed.configureTestingModule({ imports: [LiveActivityStatusComponent] });
+    TestBed.overrideComponent(LiveActivityStatusComponent, { set: { template: '' } });
+    const fixture = TestBed.createComponent(LiveActivityStatusComponent);
+    fixture.componentRef.setInput('activity', {
+      version: 1,
+      id: 'live-1',
+      userId: 'user-1',
+      activityType: 'hiking',
+      status: 'tracking',
+      startedAt: '2026-09-10T09:59:00Z',
+      stoppedAt: null,
+      locationTracking: 'denied',
+      currentSegment: 0,
+      locations: [],
+      completionDraft: null,
+    });
+    fixture.detectChanges();
+    expect(fixture.componentInstance.canRetryLocation()).toBe(true);
+  });
 });

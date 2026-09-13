@@ -10,12 +10,15 @@
     <span aria-hidden="true">⌖</span>
     {{ locationKey() | transloco }}
   </p>
-  @if (activity().locationTracking === 'active') {
-    <div class="distance">
-      <span>{{ 'liveActivity.trackedDistance' | transloco }}</span>
-      <strong>{{ distance() }}</strong>
-    </div>
+  @if (canRetryLocation()) {
+    <button type="button" class="retry-location" (click)="locationRetryRequested.emit()">
+      {{ 'liveActivity.retryLocation' | transloco }}
+    </button>
   }
+  <div class="distance">
+    <span>{{ 'liveActivity.trackedDistance' | transloco }}</span>
+    <strong>{{ distance() }}</strong>
+  </div>
   <div class="actions">
     <button type="button" class="discard" (click)="discardRequested.emit()">
       {{ 'common.discard' | transloco }}

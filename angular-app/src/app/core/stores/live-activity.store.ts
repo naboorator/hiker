@@ -75,6 +75,12 @@ export class LiveActivityStore {
     return stopped.completionDraft;
   }
 
+  retryGeolocation(): void {
+    const activity = this.activity();
+    if (!activity || activity.status !== 'tracking') return;
+    this.resumeGeolocation(true);
+  }
+
   draft(): HikeDraft | null {
     const activity = this.activity();
     return activity?.stoppedAt ? (activity.completionDraft ?? this.toDraft(activity)) : null;

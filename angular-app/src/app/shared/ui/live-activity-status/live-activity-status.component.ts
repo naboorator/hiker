@@ -28,6 +28,7 @@ export class LiveActivityStatusComponent {
   readonly activity = input.required<LiveActivity>();
   readonly stopped = output<void>();
   readonly discardRequested = output<void>();
+  readonly locationRetryRequested = output<void>();
   private readonly now = signal(Date.now());
   readonly elapsed = computed(() =>
     formatElapsedTime(
@@ -39,6 +40,9 @@ export class LiveActivityStatusComponent {
   );
   readonly distance = computed(() =>
     formatTrackedDistance(trackedDistance(this.activity().locations)),
+  );
+  readonly canRetryLocation = computed(() =>
+    ['denied', 'error'].includes(this.activity().locationTracking),
   );
 
   constructor() {

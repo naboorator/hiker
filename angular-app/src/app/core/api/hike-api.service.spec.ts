@@ -64,4 +64,24 @@ describe('HikeApiService', () => {
     request.flush({ version: 2, exportedAt: '', settings: null, activities: [], weights: [] });
     expect((await result).version).toBe(2);
   });
+
+  it('loads the administrator activity page using day pagination', async () => {
+    const result = service.loadAdminActivities(2, 10);
+    const request = http.expectOne(
+      (candidate) =>
+        candidate.url === 'http://localhost:3000/api/admin/activities' &&
+        candidate.params.get('page') === '2' &&
+        candidate.params.get('pageSize') === '10',
+    );
+    expect(request.request.method).toBe('GET');
+    request.flush({
+      items: [],
+      page: 2,
+      pageSize: 10,
+      totalActivities: 25,
+      totalDays: 12,
+      totalPages: 2,
+    });
+    await expect(result).resolves.toMatchObject({ page: 2, totalActivities: 25 });
+  });
 });

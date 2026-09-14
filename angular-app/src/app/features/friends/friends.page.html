@@ -38,8 +38,7 @@
           <article class="friend">
             <span class="avatar" aria-hidden="true">{{ user.name.charAt(0).toUpperCase() }}</span>
             <div>
-              <strong>{{ user.name }}</strong
-              ><small>{{ user.email }}</small>
+              <strong>{{ user.name }}</strong>
             </div>
             @if (user.connectionStatus === 'none') {
               <button
@@ -137,8 +136,7 @@
         <article class="friend">
           <span class="avatar" aria-hidden="true">{{ friend.name.charAt(0).toUpperCase() }}</span>
           <div>
-            <strong>{{ friend.name }}</strong
-            ><small>{{ friend.email }}</small>
+            <strong>{{ friend.name }}</strong>
           </div>
           <span class="friend-status accepted">{{ 'friends.statusAccepted' | transloco }}</span>
           <button type="button" class="remove" (click)="pendingFriendRemoval.set(friend)">

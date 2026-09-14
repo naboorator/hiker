@@ -1,5 +1,6 @@
 import { HttpError } from './http-error.js';
 import type { ActivityInput, ActivityType } from '../interface/activity.interface.js';
+import { activityTypeNames, isActivityType } from './activity-types.js';
 import type { SettingsInput } from '../interface/settings.interface.js';
 import type { WeightInput } from '../interface/weight.interface.js';
 
@@ -9,10 +10,10 @@ export function activityInput(value: unknown): ActivityInput {
   const body = record(value);
   const activityType = body['activityType'];
   const people = body['people'];
-  if (activityType !== 'hiking' && activityType !== 'fitness') invalid('Invalid activity type');
+  if (!isActivityType(activityType)) invalid('Invalid activity type');
   if (!Array.isArray(people) || !people.length || people.some((person) => !text(person)))
     invalid('At least one person is required');
-  const name = activityType === 'fitness' ? 'Fitness' : text(body['name']);
+  const name = activityTypeNames[activityType] || text(body['name']);
   const date = text(body['date']);
   const minutes = finiteNumber(body['minutes']);
   const metres = activityType === 'hiking' ? finiteNumber(body['metres']) : null;

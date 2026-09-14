@@ -36,6 +36,19 @@ describe('HikeFormComponent', () => {
     expect(saved).toHaveBeenCalledWith(expect.objectContaining({ name: 'Fitness', metres: null }));
   });
 
+  it('uses the canonical name and removes metres for a newly selected type', () => {
+    TestBed.configureTestingModule({ imports: [HikeFormComponent] });
+    TestBed.overrideComponent(HikeFormComponent, { set: { template: '' } });
+    const fixture = TestBed.createComponent(HikeFormComponent);
+    fixture.componentRef.setInput('ownerName', 'Zoran');
+    fixture.detectChanges();
+    fixture.componentInstance.model.update((draft) => ({ ...draft, metres: 500 }));
+    fixture.componentInstance.selectActivityType('table_tennis');
+    expect(fixture.componentInstance.model()).toEqual(
+      expect.objectContaining({ activityType: 'table_tennis', name: 'Table tennis', metres: null }),
+    );
+  });
+
   it('does not emit while a save is already in progress', () => {
     TestBed.configureTestingModule({ imports: [HikeFormComponent] });
     TestBed.overrideComponent(HikeFormComponent, { set: { template: '' } });

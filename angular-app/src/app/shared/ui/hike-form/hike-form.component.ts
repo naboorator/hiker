@@ -4,6 +4,7 @@ import { FormField, form, min, required } from '@angular/forms/signals';
 import { TranslocoPipe } from '@jsverse/transloco';
 import type { ActivityType } from '../../../core/interface/activity-type.type';
 import type { HikeDraft } from '../../../core/interface/hike-draft.interface';
+import { activityTypeOption } from '../../../core/utils/activity-type.helpers';
 import { ActivityTypeSelectComponent } from '../activity-type-select/activity-type-select.component';
 import { PeopleSelectComponent } from '../people-select/people-select.component';
 @Component({
@@ -44,14 +45,19 @@ export class HikeFormComponent implements OnInit {
     const d = this.draft();
     this.model.set(
       d
-        ? { ...d, name: d.activityType === 'fitness' ? 'Fitness' : d.name, people: [...d.people] }
+        ? {
+            ...d,
+            name: activityTypeOption(d.activityType).defaultName || d.name,
+            people: [...d.people],
+          }
         : {
             ...this.model(),
             activityType: this.defaultActivityType(),
             name:
-              this.defaultActivityType() === 'fitness'
-                ? 'Fitness'
-                : this.defaultHikingName() || this.hikeNames()[0] || '',
+              activityTypeOption(this.defaultActivityType()).defaultName ||
+              this.defaultHikingName() ||
+              this.hikeNames()[0] ||
+              '',
             people: [this.ownerName()],
           },
     );
@@ -64,12 +70,11 @@ export class HikeFormComponent implements OnInit {
       ...draft,
       activityType,
       name:
-        activityType === 'fitness'
-          ? 'Fitness'
-          : draft.name === 'Fitness'
-            ? this.defaultHikingName() || this.hikeNames().find((name) => name !== 'Fitness') || ''
-            : draft.name,
-      metres: activityType === 'fitness' ? null : draft.metres,
+        activityTypeOption(activityType).defaultName ||
+        (activityTypeOption(draft.activityType).hasCustomName
+          ? draft.name
+          : this.defaultHikingName() || this.hikeNames()[0] || ''),
+      metres: activityTypeOption(activityType).hasDistance ? draft.metres : null,
     }));
   }
   submit(e: SubmitEvent) {
@@ -79,8 +84,8 @@ export class HikeFormComponent implements OnInit {
       const draft = this.model();
       this.saved.emit({
         ...draft,
-        name: draft.activityType === 'fitness' ? 'Fitness' : draft.name,
-        metres: draft.activityType === 'fitness' ? null : draft.metres,
+        name: activityTypeOption(draft.activityType).defaultName || draft.name,
+        metres: activityTypeOption(draft.activityType).hasDistance ? draft.metres : null,
       });
     }
   }

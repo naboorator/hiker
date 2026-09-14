@@ -4,6 +4,7 @@ import { firstValueFrom, timeout } from 'rxjs';
 import { IndexedDbClient } from '../data/indexeddb/indexed-db.client';
 import type { AppSettings } from '../interface/app-settings.interface';
 import type { ActivityType } from '../interface/activity-type.type';
+import { activityTypeOption, isActivityType } from '../utils/activity-type.helpers';
 import type { HikeDraft } from '../interface/hike-draft.interface';
 import type { DataExport } from '../interface/data-export.interface';
 import type { DataImportResult } from '../interface/data-import-result.interface';
@@ -20,12 +21,14 @@ import type { AdminUser } from '../interface/admin-user.interface';
 import type { PaginatedResponse } from '../interface/paginated-response.interface';
 import type { AdminUserDraft } from '../interface/admin-user-draft.interface';
 import type { ChangePasswordDraft } from '../interface/change-password-draft.interface';
+import type { AdminActivityPage } from '../interface/admin-activity-page.interface';
+import { environment } from '../../../environments/environment';
 
 type StoredSetting = { key: string; value: unknown };
 type StoredHike = Partial<Hike> & { id: string; distance?: number; created?: number };
 
-const apiUrl = 'http://localhost:3000/api';
-const healthUrl = 'http://localhost:3000/health';
+const apiUrl = `${environment.apiOrigin}/api`;
+const healthUrl = `${environment.apiOrigin}/health`;
 const migrationKey = 'api-db-json-migration-v3';
 const previousMigrationKeyPrefix = 'api-db-json-migration-v2-';
 const defaults: AppSettings = { appName: 'My hike log', ownerName: 'You' };
@@ -221,6 +224,14 @@ export class HikeApiService {
     );
   }
 
+  async loadAdminActivities(page: number, pageSize = 10): Promise<AdminActivityPage> {
+    return firstValueFrom(
+      this.http.get<AdminActivityPage>(`${apiUrl}/admin/activities`, {
+        params: { page, pageSize },
+      }),
+    );
+  }
+
   private async migrateIndexedDb(): Promise<void> {
     if (!this.auth.user()?.id || localStorage.getItem(migrationKey)) return;
     if (Object.keys(localStorage).some((key) => key.startsWith(previousMigrationKeyPrefix))) {
@@ -259,7 +270,7 @@ export class HikeApiService {
     return {
       id: entry.id,
       activityType,
-      name: activityType === 'fitness' ? 'Fitness' : (entry.name ?? 'Unnamed activity'),
+      name: activityTypeOption(activityType).defaultName || (entry.name ?? 'Unnamed activity'),
       date: entry.date ?? new Date().toISOString().slice(0, 10),
       minutes: Number(entry.minutes ?? 0),
       metres: activityType === 'hiking' ? Number(entry.metres ?? entry.distance ?? 0) : 0,
@@ -270,6 +281,6 @@ export class HikeApiService {
   }
 
   private activityType(value: unknown): ActivityType {
-    return value === 'fitness' ? 'fitness' : 'hiking';
+    return isActivityType(value) ? value : 'hiking';
   }
 }

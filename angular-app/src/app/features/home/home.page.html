@@ -32,6 +32,7 @@
         [activity]="liveActivity.activity()!"
         (stopped)="stop()"
         (discardRequested)="discardModalOpen.set(true)"
+        (locationRetryRequested)="liveActivity.retryGeolocation()"
       />
     }
     @if (liveActivity.error() && !startModalOpen()) {

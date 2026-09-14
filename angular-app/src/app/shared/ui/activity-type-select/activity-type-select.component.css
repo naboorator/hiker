@@ -11,6 +11,9 @@
 .activity-select {
   position: relative;
 }
+.activity-select[open] {
+  z-index: 20;
+}
 .activity-select summary {
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -44,41 +47,63 @@
 .activity-icon.fitness {
   background: linear-gradient(145deg, #dcefe1, #a8cfad);
 }
+.activity-icon.cycling {
+  background: linear-gradient(145deg, #d9f5ec, #67c7a1);
+}
+.activity-icon.tennis {
+  background: linear-gradient(145deg, #f4ffd0, #badf59);
+}
+.activity-icon.badminton {
+  background: linear-gradient(145deg, #e5edff, #9eb9ef);
+}
+.activity-icon.table_tennis {
+  background: linear-gradient(145deg, #ffe0d7, #ff9d7e);
+}
+.activity-icon.construction {
+  background: linear-gradient(145deg, #fff0ba, #f6b83f);
+}
+.activity-icon.housework {
+  background: linear-gradient(145deg, #f1e5ff, #c49ce7);
+}
 .activity-icon svg {
   width: 31px;
   height: 31px;
 }
-.activity-icon .sun {
+.activity-icon .accent-fill {
   fill: #ff7a12;
 }
-.activity-icon .mountain-back {
+.activity-icon .dark-fill {
   fill: #075237;
 }
-.activity-icon .mountain-front {
+.activity-icon .main-fill {
   fill: #3f8950;
 }
-.activity-icon .trail {
-  fill: none;
-  stroke: #fff4d8;
-  stroke-linecap: round;
-  stroke-width: 2.5;
+.activity-icon .light-fill {
+  fill: #fff8e8;
 }
-.activity-icon .bar,
-.activity-icon .weight {
+.activity-icon .light-line,
+.activity-icon .accent-line,
+.activity-icon .main-line,
+.activity-icon .dark-line {
   fill: none;
   stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
 }
-.activity-icon .bar {
+.activity-icon .light-line {
+  stroke: #fff8e8;
+}
+.activity-icon .accent-line {
   stroke: #ff7a12;
-  stroke-width: 4;
 }
-.activity-icon .weight.outer {
+.activity-icon .main-line {
   stroke: #3f8950;
-  stroke-width: 4;
 }
-.activity-icon .weight.inner {
+.activity-icon .dark-line {
   stroke: #075237;
-  stroke-width: 5;
+}
+.activity-icon .wide {
+  stroke-width: 4;
 }
 .chevron {
   color: #587062;
@@ -93,7 +118,7 @@
   top: calc(100% + 0.35rem);
   right: 0;
   left: 0;
-  z-index: 3;
+  z-index: 21;
   display: grid;
   gap: 0.25rem;
   padding: 0.35rem;
@@ -101,6 +126,8 @@
   border-radius: 14px;
   background: #fff;
   box-shadow: 0 12px 28px #19382b30;
+  max-height: min(430px, 65dvh);
+  overflow-y: auto;
 }
 .activity-options button {
   display: grid;

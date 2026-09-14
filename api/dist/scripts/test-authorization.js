@@ -363,6 +363,52 @@ try {
     });
     const preservedActivity = await json(preservedActivityResponse);
     record("owner creates activity retained after deletion", 201, preservedActivityResponse.status);
+    const ownerAdminListActivityResponse = await request("/api/activities", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            ...authorization(owner.token),
+        },
+        body: JSON.stringify({
+            activityType: "hiking",
+            name: "Owner administrator list activity",
+            date: "2099-12-31",
+            minutes: 35,
+            metres: 1200,
+            people: ["Authorization Owner"],
+        }),
+    });
+    const ownerAdminListActivity = await json(ownerAdminListActivityResponse);
+    record("owner creates activity for administrator list", 201, ownerAdminListActivityResponse.status);
+    const otherAdminListActivityResponse = await request("/api/activities", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            ...authorization(other.token),
+        },
+        body: JSON.stringify({
+            activityType: "fitness",
+            name: "Fitness",
+            date: "2099-12-31",
+            minutes: 40,
+            metres: null,
+            people: ["Authorization Other"],
+        }),
+    });
+    const otherAdminListActivity = await json(otherAdminListActivityResponse);
+    record("other user creates activity for administrator list", 201, otherAdminListActivityResponse.status);
+    const regularUserReadsAllAdminActivities = await request("/api/admin/activities?page=1&pageSize=1", { headers: authorization(other.token) });
+    record("regular user cannot access all administrator activities", 403, regularUserReadsAllAdminActivities.status);
+    const administratorReadsAllActivities = await request("/api/admin/activities?page=1&pageSize=1", { headers: authorization(admin.token) });
+    record("administrator reads activities from all users", 200, administratorReadsAllActivities.status);
+    const allActivityPage = await json(administratorReadsAllActivities);
+    record("administrator activity page paginates by one day", 1, allActivityPage.pageSize);
+    record("activities from the same day remain on one administrator page", 1, [ownerAdminListActivity.id, otherAdminListActivity.id].every((id) => allActivityPage.items.some((item) => item.id === id))
+        ? 1
+        : 0);
+    record("administrator activity page contains activity authors", 1, allActivityPage.items.every((item) => Boolean(item.author.id && item.author.name))
+        ? 1
+        : 0);
     const regularUserReadsAdminActivities = await request(`/api/admin/users/${owner.user.id}/activities?page=1&pageSize=10`, { headers: authorization(other.token) });
     record("regular user cannot access administrator activity list", 403, regularUserReadsAdminActivities.status);
     const administratorReadsUserActivities = await request(`/api/admin/users/${owner.user.id}/activities?page=1&pageSize=10`, { headers: authorization(admin.token) });

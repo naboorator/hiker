@@ -1,14 +1,15 @@
 import { HttpError } from './http-error.js';
+import { activityTypeNames, isActivityType } from './activity-types.js';
 const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 export function activityInput(value) {
     const body = record(value);
     const activityType = body['activityType'];
     const people = body['people'];
-    if (activityType !== 'hiking' && activityType !== 'fitness')
+    if (!isActivityType(activityType))
         invalid('Invalid activity type');
     if (!Array.isArray(people) || !people.length || people.some((person) => !text(person)))
         invalid('At least one person is required');
-    const name = activityType === 'fitness' ? 'Fitness' : text(body['name']);
+    const name = activityTypeNames[activityType] || text(body['name']);
     const date = text(body['date']);
     const minutes = finiteNumber(body['minutes']);
     const metres = activityType === 'hiking' ? finiteNumber(body['metres']) : null;

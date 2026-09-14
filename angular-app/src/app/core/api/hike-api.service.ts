@@ -4,6 +4,7 @@ import { firstValueFrom, timeout } from 'rxjs';
 import { IndexedDbClient } from '../data/indexeddb/indexed-db.client';
 import type { AppSettings } from '../interface/app-settings.interface';
 import type { ActivityType } from '../interface/activity-type.type';
+import { activityTypeOption, isActivityType } from '../utils/activity-type.helpers';
 import type { HikeDraft } from '../interface/hike-draft.interface';
 import type { DataExport } from '../interface/data-export.interface';
 import type { DataImportResult } from '../interface/data-import-result.interface';
@@ -269,7 +270,7 @@ export class HikeApiService {
     return {
       id: entry.id,
       activityType,
-      name: activityType === 'fitness' ? 'Fitness' : (entry.name ?? 'Unnamed activity'),
+      name: activityTypeOption(activityType).defaultName || (entry.name ?? 'Unnamed activity'),
       date: entry.date ?? new Date().toISOString().slice(0, 10),
       minutes: Number(entry.minutes ?? 0),
       metres: activityType === 'hiking' ? Number(entry.metres ?? entry.distance ?? 0) : 0,
@@ -280,6 +281,6 @@ export class HikeApiService {
   }
 
   private activityType(value: unknown): ActivityType {
-    return value === 'fitness' ? 'fitness' : 'hiking';
+    return isActivityType(value) ? value : 'hiking';
   }
 }

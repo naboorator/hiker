@@ -39,7 +39,7 @@ CREATE TABLE `settings` (
 CREATE TABLE `activities` (
   `id` char(36) NOT NULL,
   `user_id` char(36) NOT NULL,
-  `activity_type` enum('hiking', 'fitness') NOT NULL,
+  `activity_type` enum('hiking', 'fitness', 'cycling', 'tennis', 'badminton', 'table_tennis', 'construction', 'housework') NOT NULL,
   `name` varchar(200) NOT NULL,
   `activity_date` date NOT NULL,
   `minutes` int unsigned NOT NULL,

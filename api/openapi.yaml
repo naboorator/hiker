@@ -1052,7 +1052,7 @@ components:
           $ref: "#/components/schemas/PublicUser"
     ActivityType:
       type: string
-      enum: [hiking, fitness]
+      enum: [hiking, fitness, cycling, tennis, badminton, table_tennis, construction, housework]
     ActivityInput:
       type: object
       required: [activityType, name, date, minutes, metres, people]
@@ -1061,7 +1061,7 @@ components:
           $ref: "#/components/schemas/ActivityType"
         name:
           type: string
-          description: Ignored and stored as Fitness when activityType is fitness
+          description: Custom name for hiking; other activity types use their canonical name
         date:
           type: string
           format: date
@@ -1071,7 +1071,7 @@ components:
         metres:
           type: number
           minimum: 0
-          description: Ignored and stored as zero for fitness activities
+          description: Used for hiking; ignored and stored as zero for other activity types
         people:
           type: array
           minItems: 1

@@ -406,7 +406,9 @@ try {
     record("activities from the same day remain on one administrator page", 1, [ownerAdminListActivity.id, otherAdminListActivity.id].every((id) => allActivityPage.items.some((item) => item.id === id))
         ? 1
         : 0);
-    record("administrator activity page contains activity authors", 1, allActivityPage.items.every((item) => Boolean(item.author.id && item.author.name)) ? 1 : 0);
+    record("administrator activity page contains activity authors", 1, allActivityPage.items.every((item) => Boolean(item.author.id && item.author.name))
+        ? 1
+        : 0);
     const regularUserReadsAdminActivities = await request(`/api/admin/users/${owner.user.id}/activities?page=1&pageSize=10`, { headers: authorization(other.token) });
     record("regular user cannot access administrator activity list", 403, regularUserReadsAdminActivities.status);
     const administratorReadsUserActivities = await request(`/api/admin/users/${owner.user.id}/activities?page=1&pageSize=10`, { headers: authorization(admin.token) });

@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { DestroyRef, Injectable, effect, inject, signal, untracked } from '@angular/core';
 import type { ActivityType } from '../interface/activity-type.type';
+import { activityTypeOption } from '../utils/activity-type.helpers';
 import type { HikeDraft } from '../interface/hike-draft.interface';
 import type { LiveActivity } from '../interface/live-activity.interface';
 import type { LiveActivityLocation } from '../interface/live-activity-location.interface';
@@ -113,7 +114,7 @@ export class LiveActivityStore {
     const endedAt = activity.stoppedAt ?? new Date().toISOString();
     return {
       activityType: activity.activityType,
-      name: activity.activityType === 'fitness' ? 'Fitness' : '',
+      name: activityTypeOption(activity.activityType).defaultName,
       date: localDateFromTimestamp(activity.startedAt),
       minutes: elapsedMinutes(activity.startedAt, endedAt),
       metres:

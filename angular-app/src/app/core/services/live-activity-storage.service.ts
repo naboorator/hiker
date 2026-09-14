@@ -4,6 +4,7 @@ import {
   LIVE_ACTIVITY_VERSION,
 } from '../constants/live-activity.constants';
 import type { LiveActivity } from '../interface/live-activity.interface';
+import { isActivityType } from '../utils/activity-type.helpers';
 import { LogWrapper } from '../logging/log-wrapper.service';
 
 @Injectable({ providedIn: 'root' })
@@ -19,7 +20,7 @@ export class LiveActivityStorageService {
         activity.version !== LIVE_ACTIVITY_VERSION ||
         activity.userId !== userId ||
         typeof activity.id !== 'string' ||
-        (activity.activityType !== 'hiking' && activity.activityType !== 'fitness') ||
+        !isActivityType(activity.activityType) ||
         !['tracking', 'stopped', 'saving'].includes(activity.status ?? '') ||
         typeof activity.startedAt !== 'string' ||
         !Number.isFinite(Date.parse(activity.startedAt)) ||

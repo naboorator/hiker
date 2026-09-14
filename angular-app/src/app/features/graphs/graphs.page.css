@@ -72,6 +72,79 @@ p {
   overflow-x: auto;
 }
 
+.monthly-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.summary-card {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid #ffffffaa;
+  border-radius: 18px;
+  background: #ffffffdf;
+  box-shadow: 0 8px 22px #3158431c;
+}
+
+.summary-card div:last-child {
+  min-width: 0;
+}
+
+.summary-card span,
+.summary-card strong {
+  display: block;
+}
+
+.summary-card span {
+  margin-bottom: 0.2rem;
+  color: #65776d;
+  font-size: 0.75rem;
+}
+
+.summary-card strong {
+  overflow: hidden;
+  color: #163b29;
+  font-size: 1.25rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.summary-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.summary-icon svg {
+  width: 24px;
+  min-width: 0;
+  height: 24px;
+  fill: currentColor;
+}
+
+.activities-summary .summary-icon {
+  background: #1f6a43;
+}
+
+.time-summary .summary-icon {
+  background: #d77a25;
+}
+
+.distance-summary .summary-icon {
+  background: #5c65ad;
+}
+
 svg {
   display: block;
   width: 100%;
@@ -258,5 +331,9 @@ svg {
 
   .pie-legend {
     width: min(100%, 280px);
+  }
+
+  .monthly-summary {
+    grid-template-columns: 1fr;
   }
 }

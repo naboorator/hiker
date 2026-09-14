@@ -1,4 +1,5 @@
 import { applicationLocale } from '../../core/utils/date-format.helpers';
+import type { Hike } from '../../core/interface/hike.interface';
 
 export interface ChartPlot {
   readonly left: number;
@@ -33,4 +34,24 @@ export function formatWeightDate(date: string, language: string): string {
 
 export function formatWeight(weightKg: number, language: string): string {
   return `${new Intl.NumberFormat(applicationLocale(language), { maximumFractionDigits: 1 }).format(weightKg)} kg`;
+}
+
+export function monthlyActivitySummary(hikes: readonly Pick<Hike, 'minutes' | 'metres'>[]) {
+  return hikes.reduce<{ activityCount: number; minutes: number; metres: number }>(
+    (summary, hike) => ({
+      activityCount: summary.activityCount + 1,
+      minutes: summary.minutes + hike.minutes,
+      metres: summary.metres + hike.metres,
+    }),
+    { activityCount: 0, minutes: 0, metres: 0 },
+  );
+}
+
+export function formatDistance(metres: number, language: string): string {
+  const locale = applicationLocale(language);
+  if (metres >= 1000) {
+    return `${new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(metres / 1000)} km`;
+  }
+
+  return `${new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(metres)} m`;
 }

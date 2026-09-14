@@ -11,8 +11,10 @@ import {
   activityAxisMaximum,
   chartXPosition,
   chartYPosition,
+  formatDistance,
   formatWeight,
   formatWeightDate,
+  monthlyActivitySummary,
   timeAxisMaximum,
 } from './graphs.helpers';
 
@@ -104,15 +106,15 @@ export class GraphsPage {
       .map(({ x, activityY }) => `${x},${activityY}`)
       .join(' '),
   );
-  readonly monthTotal = computed(() => this.days().reduce((total, day) => total + day.minutes, 0));
-  readonly monthActivityTotal = computed(() =>
-    this.days().reduce((total, day) => total + day.activityCount, 0),
+  readonly selectedMonthHikes = computed(() =>
+    this.store.hikes().filter(({ date }) => date.startsWith(`${this.selectedMonth()}-`)),
   );
+  readonly monthSummary = computed(() => monthlyActivitySummary(this.selectedMonthHikes()));
+  readonly monthTotal = computed(() => this.monthSummary().minutes);
+  readonly monthActivityTotal = computed(() => this.monthSummary().activityCount);
   readonly participation = computed(() => {
     const ownerName = this.store.settings().ownerName;
-    const hikes = this.store
-      .hikes()
-      .filter(({ date }) => date.startsWith(`${this.selectedMonth()}-`));
+    const hikes = this.selectedMonthHikes();
     const solo = hikes.filter(({ people }) =>
       people.every((person) => person === ownerName),
     ).length;
@@ -198,5 +200,9 @@ export class GraphsPage {
 
   formatWeight(weightKg: number): string {
     return formatWeight(weightKg, this.activeLanguage());
+  }
+
+  formatDistance(metres: number): string {
+    return formatDistance(metres, this.activeLanguage());
   }
 }

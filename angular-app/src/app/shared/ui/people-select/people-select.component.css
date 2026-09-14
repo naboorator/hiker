@@ -18,6 +18,10 @@
   position: relative;
 }
 
+.select[open] {
+  z-index: 20;
+}
+
 summary {
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -87,7 +91,7 @@ summary::-webkit-details-marker {
   position: absolute;
   right: 0;
   left: 0;
-  z-index: 4;
+  z-index: 21;
   display: grid;
   gap: 0.5rem;
   margin-top: 0.35rem;

@@ -28,6 +28,7 @@ import { MyWeightPage } from './features/my-weight/my-weight.page';
 import { ServiceUnavailablePage } from './features/service-unavailable/service-unavailable.page';
 import { SettingsPage } from './features/settings/settings.page';
 import { ActivityMonthListComponent } from './shared/ui/activity-month-list/activity-month-list.component';
+import { ActivityMonthListAdminComponent } from './shared/ui/activity-month-list-admin/activity-month-list-admin.component';
 import { AdminUserActivitiesComponent } from './shared/ui/admin-user-activities/admin-user-activities.component';
 import { AdminUserFormComponent } from './shared/ui/admin-user-form/admin-user-form.component';
 import { AppHeaderComponent } from './shared/ui/app-header/app-header.component';
@@ -68,6 +69,11 @@ const componentCases: ComponentCase[] = [
   {
     name: 'ActivityMonthListComponent',
     component: ActivityMonthListComponent,
+    inputs: { title: 'September', days: [], minutes: 0, metres: 0 },
+  },
+  {
+    name: 'ActivityMonthListAdminComponent',
+    component: ActivityMonthListAdminComponent,
     inputs: { title: 'September', days: [], minutes: 0, metres: 0 },
   },
   {
@@ -218,6 +224,14 @@ describe('Angular components', () => {
               page: 1,
               pageSize: 10,
               total: 0,
+              totalPages: 1,
+            }),
+            loadAdminActivities: vi.fn().mockResolvedValue({
+              items: [],
+              page: 1,
+              pageSize: 10,
+              totalActivities: 0,
+              totalDays: 0,
               totalPages: 1,
             }),
             loadFriendComparison: vi.fn().mockResolvedValue([]),

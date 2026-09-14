@@ -11,6 +11,9 @@
 .activity-select {
   position: relative;
 }
+.activity-select[open] {
+  z-index: 20;
+}
 .activity-select summary {
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -93,7 +96,7 @@
   top: calc(100% + 0.35rem);
   right: 0;
   left: 0;
-  z-index: 3;
+  z-index: 21;
   display: grid;
   gap: 0.25rem;
   padding: 0.35rem;

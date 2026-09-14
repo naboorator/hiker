@@ -1,0 +1,52 @@
+<section>
+  <div class="title">
+    <h2>{{ title() }}</h2>
+    <span>{{ format(minutes()) }} · {{ distance(metres()) }}</span>
+  </div>
+  @for (day of days(); track day.date) {
+    <article class="day">
+      <div class="calendar" aria-hidden="true">
+        <b>{{ day.day }}</b>
+        <small>{{ day.month }}</small>
+      </div>
+      <div class="day-content">
+        <div class="daily">
+          <strong>{{
+            'activityMonthList.activityCount' | transloco: { count: day.hikes.length }
+          }}</strong>
+          <span>{{ format(day.minutes) }} · {{ distance(day.metres) }}</span>
+        </div>
+        <div class="entries">
+          @for (hike of day.hikes; track hike.id) {
+            <article class="activity-card">
+              <div class="activity-main">
+                @if (hike.author; as author) {
+                  <span class="author">
+                    <span class="avatar" aria-hidden="true">{{
+                      author.name.charAt(0).toUpperCase()
+                    }}</span>
+                    <strong>{{ author.name }}</strong>
+                  </span>
+                }
+                <span class="activity-name">{{ hike.name }}</span>
+                @if (hike.people.length) {
+                  <small>{{ hike.people.join(', ') }}</small>
+                }
+              </div>
+              <div class="activity-stats">
+                <strong>{{ format(hike.minutes) }}</strong>
+                <span>{{ distance(hike.metres) }}</span>
+                <span class="reaction">♥ {{ hike.likes ?? 0 }}</span>
+                @if ((hike.slaps ?? 0) > 0) {
+                  <span class="reaction slap">
+                    <img src="friend-slap-small.png" alt="" />{{ hike.slaps }}
+                  </span>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      </div>
+    </article>
+  }
+</section>

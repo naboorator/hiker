@@ -20,6 +20,7 @@ import type { AdminUser } from '../interface/admin-user.interface';
 import type { PaginatedResponse } from '../interface/paginated-response.interface';
 import type { AdminUserDraft } from '../interface/admin-user-draft.interface';
 import type { ChangePasswordDraft } from '../interface/change-password-draft.interface';
+import type { AdminActivityPage } from '../interface/admin-activity-page.interface';
 import { environment } from '../../../environments/environment';
 
 type StoredSetting = { key: string; value: unknown };
@@ -217,6 +218,14 @@ export class HikeApiService {
   ): Promise<PaginatedResponse<Hike>> {
     return firstValueFrom(
       this.http.get<PaginatedResponse<Hike>>(`${apiUrl}/admin/users/${id}/activities`, {
+        params: { page, pageSize },
+      }),
+    );
+  }
+
+  async loadAdminActivities(page: number, pageSize = 10): Promise<AdminActivityPage> {
+    return firstValueFrom(
+      this.http.get<AdminActivityPage>(`${apiUrl}/admin/activities`, {
         params: { page, pageSize },
       }),
     );

@@ -28,6 +28,7 @@ import { registerAdminUserDeleteRoutes } from "./resource/admin-users/delete.js"
 import { registerBackupGetRoutes } from "./resource/backup/get.js";
 import { registerBackupPostRoutes } from "./resource/backup/post.js";
 import { registerAccountPutRoutes } from "./resource/account/put.js";
+import { registerAdminActivityGetRoutes } from "./resource/admin-activities/get.js";
 
 const app = express();
 const router = Router();
@@ -43,6 +44,7 @@ app.get("/openapi.yaml", (_request, response) => {
 
 registerAuthPostRoutes(router);
 router.use(requireAuthentication);
+registerAdminActivityGetRoutes(router);
 registerAdminUserGetRoutes(router);
 registerAdminUserPutRoutes(router);
 registerAdminUserDeleteRoutes(router);

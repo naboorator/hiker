@@ -1,0 +1,82 @@
+.activities-panel {
+  padding: 1.25rem;
+  text-align: left;
+}
+
+.title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.title-row h1 {
+  margin: 0;
+}
+
+.title-row span,
+.pagination span {
+  color: #60726a;
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.state {
+  padding: 2rem 0;
+  text-align: center;
+}
+
+.state.error {
+  color: #a34646;
+}
+
+.month-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.pagination {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.pagination span {
+  text-align: center;
+}
+
+.pagination button {
+  padding: 0.65rem 0.8rem;
+  border: 0;
+  border-radius: 11px;
+  background: #1f6a43;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.pagination button:last-child {
+  justify-self: end;
+}
+
+.pagination button:disabled {
+  background: #d9e1db;
+  color: #809087;
+  cursor: default;
+}
+
+@media (max-width: 520px) {
+  .pagination {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .pagination span {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+}

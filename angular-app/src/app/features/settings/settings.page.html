@@ -14,6 +14,13 @@
     }
   </section>
   <section>
+    <h2>{{ 'common.language' | transloco }}</h2>
+    <app-language-switcher
+      [language]="activeLanguage()"
+      (languageChange)="changeLanguage($event)"
+    />
+  </section>
+  <section>
     <h2>{{ 'settings.passwordTitle' | transloco }}</h2>
     <p>{{ 'settings.passwordDescription' | transloco }}</p>
     <form (submit)="changePassword($event)">

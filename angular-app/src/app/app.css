@@ -2,6 +2,7 @@
   display: flex;
   min-height: 100dvh;
   flex-direction: column;
+  padding-bottom: 90px;
 }
 
 .api-notification {
@@ -34,32 +35,4 @@
   margin: 0;
   font-size: 0.9rem;
   font-weight: 700;
-}
-
-footer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.45rem;
-  margin-top: auto;
-  padding: 0.75rem 1rem 1.5rem;
-  color: #60726a;
-  font-size: 0.82rem;
-  text-transform: lowercase;
-}
-
-footer button {
-  border: 0;
-  background: transparent;
-  color: inherit;
-  padding: 0.2rem;
-  font: inherit;
-  cursor: pointer;
-}
-
-footer button.active {
-  color: #245e3b;
-  font-weight: 800;
-  text-decoration: underline;
-  text-underline-offset: 0.2rem;
 }

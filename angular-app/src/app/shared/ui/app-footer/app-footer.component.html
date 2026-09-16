@@ -1,0 +1,39 @@
+<footer>
+  @if (showNavigation()) {
+    <nav [attr.aria-label]="'common.mainNavigation' | transloco">
+      <a
+        routerLink="/"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        ariaCurrentWhenActive="page"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-8 9 8v11h-6v-7H9v7H3z" /></svg>
+        <span>{{ 'common.home' | transloco }}</span>
+      </a>
+      <a routerLink="/my-activities" routerLinkActive="active" ariaCurrentWhenActive="page">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m2 19 6-12 4 7 3-5 7 10H2Z" />
+          <path class="outline" d="M3 22h18" />
+        </svg>
+        <span>{{ 'common.myActivities' | transloco }}</span>
+      </a>
+      <a routerLink="/friends" routerLinkActive="active" ariaCurrentWhenActive="page">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="9" cy="7" r="4" />
+          <circle cx="18" cy="8" r="3" />
+          <path d="M1 21v-3a8 8 0 0 1 16 0v3H1Zm17-7a6 6 0 0 1 5 6v1h-4v-3c0-1.4-.3-2.8-1-4Z" />
+        </svg>
+        <span>{{ 'common.friends' | transloco }}</span>
+      </a>
+      <a routerLink="/settings" routerLinkActive="active" ariaCurrentWhenActive="page">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            fill-rule="evenodd"
+            d="m10 1-1 3-2 1-3-.5-2 3 2 2v3l-2 2 2 3 3-.5 2 1 1 3h4l1-3 2-1 3 .5 2-3-2-2v-3l2-2-2-3-3 .5-2-1-1-3h-4Zm2 7a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"
+          />
+        </svg>
+        <span>{{ 'common.settings' | transloco }}</span>
+      </a>
+    </nav>
+  }
+</footer>

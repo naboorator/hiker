@@ -1,0 +1,37 @@
+.language-picker {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  color: #60726a;
+  font-size: 0.82rem;
+}
+
+button {
+  min-width: 36px;
+  min-height: 36px;
+  padding: 10px 14px;
+  border: 1px solid #cfdcd0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+button.active {
+  border-color: #245e3b;
+  background: #e4efe6;
+  color: #245e3b;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+button:hover {
+  background: #245e3b12;
+}
+
+button:focus-visible {
+  outline: 2px solid #245e3b;
+  outline-offset: 2px;
+}

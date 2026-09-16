@@ -1,5 +1,7 @@
 {
   "common": {
+    "home": "Home",
+    "mainNavigation": "Main navigation",
     "activities": "Activities",
     "myActivities": "My Activities",
     "friends": "Friends",

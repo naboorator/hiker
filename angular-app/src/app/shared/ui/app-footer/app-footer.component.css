@@ -23,8 +23,7 @@ footer::before {
   left: 50%;
   width: 1600px;
   height: 120px;
-  background:
-    url('/footer-mountains-forest-dark-90-v2.png') center bottom / 1600px 120px no-repeat;
+  background: url('/footer-mountains-forest-dark-90-v2.png') center bottom / 1600px 120px no-repeat;
   content: '';
   transform: translateX(-50%);
 }

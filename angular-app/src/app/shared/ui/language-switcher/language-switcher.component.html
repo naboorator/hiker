@@ -1,0 +1,18 @@
+<div class="language-picker" role="group" [attr.aria-label]="'common.language' | transloco">
+  <button
+    type="button"
+    [class.active]="language() === 'si'"
+    [attr.aria-pressed]="language() === 'si'"
+    (click)="languageChange.emit('si')"
+  >
+    <span aria-hidden="true">🇸🇮</span> {{ 'common.slovenian' | transloco }}
+  </button>
+  <button
+    type="button"
+    [class.active]="language() === 'en'"
+    [attr.aria-pressed]="language() === 'en'"
+    (click)="languageChange.emit('en')"
+  >
+    <span aria-hidden="true">🇬🇧</span> {{ 'common.english' | transloco }}
+  </button>
+</div>

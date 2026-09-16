@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormField, form, minLength, required } from '@angular/forms/signals';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import type { AppSettings } from '../../core/interface/app-settings.interface';
@@ -8,8 +16,15 @@ import { ModalDialogComponent } from '../../shared/ui/modal-dialog/modal-dialog.
 import type { ChangePasswordDraft } from '../../core/interface/change-password-draft.interface';
 import { HikeApiService } from '../../core/api/hike-api.service';
 import { passwordErrorTranslation } from './settings.helpers';
+import { LanguageSwitcherComponent } from '../../shared/ui/language-switcher/language-switcher.component';
 @Component({
-  imports: [AppHeaderComponent, FormField, ModalDialogComponent, TranslocoPipe],
+  imports: [
+    AppHeaderComponent,
+    FormField,
+    ModalDialogComponent,
+    TranslocoPipe,
+    LanguageSwitcherComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './settings.page.html',
   styleUrl: './settings.page.css',
@@ -17,6 +32,10 @@ import { passwordErrorTranslation } from './settings.helpers';
 export class SettingsPage {
   readonly store = inject(MockHikeStore);
   private readonly transloco = inject(TranslocoService);
+  private readonly language = toSignal(this.transloco.langChanges$, {
+    initialValue: this.transloco.getActiveLang(),
+  });
+  readonly activeLanguage = computed(() => (this.language() === 'si' ? 'si' : 'en'));
   private readonly api = inject(HikeApiService);
   readonly model = signal<AppSettings>({ ...this.store.settings() });
   readonly settingsForm = form(this.model, (schema) => {
@@ -41,6 +60,11 @@ export class SettingsPage {
 
   constructor() {
     effect(() => this.model.set({ ...this.store.settings() }));
+  }
+
+  changeLanguage(language: 'si' | 'en'): void {
+    this.transloco.setActiveLang(language);
+    localStorage.setItem('language', language);
   }
 
   async save(event: SubmitEvent): Promise<void> {

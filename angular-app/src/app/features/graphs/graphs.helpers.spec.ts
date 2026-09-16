@@ -3,7 +3,9 @@ import {
   activityAxisMaximum,
   chartXPosition,
   chartYPosition,
+  formatDistance,
   formatWeight,
+  monthlyActivitySummary,
   timeAxisMaximum,
 } from './graphs.helpers';
 
@@ -29,5 +31,23 @@ describe('graph helpers', () => {
 
   it('formats weight with the selected locale', () => {
     expect(formatWeight(81.5, 'en')).toBe('81.5 kg');
+  });
+
+  it('calculates all monthly activity totals', () => {
+    const hikes = [
+      { minutes: 45, metres: 3200 },
+      { minutes: 70, metres: 7800 },
+    ];
+
+    expect(monthlyActivitySummary(hikes)).toEqual({
+      activityCount: 2,
+      minutes: 115,
+      metres: 11000,
+    });
+  });
+
+  it('formats distances in metres and kilometres', () => {
+    expect(formatDistance(850, 'en')).toBe('850 m');
+    expect(formatDistance(1250, 'en')).toBe('1.3 km');
   });
 });

@@ -1,5 +1,7 @@
 {
   "common": {
+    "home": "Domov",
+    "mainNavigation": "Glavna navigacija",
     "activities": "Aktivnosti",
     "myActivities": "Moje aktivnosti",
     "friends": "Prijatelji",

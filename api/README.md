@@ -7,7 +7,7 @@ The API stores data in MariaDB. It no longer reads or writes `db.json`.
 From the repository root:
 
 ```bash
-docker compose up -d mariadb
+docker compose up -d mariadb mailpit
 docker compose ps
 ```
 
@@ -39,9 +39,18 @@ The OpenAPI 3.0 description is stored in [`openapi.yaml`](./openapi.yaml) and is
 from `GET /openapi.yaml`. Swagger, Postman, and other OpenAPI-compatible clients can import
 `http://localhost:3000/openapi.yaml` directly.
 
-All `/api` endpoints except registration and login require an `Authorization: Bearer <token>`
+All `/api` endpoints except registration, login, forgot/reset password require an `Authorization: Bearer <token>`
 header. Passwords are stored only as bcrypt hashes, and resource responses are scoped to the
 authenticated user.
+
+## Transactional email
+
+Local email is delivered to Mailpit. Start it with Docker and open
+`http://localhost:8025` to inspect messages. Set `EMAIL_PROVIDER=mailpit` locally. In production,
+set `EMAIL_PROVIDER=resend`, provide `RESEND_API_KEY`, use a verified sending domain in
+`EMAIL_FROM`, and set `FRONTEND_URL` to the deployed frontend URL. Registration accepts an
+optional `language` value (`en` or `si`) and stores it for localized email. Password reset
+requests may also supply `language`; when omitted, the stored user language is used.
 
 See [MARIADB_MIGRATION_PLAN.md](./MARIADB_MIGRATION_PLAN.md) for the schema decisions and rollout
 plan.

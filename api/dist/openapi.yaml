@@ -1,10 +1,10 @@
 openapi: 3.0.3
 info:
   title: My Hike API
-  version: 1.0.0
+  version: 1.1.0
   description: |
-    REST API for My Hike. Except for registration, login, health, and this
-    document, endpoints require a JWT access token in the Authorization header.
+    REST API for My Hike. Except for registration, login, password recovery,
+    health, and this document, endpoints require a JWT access token in the Authorization header.
     Administrator endpoints additionally require the `admin` role.
 servers:
   - url: http://localhost:3000
@@ -79,6 +79,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "429":
+          description: Registration rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /api/auth/login:
     post:
       tags: [Authentication]
@@ -104,6 +110,55 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+  /api/auth/forgot-password:
+    post:
+      tags: [Authentication]
+      summary: Request password reset instructions
+      description: Always returns the same response so account existence is not disclosed.
+      operationId: forgotPassword
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ForgotPasswordRequest"
+      responses:
+        "202":
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [message]
+                properties:
+                  message:
+                    type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "429":
+          description: Password reset request rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /api/auth/reset-password:
+    post:
+      tags: [Authentication]
+      summary: Reset a password with a single-use token
+      operationId: resetPassword
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPasswordRequest"
+      responses:
+        "204":
+          description: Password reset successfully
+        "400":
+          $ref: "#/components/responses/BadRequest"
   /api/account/password:
     put:
       tags: [Authentication]
@@ -1014,6 +1069,36 @@ components:
           type: string
           format: password
           minLength: 8
+        language:
+          $ref: "#/components/schemas/EmailLanguage"
+    EmailLanguage:
+      type: string
+      enum: [en, si]
+      default: en
+    ForgotPasswordRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+        language:
+          $ref: "#/components/schemas/EmailLanguage"
+    ResetPasswordRequest:
+      type: object
+      required: [token, password, repeatPassword]
+      properties:
+        token:
+          type: string
+          description: Opaque single-use token received by email
+        password:
+          type: string
+          format: password
+          minLength: 8
+        repeatPassword:
+          type: string
+          format: password
+          minLength: 8
     LoginRequest:
       type: object
       required: [email, password]
@@ -1052,7 +1137,17 @@ components:
           $ref: "#/components/schemas/PublicUser"
     ActivityType:
       type: string
-      enum: [hiking, fitness, cycling, tennis, badminton, table_tennis, construction, housework]
+      enum:
+        [
+          hiking,
+          fitness,
+          cycling,
+          tennis,
+          badminton,
+          table_tennis,
+          construction,
+          housework,
+        ]
     ActivityInput:
       type: object
       required: [activityType, name, date, minutes, metres, people]

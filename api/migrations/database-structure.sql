@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS `activities`;
 DROP TABLE IF EXISTS `friend_connections`;
 DROP TABLE IF EXISTS `settings`;
 DROP TABLE IF EXISTS `weights`;
+DROP TABLE IF EXISTS `password_reset_tokens`;
 DROP TABLE IF EXISTS `users`;
 
 CREATE TABLE `users` (
@@ -23,11 +24,24 @@ CREATE TABLE `users` (
   `password_hash` varchar(255) NOT NULL,
   `role` enum('normal_user', 'admin') NOT NULL DEFAULT 'normal_user',
   `status` enum('active', 'blocked', 'deleted') NOT NULL DEFAULT 'active',
+  `language` enum('en', 'si') NOT NULL DEFAULT 'en',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_users_email` (`email`),
   KEY `idx_users_status_created` (`status`, `created_at`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE `password_reset_tokens` (
+  `id` char(36) NOT NULL,
+  `user_id` char(36) NOT NULL,
+  `token_hash` char(64) NOT NULL,
+  `expires_at` datetime NOT NULL,
+  `used_at` datetime NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_password_reset_token_hash` (`token_hash`),
+  KEY `idx_password_reset_user_expiry` (`user_id`, `expires_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `settings` (
   `user_id` char(36) NOT NULL,
@@ -91,6 +105,9 @@ CREATE TABLE `activity_reactions` (
 
 ALTER TABLE `settings`
   ADD CONSTRAINT `fk_settings_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+ALTER TABLE `password_reset_tokens`
+  ADD CONSTRAINT `fk_password_reset_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 ALTER TABLE `activities`
   ADD CONSTRAINT `fk_activities_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;

@@ -1,0 +1,8 @@
+Welcome to My Hike
+
+Hello {{name}},
+
+Your account was registered successfully.
+Log in: {{loginUrl}}
+
+This mailbox is not monitored. Please do not reply to this message.

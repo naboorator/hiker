@@ -89,8 +89,9 @@ export function registerActivityPostRoutes(router: Router): void {
       if (gpsLocations.length)
         await connection.batch(
           `INSERT INTO activity_locations
-             (activity_id, sequence, segment, latitude, longitude, accuracy, recorded_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?)`,
+             (activity_id, sequence, segment, latitude, longitude, accuracy,
+              altitude, altitude_accuracy, recorded_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           gpsLocations.map((location, sequence) => [
             activity.id,
             sequence,
@@ -98,6 +99,8 @@ export function registerActivityPostRoutes(router: Router): void {
             location.latitude,
             location.longitude,
             location.accuracy,
+            location.altitude,
+            location.altitudeAccuracy,
             toSqlDateTime(location.recordedAt),
           ]),
         );

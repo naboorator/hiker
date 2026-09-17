@@ -49,6 +49,30 @@
         </div>
       </dl>
 
+      @if (item.hasGpsLocations) {
+        <div class="route-map">
+          @if (routeLoading()) {
+            <div class="route-state" aria-live="polite">
+              {{ 'activityRouteMap.loading' | transloco }}
+            </div>
+          } @else if (routeLoadFailed()) {
+            <div class="route-state error" role="alert">
+              <p>{{ 'activityRouteMap.unavailable' | transloco }}</p>
+              <button type="button" (click)="loadRoute()">
+                {{ 'activityRouteMap.retry' | transloco }}
+              </button>
+            </div>
+          } @else if (routeLocations().length) {
+            <app-activity-route-map
+              [locations]="routeLocations()"
+              [accessToken]="mapbox.accessToken"
+              [styleUrl]="mapbox.styleUrl"
+              [routeColor]="mapbox.routeColor"
+            />
+          }
+        </div>
+      }
+
       <div class="people">
         <h2>{{ 'activityDetail.people' | transloco }}</h2>
         @if (item.people.length) {

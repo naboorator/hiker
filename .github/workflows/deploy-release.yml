@@ -42,6 +42,14 @@ jobs:
           npm run lint
           npm run test:ci
 
+      - name: Configure frontend production environment
+        working-directory: angular-app
+        env:
+          MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
+        run: |
+          : "${MAPBOX_ACCESS_TOKEN:?Missing GitHub Actions secret: MAPBOX_ACCESS_TOKEN}"
+          node -e "const fs = require('node:fs'); const path = 'src/environments/environment.production.ts'; const placeholder = '__MAPBOX_ACCESS_TOKEN__'; const source = fs.readFileSync(path, 'utf8'); if (!source.includes(placeholder)) throw new Error('Mapbox token placeholder is missing'); fs.writeFileSync(path, source.replace(placeholder, process.env.MAPBOX_ACCESS_TOKEN));"
+
       - name: Build frontend
         working-directory: angular-app
         run: npx ng build --configuration production

@@ -93,6 +93,8 @@ CREATE TABLE `activity_locations` (
   `latitude` decimal(10,7) NOT NULL,
   `longitude` decimal(10,7) NOT NULL,
   `accuracy` decimal(8,2) unsigned NOT NULL,
+  `altitude` decimal(9,2) NULL,
+  `altitude_accuracy` decimal(8,2) unsigned NULL,
   `recorded_at` datetime(3) NOT NULL,
   PRIMARY KEY (`activity_id`, `sequence`),
   KEY `idx_activity_locations_recorded` (`activity_id`, `recorded_at`)

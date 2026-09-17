@@ -64,14 +64,30 @@ describe('LiveActivityStore', () => {
     store.start('hiking', '2026-09-10T10:00:00Z');
     const onPosition = geolocation.start.mock.calls.at(-1)?.[0];
     onPosition({
-      coords: { latitude: 46.0569, longitude: 14.5058, accuracy: 10 },
+      coords: {
+        latitude: 46.0569,
+        longitude: 14.5058,
+        accuracy: 10,
+        altitude: 512.5,
+        altitudeAccuracy: 7,
+      },
       timestamp: Date.parse('2026-09-10T10:00:00Z'),
     });
     onPosition({
-      coords: { latitude: 46.0569, longitude: 14.5061, accuracy: 10 },
+      coords: {
+        latitude: 46.0569,
+        longitude: 14.5061,
+        accuracy: 10,
+        altitude: 512.5,
+        altitudeAccuracy: 7,
+      },
       timestamp: Date.parse('2026-09-10T10:00:10Z'),
     });
     expect(store.activity()?.locations).toHaveLength(1);
+    expect(store.activity()?.locations[0]).toMatchObject({
+      altitude: 512.5,
+      altitudeAccuracy: 7,
+    });
     expect(store.activity()?.locationTracking).toBe('active');
     expect(store.stop('2026-09-10T10:01:00Z')?.metres).toBeGreaterThan(20);
   });

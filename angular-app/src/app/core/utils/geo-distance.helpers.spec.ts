@@ -6,6 +6,8 @@ import {
   formatTrackedDistance,
   locationRejectionReason,
   minimumReliableMovement,
+  normalizeAltitude,
+  normalizeAltitudeAccuracy,
   trackedDistance,
 } from './geo-distance.helpers';
 
@@ -18,6 +20,14 @@ const point = (longitude: number, recordedAt: string, segment = 0): LiveActivity
 });
 
 describe('geo distance helpers', () => {
+  it('normalizes optional altitude metadata without affecting horizontal samples', () => {
+    expect(normalizeAltitude(512.4)).toBe(512.4);
+    expect(normalizeAltitude(Number.NaN)).toBeNull();
+    expect(normalizeAltitude(null)).toBeNull();
+    expect(normalizeAltitudeAccuracy(8)).toBe(8);
+    expect(normalizeAltitudeAccuracy(-1)).toBeNull();
+    expect(normalizeAltitudeAccuracy(Number.POSITIVE_INFINITY)).toBeNull();
+  });
   it('calculates Haversine distance in metres', () => {
     expect(distanceBetweenLocations(point(14.5058, ''), point(14.5188, ''))).toBeCloseTo(1_003, -1);
   });

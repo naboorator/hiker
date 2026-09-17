@@ -10,6 +10,14 @@ const earthRadiusMetres = 6_371_000;
 
 const radians = (degrees: number): number => (degrees * Math.PI) / 180;
 
+export function normalizeAltitude(value: number | null | undefined): number | null {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+export function normalizeAltitudeAccuracy(value: number | null | undefined): number | null {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null;
+}
+
 export function minimumReliableMovement(
   previous: Pick<LiveActivityLocation, 'accuracy'>,
   next: Pick<LiveActivityLocation, 'accuracy'>,

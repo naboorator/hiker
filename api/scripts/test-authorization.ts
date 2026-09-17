@@ -504,6 +504,8 @@ try {
           latitude: 46.0569,
           longitude: 14.5058,
           accuracy: 10,
+          altitude: 512.5,
+          altitudeAccuracy: 6,
           recordedAt: "2026-09-07T10:00:00.000Z",
           segment: 0,
         },
@@ -511,6 +513,8 @@ try {
           latitude: 46.057,
           longitude: 14.506,
           accuracy: 9,
+          altitude: null,
+          altitudeAccuracy: null,
           recordedAt: "2026-09-07T10:00:05.000Z",
           segment: 0,
         },
@@ -558,22 +562,47 @@ try {
     { headers: authorization(owner.token) },
   );
   record("owner reads the stored GPS route", 200, routeResponse.status);
-  const route =
-    await json<{ sequence: number; segment: number }[]>(routeResponse);
+  const route = await json<
+    {
+      sequence: number;
+      segment: number;
+      altitude: number | null;
+      altitudeAccuracy: number | null;
+    }[]
+  >(routeResponse);
   record("GPS route preserves both ordered samples", 2, route.length);
   record(
     "GPS route preserves sequence and segment",
     1,
     Number(route[1]?.sequence === 1 && route[1].segment === 0),
   );
+  record(
+    "GPS route preserves optional altitude metadata",
+    1,
+    Number(route[0]?.altitude === 512.5 && route[0].altitudeAccuracy === 6),
+  );
   const otherRouteResponse = await request(
     `/api/activities/${activity.id}/locations`,
     { headers: authorization(other.token) },
   );
   record(
-    "other user cannot read an owned GPS route",
-    404,
+    "accepted friend can read an activity GPS route",
+    200,
     otherRouteResponse.status,
+  );
+  const removeFriendResponse = await request(`/api/friends/${other.user.id}`, {
+    method: "DELETE",
+    headers: authorization(owner.token),
+  });
+  record("owner removes accepted friend", 204, removeFriendResponse.status);
+  const removedFriendRouteResponse = await request(
+    `/api/activities/${activity.id}/locations`,
+    { headers: authorization(other.token) },
+  );
+  record(
+    "removed friend immediately loses GPS route access",
+    403,
+    removedFriendRouteResponse.status,
   );
 
   const weightResponse = await request("/api/weights", {

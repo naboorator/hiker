@@ -9,6 +9,7 @@ export const translationFiles = [
   'hike-list',
   'activity-month-list',
   'activity-detail',
+  'activity-route-map',
   'my-weight',
   'weight-records',
   'people-select',

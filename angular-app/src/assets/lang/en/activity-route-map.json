@@ -1,0 +1,8 @@
+{
+  "activityRouteMap": {
+    "label": "Recorded activity route map",
+    "loading": "Loading route map…",
+    "unavailable": "The map could not be displayed at this time.",
+    "retry": "Try again"
+  }
+}

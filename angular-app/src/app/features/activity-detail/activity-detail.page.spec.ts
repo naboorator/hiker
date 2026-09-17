@@ -21,12 +21,15 @@ describe('ActivityDetailPage', () => {
     createdAt: 1,
   };
 
-  function createPage(loadHike: ReturnType<typeof vi.fn>) {
+  function createPage(
+    loadHike: ReturnType<typeof vi.fn>,
+    loadActivityLocations = vi.fn().mockResolvedValue([]),
+  ) {
     const logger = { error: vi.fn() };
     TestBed.configureTestingModule({
       imports: [ActivityDetailPage],
       providers: [
-        { provide: HikeApiService, useValue: { loadHike } },
+        { provide: HikeApiService, useValue: { loadHike, loadActivityLocations } },
         {
           provide: ActivatedRoute,
           useValue: { snapshot: { paramMap: { get: () => 'activity-1' } } },
@@ -43,7 +46,11 @@ describe('ActivityDetailPage', () => {
       ],
     });
     TestBed.overrideComponent(ActivityDetailPage, { set: { template: '' } });
-    return { page: TestBed.createComponent(ActivityDetailPage).componentInstance, logger };
+    return {
+      page: TestBed.createComponent(ActivityDetailPage).componentInstance,
+      logger,
+      loadActivityLocations,
+    };
   }
 
   it('loads the selected activity and exposes its translated type', async () => {
@@ -55,6 +62,50 @@ describe('ActivityDetailPage', () => {
     expect(page.activity()).toEqual(activity);
     expect(page.typeTranslationKey(activity)).toBe('hikeForm.hiking');
     expect(page.formattedDate(activity.date)).toContain('2026');
+  });
+
+  it('loads GPS locations only when the activity reports a stored route', async () => {
+    const route = [
+      {
+        latitude: 46.05,
+        longitude: 14.5,
+        accuracy: 5,
+        altitude: 500,
+        altitudeAccuracy: 7,
+        recordedAt: '2026-09-17T10:00:00Z',
+        segment: 0,
+        sequence: 0,
+      },
+    ];
+    const loadActivityLocations = vi.fn().mockResolvedValue(route);
+    const { page } = createPage(
+      vi.fn().mockResolvedValue({ ...activity, hasGpsLocations: true }),
+      loadActivityLocations,
+    );
+    await vi.waitFor(() => expect(page.loading()).toBe(false));
+
+    expect(loadActivityLocations).toHaveBeenCalledWith('activity-1');
+    expect(page.routeLocations()).toEqual(route);
+  });
+
+  it('does not request GPS locations for an activity without a stored route', async () => {
+    const { page, loadActivityLocations } = createPage(vi.fn().mockResolvedValue(activity));
+    await vi.waitFor(() => expect(page.loading()).toBe(false));
+
+    expect(loadActivityLocations).not.toHaveBeenCalled();
+    expect(page.routeLocations()).toEqual([]);
+  });
+
+  it('keeps activity details and exposes retry when route loading fails', async () => {
+    const loadActivityLocations = vi.fn().mockRejectedValue(new Error('route offline'));
+    const { page } = createPage(
+      vi.fn().mockResolvedValue({ ...activity, hasGpsLocations: true }),
+      loadActivityLocations,
+    );
+    await vi.waitFor(() => expect(page.loading()).toBe(false));
+
+    expect(page.activity()?.id).toBe('activity-1');
+    expect(page.routeLoadFailed()).toBe(true);
   });
 
   it('shows a failed state and logs when the activity cannot be loaded', async () => {

@@ -29,7 +29,11 @@ export class LiveActivityLocationRepository {
     return records
       .filter((record) => record.activityId === activityId)
       .sort((first, second) => first.sequence - second.sequence)
-      .map(({ id: _id, activityId: _activityId, sequence: _sequence, ...location }) => location);
+      .map(({ id: _id, activityId: _activityId, sequence: _sequence, ...location }) => ({
+        ...location,
+        altitude: location.altitude ?? null,
+        altitudeAccuracy: location.altitudeAccuracy ?? null,
+      }));
   }
 
   async remove(activityId: string): Promise<void> {

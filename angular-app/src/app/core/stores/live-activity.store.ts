@@ -18,7 +18,12 @@ import { GeolocationTrackingService } from '../services/geolocation-tracking.ser
 import { LiveActivityLocationRepository } from '../services/live-activity-location.repository';
 import { LiveActivityStorageService } from '../services/live-activity-storage.service';
 import { activityTypeOption } from '../utils/activity-type.helpers';
-import { distanceBetweenLocations, locationRejectionReason } from '../utils/geo-distance.helpers';
+import {
+  distanceBetweenLocations,
+  locationRejectionReason,
+  normalizeAltitude,
+  normalizeAltitudeAccuracy,
+} from '../utils/geo-distance.helpers';
 import { elapsedMinutes, localDateFromTimestamp } from '../utils/live-activity-time.helpers';
 import { mergeUniqueLocations } from '../utils/live-activity-location.helpers';
 
@@ -288,6 +293,8 @@ export class LiveActivityStore {
       latitude: position.coords.latitude,
       longitude: position.coords.longitude,
       accuracy: position.coords.accuracy,
+      altitude: normalizeAltitude(position.coords.altitude),
+      altitudeAccuracy: normalizeAltitudeAccuracy(position.coords.altitudeAccuracy),
       recordedAt: new Date(position.timestamp).toISOString(),
       segment: activity.currentSegment,
     };

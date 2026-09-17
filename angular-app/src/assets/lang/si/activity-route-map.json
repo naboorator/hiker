@@ -1,0 +1,8 @@
+{
+  "activityRouteMap": {
+    "label": "Zemljevid zabeležene poti aktivnosti",
+    "loading": "Nalaganje zemljevida poti…",
+    "unavailable": "Zemljevida trenutno ni bilo mogoče prikazati.",
+    "retry": "Poskusi znova"
+  }
+}

@@ -22,6 +22,16 @@ On the first successful connection, existing IndexedDB settings, activities, and
 
 Register an account in the application and then log in. The frontend sends its bearer token automatically, and the API returns only that user's settings, activities, and weight measurements.
 
+## Activity route maps
+
+Activity routes use Mapbox GL JS. For local development, add a public Mapbox
+access token to `mapbox.accessToken` in `src/environments/environment.ts` but do
+not commit that local value. Production deployment reads the token from the
+GitHub Actions secret `MAPBOX_ACCESS_TOKEN` and replaces the placeholder in
+`src/environments/environment.production.ts` immediately before the build. The
+Mapbox JavaScript bundle is loaded lazily only when an activity has stored GPS
+locations.
+
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:

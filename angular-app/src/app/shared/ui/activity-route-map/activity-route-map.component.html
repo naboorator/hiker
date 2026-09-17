@@ -1,0 +1,14 @@
+@if (feature()) {
+  <section class="map-card" [attr.aria-label]="'activityRouteMap.label' | transloco">
+    @if (loading()) {
+      <div class="map-state" aria-live="polite">{{ 'activityRouteMap.loading' | transloco }}</div>
+    }
+    @if (failed()) {
+      <div class="map-state error" role="alert">
+        <p>{{ 'activityRouteMap.unavailable' | transloco }}</p>
+        <button type="button" (click)="retry()">{{ 'activityRouteMap.retry' | transloco }}</button>
+      </div>
+    }
+    <div #mapContainer class="map" [class.hidden]="failed()" aria-hidden="true"></div>
+  </section>
+}

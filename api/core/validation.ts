@@ -55,17 +55,29 @@ export function activityLocationsInput(
     const latitude = finiteNumber(location["latitude"]);
     const longitude = finiteNumber(location["longitude"]);
     const accuracy = finiteNumber(location["accuracy"]);
+    const altitude = optionalFiniteNumber(location["altitude"]);
+    const altitudeAccuracy = optionalFiniteNumber(location["altitudeAccuracy"]);
     const segment = finiteNumber(location["segment"]);
     const recordedAt = text(location["recordedAt"]);
     if (latitude < -90 || latitude > 90) invalid("GPS latitude is invalid");
     if (longitude < -180 || longitude > 180)
       invalid("GPS longitude is invalid");
     if (accuracy < 0) invalid("GPS accuracy is invalid");
+    if (altitudeAccuracy !== null && altitudeAccuracy < 0)
+      invalid("GPS altitude accuracy is invalid");
     if (!Number.isInteger(segment) || segment < 0)
       invalid("GPS segment is invalid");
     if (!recordedAt || !Number.isFinite(Date.parse(recordedAt)))
       invalid("GPS timestamp is invalid");
-    return { latitude, longitude, accuracy, recordedAt, segment };
+    return {
+      latitude,
+      longitude,
+      accuracy,
+      altitude,
+      altitudeAccuracy,
+      recordedAt,
+      segment,
+    };
   });
 }
 
@@ -101,6 +113,11 @@ function finiteNumber(value: unknown): number {
   const number = Number(value);
   if (!Number.isFinite(number)) invalid("A valid numeric value is required");
   return number;
+}
+
+function optionalFiniteNumber(value: unknown): number | null {
+  if (value === undefined || value === null) return null;
+  return finiteNumber(value);
 }
 
 function invalid(message: string): never {

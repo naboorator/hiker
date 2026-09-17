@@ -4,14 +4,17 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { HikeApiService } from '../../core/api/hike-api.service';
 import type { Hike } from '../../core/interface/hike.interface';
+import type { ActivityGpsLocation } from '../../core/interface/activity-gps-location.interface';
 import { LogWrapper } from '../../core/logging/log-wrapper.service';
 import { MockHikeStore } from '../../core/stores/mock-hike.store';
 import { activityTypeOption } from '../../core/utils/activity-type.helpers';
 import { formatRegistrationDate } from '../../core/utils/date-format.helpers';
 import { AppHeaderComponent } from '../../shared/ui/app-header/app-header.component';
+import { ActivityRouteMapComponent } from '../../shared/ui/activity-route-map/activity-route-map.component';
+import { environment } from '../../../environments/environment';
 
 @Component({
-  imports: [AppHeaderComponent, RouterLink, TranslocoPipe],
+  imports: [ActivityRouteMapComponent, AppHeaderComponent, RouterLink, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './activity-detail.page.html',
   styleUrl: './activity-detail.page.css',
@@ -26,6 +29,10 @@ export class ActivityDetailPage {
   readonly loading = signal(true);
   readonly loadFailed = signal(false);
   readonly unavailable = signal(false);
+  readonly routeLocations = signal<readonly ActivityGpsLocation[]>([]);
+  readonly routeLoading = signal(false);
+  readonly routeLoadFailed = signal(false);
+  readonly mapbox = environment.mapbox;
 
   constructor() {
     void this.load();
@@ -39,7 +46,9 @@ export class ActivityDetailPage {
       return;
     }
     try {
-      this.activity.set(await this.api.loadHike(id));
+      const activity = await this.api.loadHike(id);
+      this.activity.set(activity);
+      if (activity.hasGpsLocations) await this.loadRoute(activity.id);
     } catch (error) {
       this.logger.error('Unable to load activity details', error);
       if (
@@ -52,6 +61,27 @@ export class ActivityDetailPage {
       }
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  async loadRoute(activityId = this.activity()?.id): Promise<void> {
+    if (!activityId) return;
+    this.routeLoading.set(true);
+    this.routeLoadFailed.set(false);
+    try {
+      this.routeLocations.set(await this.api.loadActivityLocations(activityId));
+    } catch (error) {
+      this.logger.error('Unable to load activity GPS route', error);
+      if (
+        error instanceof HttpErrorResponse &&
+        (error.status === 403 || error.error?.code === 'ACTIVITY_UNAVAILABLE')
+      ) {
+        this.unavailable.set(true);
+      } else {
+        this.routeLoadFailed.set(true);
+      }
+    } finally {
+      this.routeLoading.set(false);
     }
   }
 

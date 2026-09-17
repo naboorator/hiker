@@ -320,7 +320,7 @@ paths:
       - $ref: "#/components/parameters/IdPath"
     get:
       tags: [Activities]
-      summary: Get the ordered GPS route for an owned activity; administrators may read any route
+      summary: Get the ordered GPS route for an owned or accepted-friend activity; administrators may read any route
       operationId: getActivityLocations
       responses:
         "200":
@@ -333,6 +333,12 @@ paths:
                   $ref: "#/components/schemas/ActivityLocation"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: Activity belongs neither to the authenticated user nor to an accepted friend
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "404":
           $ref: "#/components/responses/NotFound"
   /api/activities/migrate:
@@ -1344,6 +1350,17 @@ components:
           type: number
           format: double
           minimum: 0
+        altitude:
+          type: number
+          format: double
+          nullable: true
+          description: Optional altitude in metres above the WGS84 reference ellipsoid
+        altitudeAccuracy:
+          type: number
+          format: double
+          minimum: 0
+          nullable: true
+          description: Optional altitude accuracy in metres
         recordedAt:
           type: string
           format: date-time

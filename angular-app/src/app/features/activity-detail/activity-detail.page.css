@@ -93,6 +93,41 @@ dd {
   border-top: 1px solid #dce8df;
 }
 
+.route-map {
+  margin-bottom: 1.25rem;
+}
+
+.route-state {
+  display: grid;
+  min-height: 180px;
+  place-content: center;
+  padding: 1rem;
+  border-radius: 18px;
+  background: #edf4ee;
+  color: #587062;
+  text-align: center;
+}
+
+.route-state.error {
+  color: #8e3f37;
+}
+
+.route-state p {
+  margin: 0 0 0.8rem;
+}
+
+.route-state button {
+  justify-self: center;
+  border: 0;
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  background: #1f6a43;
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
 .people h2 {
   font-size: 1rem;
 }

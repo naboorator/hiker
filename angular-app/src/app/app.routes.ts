@@ -38,6 +38,12 @@ export const routes: Routes = [
   },
   { path: 'activities', redirectTo: 'my-activities', pathMatch: 'full' },
   {
+    path: 'activities/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/activity-detail/activity-detail.page').then((m) => m.ActivityDetailPage),
+  },
+  {
     path: 'friends',
     canActivate: [authGuard],
     loadComponent: () =>

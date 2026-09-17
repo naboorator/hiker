@@ -7,6 +7,7 @@ export interface Hike {
   date: string;
   minutes: number;
   metres: number;
+  hasGpsLocations?: boolean;
   people: string[];
   createdAt: number;
   likes?: number;

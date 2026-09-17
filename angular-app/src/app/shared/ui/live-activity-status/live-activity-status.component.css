@@ -31,7 +31,29 @@ strong {
   height: 14px;
   border-radius: 50%;
   background: #df583f;
-  box-shadow: 0 0 0 7px #df583f26;
+  box-shadow: 0 0 0 4px #df583f20;
+}
+.pulse.gps-received {
+  animation: gps-location-received 700ms ease-out;
+}
+@keyframes gps-location-received {
+  0% {
+    transform: scale(0.75);
+    box-shadow: 0 0 0 0 #df583f80;
+  }
+  45% {
+    transform: scale(1.25);
+    box-shadow: 0 0 0 11px #df583f35;
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 4px #df583f00;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pulse.gps-received {
+    animation: none;
+  }
 }
 .location {
   margin: 0;
@@ -40,6 +62,21 @@ strong {
 }
 .location.warning {
   color: #9a5a21;
+}
+.last-update,
+.sample-detail,
+.storage-warning {
+  margin: -0.45rem 0 0;
+  color: #587062;
+  font-size: 0.78rem;
+}
+.last-update strong {
+  color: inherit;
+  font-size: inherit;
+}
+.storage-warning {
+  color: #9b3529;
+  font-weight: 700;
 }
 .distance {
   display: flex;

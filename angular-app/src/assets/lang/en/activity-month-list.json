@@ -2,6 +2,7 @@
   "activityMonthList": {
     "activityCount": "{{ count }} activities",
     "empty": "No activities recorded.",
+    "gpsTracked": "GPS route recorded",
     "likes": "{{ count }} likes",
     "slaps": "{{ count }} slaps"
   }

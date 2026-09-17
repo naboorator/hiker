@@ -43,6 +43,45 @@ describe('HikeApiService', () => {
     await expect(result).resolves.toEqual([]);
   });
 
+  it('loads one activity by id', async () => {
+    const result = service.loadHike('activity-1');
+    const request = http.expectOne('http://localhost:3000/api/activities/activity-1');
+    expect(request.request.method).toBe('GET');
+    request.flush({ id: 'activity-1', name: 'Tracked hike' });
+    await expect(result).resolves.toEqual({ id: 'activity-1', name: 'Tracked hike' });
+  });
+
+  it('sends GPS samples while creating an activity and can load the stored route', async () => {
+    const gpsLocations = [
+      {
+        latitude: 46.05,
+        longitude: 14.5,
+        accuracy: 10,
+        recordedAt: '2026-09-10T10:00:00Z',
+        segment: 0,
+      },
+    ];
+    const draft = {
+      activityType: 'hiking' as const,
+      name: 'Hill',
+      date: '2026-09-10',
+      minutes: 30,
+      metres: 200,
+      people: ['User'],
+      gpsLocations,
+    };
+    const save = service.saveHike(draft);
+    await Promise.resolve();
+    const saveRequest = http.expectOne('http://localhost:3000/api/activities');
+    expect(saveRequest.request.body.gpsLocations).toEqual(gpsLocations);
+    saveRequest.flush({ id: 'activity-1', ...draft, createdAt: 1 });
+    await save;
+
+    const load = service.loadActivityLocations('activity-1');
+    http.expectOne('http://localhost:3000/api/activities/activity-1/locations').flush(gpsLocations);
+    await expect(load).resolves.toEqual(gpsLocations);
+  });
+
   it('sends password changes to the account endpoint', async () => {
     const result = service.changePassword({
       currentPassword: 'Current123!',

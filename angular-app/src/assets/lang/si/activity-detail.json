@@ -1,0 +1,15 @@
+{
+  "activityDetail": {
+    "subtitle": "Podrobnosti aktivnosti",
+    "back": "Nazaj na moje aktivnosti",
+    "loading": "Nalaganje aktivnosti…",
+    "notFound": "Aktivnosti ni bilo mogoče najti.",
+    "unavailable": "Ta aktivnost vam ni na voljo. Vidite lahko samo svoje aktivnosti oziroma aktivnosti svojih prijateljev.",
+    "date": "Datum",
+    "time": "Čas aktivnosti",
+    "distance": "Razdalja",
+    "type": "Tip aktivnosti",
+    "people": "Prisotne osebe",
+    "noPeople": "Pri tej aktivnosti ni bila dodana nobena oseba."
+  }
+}

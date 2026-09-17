@@ -12,6 +12,7 @@ import { FriendsStore } from './core/stores/friends.store';
 import { MockHikeStore } from './core/stores/mock-hike.store';
 import { LiveActivityStore } from './core/stores/live-activity.store';
 import { ActivitiesPage } from './features/activities/activities.page';
+import { ActivityDetailPage } from './features/activity-detail/activity-detail.page';
 import { AdminActivitiesPage } from './features/admin/activities/admin-activities.page';
 import { AdminEmailsPage } from './features/admin/emails/admin-emails.page';
 import { AdminSendTestEmailPage } from './features/admin/emails/send-test-email/admin-send-test-email.page';
@@ -54,6 +55,7 @@ interface ComponentCase {
 const componentCases: ComponentCase[] = [
   { name: 'App', component: App },
   { name: 'ActivitiesPage', component: ActivitiesPage },
+  { name: 'ActivityDetailPage', component: ActivityDetailPage },
   { name: 'AdminActivitiesPage', component: AdminActivitiesPage },
   { name: 'AdminEmailsPage', component: AdminEmailsPage },
   { name: 'AdminSendTestEmailPage', component: AdminSendTestEmailPage },
@@ -114,7 +116,7 @@ const componentCases: ComponentCase[] = [
     component: LiveActivityStatusComponent,
     inputs: {
       activity: {
-        version: 1,
+        version: 2,
         id: 'live-1',
         userId: 'user-1',
         activityType: 'hiking',
@@ -124,6 +126,12 @@ const componentCases: ComponentCase[] = [
         locationTracking: 'active',
         currentSegment: 0,
         locations: [],
+        trackedDistanceMetres: 0,
+        lastCallbackAt: null,
+        lastValidSampleAt: null,
+        lastAcceptedSampleAt: null,
+        rejectionReason: null,
+        storageWarning: false,
         completionDraft: null,
       },
     },

@@ -12,7 +12,7 @@ describe('LiveActivityStatusComponent', () => {
     TestBed.overrideComponent(LiveActivityStatusComponent, { set: { template: '' } });
     const fixture = TestBed.createComponent(LiveActivityStatusComponent);
     fixture.componentRef.setInput('activity', {
-      version: 1,
+      version: 2,
       id: 'live-1',
       userId: 'user-1',
       activityType: 'hiking',
@@ -37,11 +37,18 @@ describe('LiveActivityStatusComponent', () => {
           segment: 0,
         },
       ],
+      trackedDistanceMetres: 77,
+      lastCallbackAt: '2026-09-10T10:00:00Z',
+      lastValidSampleAt: '2026-09-10T10:00:00Z',
+      lastAcceptedSampleAt: '2026-09-10T10:00:00Z',
+      rejectionReason: null,
+      storageWarning: false,
       completionDraft: null,
     });
     fixture.detectChanges();
     expect(fixture.componentInstance.elapsed()).toBe('00:01:00');
     expect(fixture.componentInstance.locationKey()).toBe('liveActivity.location.active');
+    expect(fixture.componentInstance.gpsPulseKey()).toBe('2026-09-10T10:00:00Z');
     expect(fixture.componentInstance.distance()).toMatch(/^77 m$/);
   });
 
@@ -50,7 +57,7 @@ describe('LiveActivityStatusComponent', () => {
     TestBed.overrideComponent(LiveActivityStatusComponent, { set: { template: '' } });
     const fixture = TestBed.createComponent(LiveActivityStatusComponent);
     fixture.componentRef.setInput('activity', {
-      version: 1,
+      version: 2,
       id: 'live-1',
       userId: 'user-1',
       activityType: 'hiking',
@@ -60,6 +67,12 @@ describe('LiveActivityStatusComponent', () => {
       locationTracking: 'denied',
       currentSegment: 0,
       locations: [],
+      trackedDistanceMetres: 0,
+      lastCallbackAt: null,
+      lastValidSampleAt: null,
+      lastAcceptedSampleAt: null,
+      rejectionReason: null,
+      storageWarning: false,
       completionDraft: null,
     });
     fixture.detectChanges();

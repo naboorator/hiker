@@ -4,6 +4,8 @@ import {
   canAppendLocation,
   distanceBetweenLocations,
   formatTrackedDistance,
+  locationRejectionReason,
+  minimumReliableMovement,
   trackedDistance,
 } from './geo-distance.helpers';
 
@@ -53,6 +55,33 @@ describe('geo distance helpers', () => {
     ).toBe(false);
   });
 
+  it('uses the combined accuracy of consecutive samples to reject stationary GPS drift', () => {
+    const previous = point(14.5058, '2026-09-10T10:00:00Z');
+    const apparentElevenMetreMove = point(14.505942, '2026-09-10T10:00:10Z');
+
+    expect(minimumReliableMovement(previous, apparentElevenMetreMove, 'hiking')).toBe(12);
+    expect(canAppendLocation(previous, apparentElevenMetreMove, 'hiking')).toBe(false);
+    expect(locationRejectionReason(previous, apparentElevenMetreMove, 'hiking')).toBe('movement');
+  });
+
+  it('still accepts movement that exceeds GPS uncertainty', () => {
+    expect(
+      canAppendLocation(
+        point(14.5058, '2026-09-10T10:00:00Z'),
+        point(14.50606, '2026-09-10T10:00:10Z'),
+        'hiking',
+      ),
+    ).toBe(true);
+  });
+
+  it('caps the drift threshold so a real 15 metre movement is accepted with weaker GPS', () => {
+    const previous = { ...point(14.5058, '2026-09-10T10:00:00Z'), accuracy: 20 };
+    const fifteenMetreMove = { ...point(14.505994, '2026-09-10T10:00:10Z'), accuracy: 20 };
+
+    expect(minimumReliableMovement(previous, fifteenMetreMove, 'hiking')).toBe(12);
+    expect(canAppendLocation(previous, fifteenMetreMove, 'hiking')).toBe(true);
+  });
+
   it('does not connect points from separate foreground segments', () => {
     const locations = [
       point(14.5058, '2026-09-10T10:00:00Z', 0),
@@ -66,5 +95,22 @@ describe('geo distance helpers', () => {
   it('formats tracked distance in metres and kilometres', () => {
     expect(formatTrackedDistance(248.6)).toBe('249 m');
     expect(formatTrackedDistance(1_234)).toBe('1.23 km');
+  });
+
+  it('reports why a GPS sample was rejected', () => {
+    expect(
+      locationRejectionReason(
+        point(14.5058, '2026-09-10T10:00:00Z'),
+        point(14.50581, '2026-09-10T10:00:10Z'),
+        'hiking',
+      ),
+    ).toBe('movement');
+    expect(
+      locationRejectionReason(
+        undefined,
+        { ...point(14.5058, '2026-09-10T10:00:00Z'), accuracy: 100 },
+        'hiking',
+      ),
+    ).toBe('accuracy');
   });
 });

@@ -2,6 +2,7 @@
   "activityMonthList": {
     "activityCount": "Aktivnosti: {{ count }}",
     "empty": "Ni zabeleženih aktivnosti.",
+    "gpsTracked": "GPS pot je shranjena",
     "likes": "Všečki: {{ count }}",
     "slaps": "Slapi: {{ count }}"
   }

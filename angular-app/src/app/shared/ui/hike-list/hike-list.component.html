@@ -2,7 +2,8 @@
   @for (hike of hikes(); track hike.id) {
     <article>
       <div>
-        <strong>{{ hike.name }}</strong
+        <strong
+          ><a [routerLink]="['/activities', hike.id]">{{ hike.name }}</a></strong
         ><span
           >{{ hike.minutes }} {{ 'common.minuteShort' | transloco }} · {{ hike.metres }}
           {{ 'common.metreShort' | transloco }}</span

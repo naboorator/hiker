@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import type { ActivityDayGroup } from '../../../core/interface/activity-day-group.interface';
 import type { Hike } from '../../../core/interface/hike.interface';
 @Component({
   selector: 'app-activity-month-list',
-  imports: [TranslocoPipe],
+  imports: [RouterLink, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './activity-month-list.component.html',
   styleUrl: './activity-month-list.component.css',
@@ -18,6 +19,7 @@ export class ActivityMonthListComponent {
   readonly allowEdits = input(false);
   readonly showLikes = input(false);
   readonly showFriendReactions = input(false);
+  readonly detailsEnabled = input(false);
   readonly edit = output<Hike>();
   readonly remove = output<string>();
   readonly like = output<Hike>();

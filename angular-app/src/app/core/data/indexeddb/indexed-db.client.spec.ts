@@ -1,18 +1,12 @@
 import 'fake-indexeddb/auto';
 import { TestBed } from '@angular/core/testing';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { IndexedDbClient } from './indexed-db.client';
 
 describe('IndexedDbClient', () => {
   let service: IndexedDbClient;
 
-  beforeEach(async () => {
-    await new Promise<void>((resolve) => {
-      const request = indexedDB.deleteDatabase('hike-log');
-      request.onsuccess = () => resolve();
-      request.onerror = () => resolve();
-      request.onblocked = () => resolve();
-    });
+  beforeAll(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(IndexedDbClient);
   });
@@ -29,5 +23,13 @@ describe('IndexedDbClient', () => {
     ]);
     await service.delete('hikes', 'one');
     expect(await service.get('hikes', 'one')).toBeUndefined();
+  });
+
+  it('writes a batch in one transaction', async () => {
+    await service.putMany('liveActivityLocations', [
+      { id: 'activity:1', activityId: 'activity', sequence: 1 },
+      { id: 'activity:2', activityId: 'activity', sequence: 2 },
+    ]);
+    expect(await service.getAll('liveActivityLocations')).toHaveLength(2);
   });
 });

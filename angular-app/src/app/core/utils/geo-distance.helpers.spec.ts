@@ -74,6 +74,26 @@ describe('geo distance helpers', () => {
     ).toBe(true);
   });
 
+  it('accepts valid GPS samples while travelling at car speed', () => {
+    expect(
+      canAppendLocation(
+        point(14.5058, '2026-09-10T10:00:00Z'),
+        point(14.50968, '2026-09-10T10:00:10Z'),
+        'hiking',
+      ),
+    ).toBe(true);
+  });
+
+  it('still rejects physically implausible GPS jumps', () => {
+    expect(
+      canAppendLocation(
+        point(14.5058, '2026-09-10T10:00:00Z'),
+        point(14.5188, '2026-09-10T10:00:10Z'),
+        'hiking',
+      ),
+    ).toBe(false);
+  });
+
   it('caps the drift threshold so a real 15 metre movement is accepted with weaker GPS', () => {
     const previous = { ...point(14.5058, '2026-09-10T10:00:00Z'), accuracy: 20 };
     const fifteenMetreMove = { ...point(14.505994, '2026-09-10T10:00:10Z'), accuracy: 20 };

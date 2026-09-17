@@ -10,37 +10,46 @@ export const LIVE_ACTIVITY_PERSISTENCE_FLUSH_MS = 5_000;
 export const LIVE_ACTIVITY_MAX_PENDING_SAMPLES = 250;
 export const LIVE_ACTIVITY_MAX_ACCEPTED_SAMPLES = 20_000;
 export const LIVE_ACTIVITY_MAX_DRIFT_THRESHOLD_METRES = 12;
+export const LIVE_ACTIVITY_MAX_PLAUSIBLE_SPEED_METRES_PER_SECOND = 70;
 export const ACTIVITY_GPS_FILTERS: Readonly<Record<ActivityType, ActivityGpsFilter>> = {
   hiking: {
     maximumAccuracyMetres: 40,
-    maximumSpeedMetresPerSecond: 6,
+    maximumSpeedMetresPerSecond: LIVE_ACTIVITY_MAX_PLAUSIBLE_SPEED_METRES_PER_SECOND,
     minimumMovementMetres: 4,
   },
   fitness: {
     maximumAccuracyMetres: 20,
-    maximumSpeedMetresPerSecond: 4,
+    maximumSpeedMetresPerSecond: LIVE_ACTIVITY_MAX_PLAUSIBLE_SPEED_METRES_PER_SECOND,
     minimumMovementMetres: 6,
   },
-  cycling: { maximumAccuracyMetres: 30, maximumSpeedMetresPerSecond: 20, minimumMovementMetres: 5 },
-  tennis: { maximumAccuracyMetres: 20, maximumSpeedMetresPerSecond: 8, minimumMovementMetres: 6 },
+  cycling: {
+    maximumAccuracyMetres: 30,
+    maximumSpeedMetresPerSecond: LIVE_ACTIVITY_MAX_PLAUSIBLE_SPEED_METRES_PER_SECOND,
+    minimumMovementMetres: 5,
+  },
+  tennis: {
+    maximumAccuracyMetres: 20,
+    maximumSpeedMetresPerSecond: LIVE_ACTIVITY_MAX_PLAUSIBLE_SPEED_METRES_PER_SECOND,
+    minimumMovementMetres: 6,
+  },
   badminton: {
     maximumAccuracyMetres: 20,
-    maximumSpeedMetresPerSecond: 8,
+    maximumSpeedMetresPerSecond: LIVE_ACTIVITY_MAX_PLAUSIBLE_SPEED_METRES_PER_SECOND,
     minimumMovementMetres: 6,
   },
   table_tennis: {
     maximumAccuracyMetres: 20,
-    maximumSpeedMetresPerSecond: 5,
+    maximumSpeedMetresPerSecond: LIVE_ACTIVITY_MAX_PLAUSIBLE_SPEED_METRES_PER_SECOND,
     minimumMovementMetres: 6,
   },
   construction: {
     maximumAccuracyMetres: 30,
-    maximumSpeedMetresPerSecond: 5,
+    maximumSpeedMetresPerSecond: LIVE_ACTIVITY_MAX_PLAUSIBLE_SPEED_METRES_PER_SECOND,
     minimumMovementMetres: 5,
   },
   housework: {
     maximumAccuracyMetres: 30,
-    maximumSpeedMetresPerSecond: 5,
+    maximumSpeedMetresPerSecond: LIVE_ACTIVITY_MAX_PLAUSIBLE_SPEED_METRES_PER_SECOND,
     minimumMovementMetres: 5,
   },
 };

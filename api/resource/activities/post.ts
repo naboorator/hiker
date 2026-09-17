@@ -2,9 +2,13 @@ import { randomUUID } from "node:crypto";
 import type { Router } from "express";
 import { database, withTransaction } from "../../core/database.js";
 import { replaceActivityPeople } from "../../core/activity-repository.js";
-import { activityInput } from "../../core/validation.js";
+import {
+  activityInput,
+  activityLocationsInput,
+} from "../../core/validation.js";
 import type { Activity } from "../../interface/activity.interface.js";
 import { authenticatedUserId } from "../../core/auth.js";
+import { toSqlDateTime } from "../../core/sql-date.js";
 
 export function registerActivityPostRoutes(router: Router): void {
   router.post("/activities/migrate", async (request, response) => {
@@ -56,11 +60,13 @@ export function registerActivityPostRoutes(router: Router): void {
   router.post("/activities", async (request, response) => {
     const userId = authenticatedUserId(response);
     const input = activityInput(request.body);
+    const gpsLocations = activityLocationsInput(request.body);
     const activity: Activity = {
       ...input,
       id: randomUUID(),
       userId,
       metres: input.metres ?? 0,
+      hasGpsLocations: gpsLocations.length > 0,
       createdAt: Date.now(),
     };
     await withTransaction(async (connection) => {
@@ -80,6 +86,21 @@ export function registerActivityPostRoutes(router: Router): void {
         ],
       );
       await replaceActivityPeople(connection, activity.id, activity.people);
+      if (gpsLocations.length)
+        await connection.batch(
+          `INSERT INTO activity_locations
+             (activity_id, sequence, segment, latitude, longitude, accuracy, recorded_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          gpsLocations.map((location, sequence) => [
+            activity.id,
+            sequence,
+            location.segment,
+            location.latitude,
+            location.longitude,
+            location.accuracy,
+            toSqlDateTime(location.recordedAt),
+          ]),
+        );
     });
     response
       .status(201)

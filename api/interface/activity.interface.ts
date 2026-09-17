@@ -1,12 +1,12 @@
 export type ActivityType =
-  | 'hiking'
-  | 'fitness'
-  | 'cycling'
-  | 'tennis'
-  | 'badminton'
-  | 'table_tennis'
-  | 'construction'
-  | 'housework';
+  | "hiking"
+  | "fitness"
+  | "cycling"
+  | "tennis"
+  | "badminton"
+  | "table_tennis"
+  | "construction"
+  | "housework";
 
 export interface Activity {
   id: string;
@@ -16,6 +16,7 @@ export interface Activity {
   date: string;
   minutes: number;
   metres: number;
+  hasGpsLocations: boolean;
   people: string[];
   createdAt: number;
 }

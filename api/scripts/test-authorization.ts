@@ -499,10 +499,82 @@ try {
       minutes: 30,
       metres: 1000,
       people: ["Authorization Owner"],
+      gpsLocations: [
+        {
+          latitude: 46.0569,
+          longitude: 14.5058,
+          accuracy: 10,
+          recordedAt: "2026-09-07T10:00:00.000Z",
+          segment: 0,
+        },
+        {
+          latitude: 46.057,
+          longitude: 14.506,
+          accuracy: 9,
+          recordedAt: "2026-09-07T10:00:05.000Z",
+          segment: 0,
+        },
+      ],
     }),
   });
   record("owner creates activity", 201, activityResponse.status);
-  const activity = await json<{ id: string }>(activityResponse);
+  const activity = await json<{ id: string; hasGpsLocations: boolean }>(
+    activityResponse,
+  );
+  record(
+    "created activity is marked as GPS tracked",
+    1,
+    Number(activity.hasGpsLocations),
+  );
+  const activityListResponse = await request("/api/activities", {
+    headers: authorization(owner.token),
+  });
+  const activityList =
+    await json<{ id: string; hasGpsLocations: boolean }[]>(
+      activityListResponse,
+    );
+  record(
+    "activity list exposes the GPS route flag",
+    1,
+    Number(
+      activityList.some(
+        (item) => item.id === activity.id && item.hasGpsLocations === true,
+      ),
+    ),
+  );
+  const friendActivityDetailResponse = await request(
+    `/api/activities/${activity.id}`,
+    {
+      headers: authorization(other.token),
+    },
+  );
+  record(
+    "accepted friend can read activity details",
+    200,
+    friendActivityDetailResponse.status,
+  );
+  const routeResponse = await request(
+    `/api/activities/${activity.id}/locations`,
+    { headers: authorization(owner.token) },
+  );
+  record("owner reads the stored GPS route", 200, routeResponse.status);
+  const route =
+    await json<{ sequence: number; segment: number }[]>(routeResponse);
+  record("GPS route preserves both ordered samples", 2, route.length);
+  record(
+    "GPS route preserves sequence and segment",
+    1,
+    Number(route[1]?.sequence === 1 && route[1].segment === 0),
+  );
+  const otherRouteResponse = await request(
+    `/api/activities/${activity.id}/locations`,
+    { headers: authorization(other.token) },
+  );
+  record(
+    "other user cannot read an owned GPS route",
+    404,
+    otherRouteResponse.status,
+  );
 
   const weightResponse = await request("/api/weights", {
     method: "POST",

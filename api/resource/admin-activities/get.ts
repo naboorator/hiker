@@ -51,6 +51,7 @@ export function registerAdminActivityGetRoutes(router: Router): void {
       const rows = await database.query<AdminActivityRow[]>(
         `SELECT a.id, a.user_id AS userId, a.activity_type AS activityType, a.name,
                 CAST(a.activity_date AS CHAR) AS date, a.minutes, a.metres,
+                EXISTS(SELECT 1 FROM activity_locations l WHERE l.activity_id = a.id) AS hasGpsLocations,
                 a.created_at AS createdAt, u.id AS authorId, u.name AS authorName
            FROM activities a
            JOIN users u ON u.id = a.user_id
@@ -60,6 +61,7 @@ export function registerAdminActivityGetRoutes(router: Router): void {
       );
       const withAuthors = rows.map(({ authorId, authorName, ...activity }) => ({
         ...activity,
+        hasGpsLocations: Boolean(activity.hasGpsLocations),
         author: { id: authorId, name: authorName },
       }));
       items = await activitiesWithReactionSummaries(

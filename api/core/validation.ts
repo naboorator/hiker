@@ -6,8 +6,10 @@ import type {
 import { activityTypeNames, isActivityType } from "./activity-types.js";
 import type { SettingsInput } from "../interface/settings.interface.js";
 import type { WeightInput } from "../interface/weight.interface.js";
+import type { ActivityLocationInput } from "../interface/activity-location.interface.js";
 
 const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+const maximumActivityLocations = 20_000;
 
 export function activityInput(value: unknown): ActivityInput {
   const body = record(value);
@@ -37,6 +39,34 @@ export function activityInput(value: unknown): ActivityInput {
     metres,
     people,
   };
+}
+
+export function activityLocationsInput(
+  value: unknown,
+): ActivityLocationInput[] {
+  const locations = record(value)["gpsLocations"];
+  if (locations === undefined) return [];
+  if (!Array.isArray(locations) || locations.length > maximumActivityLocations)
+    invalid(
+      `GPS locations must be an array with at most ${maximumActivityLocations} items`,
+    );
+  return locations.map((candidate) => {
+    const location = record(candidate);
+    const latitude = finiteNumber(location["latitude"]);
+    const longitude = finiteNumber(location["longitude"]);
+    const accuracy = finiteNumber(location["accuracy"]);
+    const segment = finiteNumber(location["segment"]);
+    const recordedAt = text(location["recordedAt"]);
+    if (latitude < -90 || latitude > 90) invalid("GPS latitude is invalid");
+    if (longitude < -180 || longitude > 180)
+      invalid("GPS longitude is invalid");
+    if (accuracy < 0) invalid("GPS accuracy is invalid");
+    if (!Number.isInteger(segment) || segment < 0)
+      invalid("GPS segment is invalid");
+    if (!recordedAt || !Number.isFinite(Date.parse(recordedAt)))
+      invalid("GPS timestamp is invalid");
+    return { latitude, longitude, accuracy, recordedAt, segment };
+  });
 }
 
 export function settingsInput(value: unknown): SettingsInput {

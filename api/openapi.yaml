@@ -249,7 +249,7 @@ paths:
       summary: Create an activity
       operationId: createActivity
       requestBody:
-        $ref: "#/components/requestBodies/ActivityInput"
+        $ref: "#/components/requestBodies/CreateActivityInput"
       responses:
         "201":
           description: Activity created
@@ -266,7 +266,7 @@ paths:
       - $ref: "#/components/parameters/IdPath"
     get:
       tags: [Activities]
-      summary: Get an activity owned by the user; administrators may read any activity
+      summary: Get an activity owned by the user or an accepted friend; administrators may read any activity
       operationId: getActivity
       responses:
         "200":
@@ -277,6 +277,12 @@ paths:
                 $ref: "#/components/schemas/Activity"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: Activity belongs neither to the authenticated user nor to an accepted friend
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "404":
           $ref: "#/components/responses/NotFound"
     put:
@@ -305,6 +311,26 @@ paths:
       responses:
         "204":
           description: Activity deleted
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/activities/{id}/locations:
+    parameters:
+      - $ref: "#/components/parameters/IdPath"
+    get:
+      tags: [Activities]
+      summary: Get the ordered GPS route for an owned activity; administrators may read any route
+      operationId: getActivityLocations
+      responses:
+        "200":
+          description: Ordered GPS samples grouped by their segment value
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityLocation"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -1023,6 +1049,12 @@ components:
         maximum: 31
         default: 10
   requestBodies:
+    CreateActivityInput:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateActivityInput"
     ActivityInput:
       required: true
       content:
@@ -1283,6 +1315,50 @@ components:
           minItems: 1
           items:
             type: string
+    CreateActivityInput:
+      allOf:
+        - $ref: "#/components/schemas/ActivityInput"
+        - type: object
+          properties:
+            gpsLocations:
+              type: array
+              maxItems: 20000
+              description: Ordered accepted GPS samples collected while tracking the activity
+              items:
+                $ref: "#/components/schemas/ActivityLocationInput"
+    ActivityLocationInput:
+      type: object
+      required: [latitude, longitude, accuracy, recordedAt, segment]
+      properties:
+        latitude:
+          type: number
+          format: double
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          format: double
+          minimum: -180
+          maximum: 180
+        accuracy:
+          type: number
+          format: double
+          minimum: 0
+        recordedAt:
+          type: string
+          format: date-time
+        segment:
+          type: integer
+          minimum: 0
+    ActivityLocation:
+      allOf:
+        - $ref: "#/components/schemas/ActivityLocationInput"
+        - type: object
+          required: [sequence]
+          properties:
+            sequence:
+              type: integer
+              minimum: 0
     ActivityMigrationItem:
       allOf:
         - $ref: "#/components/schemas/ActivityInput"
@@ -1298,11 +1374,14 @@ components:
       allOf:
         - $ref: "#/components/schemas/ActivityMigrationItem"
         - type: object
-          required: [userId, likes, likedBy, slaps, slappedBy]
+          required: [userId, hasGpsLocations, likes, likedBy, slaps, slappedBy]
           properties:
             userId:
               type: string
               format: uuid
+            hasGpsLocations:
+              type: boolean
+              description: Whether at least one stored GPS route sample exists for the activity
             likes:
               type: integer
               minimum: 0

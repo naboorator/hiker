@@ -15,6 +15,7 @@ export function registerFriendActivityGetRoutes(router: Router): void {
     >(
       `SELECT a.id, a.user_id AS userId, a.activity_type AS activityType, a.name,
               CAST(a.activity_date AS CHAR) AS date, a.minutes, a.metres,
+              EXISTS(SELECT 1 FROM activity_locations l WHERE l.activity_id = a.id) AS hasGpsLocations,
               a.created_at AS createdAt, u.name AS authorName
          FROM activities a
          JOIN users u ON u.id = a.user_id
@@ -46,6 +47,7 @@ export function registerFriendActivityGetRoutes(router: Router): void {
     response.json(
       activities.map(({ authorName, ...activity }) => ({
         ...activity,
+        hasGpsLocations: Boolean(activity.hasGpsLocations),
         author: { id: activity.userId, name: authorName },
         ...summaries.get(activity.id),
         myReactions: myReactions.get(activity.id) ?? [],

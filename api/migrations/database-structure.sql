@@ -9,6 +9,7 @@ SET @OLD_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;
 SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS `activity_reactions`;
+DROP TABLE IF EXISTS `activity_locations`;
 DROP TABLE IF EXISTS `activity_people`;
 DROP TABLE IF EXISTS `activities`;
 DROP TABLE IF EXISTS `friend_connections`;
@@ -85,6 +86,18 @@ CREATE TABLE `activity_people` (
   PRIMARY KEY (`activity_id`, `position`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE `activity_locations` (
+  `activity_id` char(36) NOT NULL,
+  `sequence` int unsigned NOT NULL,
+  `segment` int unsigned NOT NULL,
+  `latitude` decimal(10,7) NOT NULL,
+  `longitude` decimal(10,7) NOT NULL,
+  `accuracy` decimal(8,2) unsigned NOT NULL,
+  `recorded_at` datetime(3) NOT NULL,
+  PRIMARY KEY (`activity_id`, `sequence`),
+  KEY `idx_activity_locations_recorded` (`activity_id`, `recorded_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE `weights` (
   `id` char(36) NOT NULL,
   `user_id` char(36) NOT NULL,
@@ -132,6 +145,9 @@ ALTER TABLE `activities`
 
 ALTER TABLE `activity_people`
   ADD CONSTRAINT `fk_activity_people_activity` FOREIGN KEY (`activity_id`) REFERENCES `activities` (`id`) ON DELETE CASCADE;
+
+ALTER TABLE `activity_locations`
+  ADD CONSTRAINT `fk_activity_locations_activity` FOREIGN KEY (`activity_id`) REFERENCES `activities` (`id`) ON DELETE CASCADE;
 
 ALTER TABLE `weights`
   ADD CONSTRAINT `fk_weights_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;

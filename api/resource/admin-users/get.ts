@@ -34,14 +34,21 @@ export function registerAdminUserGetRoutes(router: Router): void {
     const normalizedPage = Math.min(page, totalPages);
     const rows = await database.query<Omit<Activity, "people">[]>(
       `SELECT id, user_id AS userId, activity_type AS activityType, name,
-              CAST(activity_date AS CHAR) AS date, minutes, metres, created_at AS createdAt
+              CAST(activity_date AS CHAR) AS date, minutes, metres,
+              EXISTS(SELECT 1 FROM activity_locations l WHERE l.activity_id = activities.id) AS hasGpsLocations,
+              created_at AS createdAt
          FROM activities
         WHERE user_id = ?
         ORDER BY activity_date DESC, created_at DESC
         LIMIT ? OFFSET ?`,
       [userId, pageSize, (normalizedPage - 1) * pageSize],
     );
-    const activities = await attachPeople(rows);
+    const activities = await attachPeople(
+      rows.map((row) => ({
+        ...row,
+        hasGpsLocations: Boolean(row.hasGpsLocations),
+      })),
+    );
     response.json({
       items: await activitiesWithReactionSummaries(activities),
       page: normalizedPage,

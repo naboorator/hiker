@@ -10,7 +10,7 @@
   </div>
   <div class="tools">
     @if (friendsStore.incomingRequests().length; as requestCount) {
-      <a class="friend-requests" routerLink="/friends">
+      <a class="friend-requests" routerLink="/friends/find">
         <span aria-hidden="true">👥</span>
         {{ 'appHeader.pendingFriendRequests' | transloco: { count: requestCount } }}
       </a>

@@ -1,29 +1,33 @@
-import type { Router } from 'express';
-import { authenticatedUserId } from '../../core/auth.js';
-import { database } from '../../core/database.js';
-import { HttpError } from '../../core/http-error.js';
+import type { Router } from "express";
+import { authenticatedUserId } from "../../core/auth.js";
+import { database } from "../../core/database.js";
+import { HttpError } from "../../core/http-error.js";
 
 export function registerFriendGetRoutes(router: Router): void {
-  router.get('/friends/comparison', async (request, response) => {
+  router.get("/friends/comparison", async (request, response) => {
     const userId = authenticatedUserId(response);
     const currentMonth = new Date().toISOString().slice(0, 7);
     const month =
-      typeof request.query['month'] === 'string' && /^\d{4}-(0[1-9]|1[0-2])$/.test(request.query['month'])
-        ? request.query['month']
+      typeof request.query["month"] === "string" &&
+      /^\d{4}-(0[1-9]|1[0-2])$/.test(request.query["month"])
+        ? request.query["month"]
         : currentMonth;
     const friendIds = [
       ...new Set(
-        (typeof request.query['friendIds'] === 'string' ? request.query['friendIds'] : '')
-          .split(',')
+        (typeof request.query["friendIds"] === "string"
+          ? request.query["friendIds"]
+          : ""
+        )
+          .split(",")
           .map((id) => id.trim())
           .filter(Boolean),
       ),
     ].slice(0, 50);
 
     if (friendIds.includes(userId))
-      throw new HttpError(400, 'Current user must not be a friend selection');
+      throw new HttpError(400, "Current user must not be a friend selection");
     if (friendIds.length) {
-      const placeholders = friendIds.map(() => '?').join(', ');
+      const placeholders = friendIds.map(() => "?").join(", ");
       const [allowed] = await database.query<{ total: number }[]>(
         `SELECT COUNT(*) AS total
            FROM friend_connections
@@ -33,13 +37,15 @@ export function registerFriendGetRoutes(router: Router): void {
         [userId, ...friendIds, userId, ...friendIds],
       );
       if (Number(allowed?.total ?? 0) !== friendIds.length) {
-        response.status(403).json({ error: 'You can compare only with accepted friends' });
+        response
+          .status(403)
+          .json({ error: "You can compare only with accepted friends" });
         return;
       }
     }
 
     const selectedIds = [userId, ...friendIds];
-    const placeholders = selectedIds.map(() => '?').join(', ');
+    const placeholders = selectedIds.map(() => "?").join(", ");
     const users = await database.query<{ id: string; name: string }[]>(
       `SELECT id, name FROM users WHERE id IN (${placeholders})`,
       selectedIds,
@@ -56,33 +62,46 @@ export function registerFriendGetRoutes(router: Router): void {
         ORDER BY activity_date`,
       [...selectedIds, month],
     );
-    const countsByUser = new Map<string, { date: string; activityCount: number }[]>();
+    const countsByUser = new Map<
+      string,
+      { date: string; activityCount: number }[]
+    >();
     for (const count of counts) {
       const days = countsByUser.get(count.userId) ?? [];
-      days.push({ date: count.date, activityCount: Number(count.activityCount) });
+      days.push({
+        date: count.date,
+        activityCount: Number(count.activityCount),
+      });
       countsByUser.set(count.userId, days);
     }
     const usersById = new Map(users.map((user) => [user.id, user]));
     response.json(
       selectedIds.map((id) => ({
         userId: id,
-        name: usersById.get(id)?.name ?? '',
+        name: usersById.get(id)?.name ?? "",
         isCurrentUser: id === userId,
         days: countsByUser.get(id) ?? [],
       })),
     );
   });
 
-  router.get('/friends/search', async (request, response) => {
+  router.get("/friends/search", async (request, response) => {
     const userId = authenticatedUserId(response);
     const search =
-      typeof request.query['search'] === 'string' ? request.query['search'].trim().slice(0, 320) : '';
+      typeof request.query["search"] === "string"
+        ? request.query["search"].trim().slice(0, 320)
+        : "";
     if (!search) {
       response.json([]);
       return;
     }
     const users = await database.query<
-      { id: string; name: string; email: string; connectionStatus: 'pending' | 'accepted' | null }[]
+      {
+        id: string;
+        name: string;
+        email: string;
+        connectionStatus: "pending" | "accepted" | null;
+      }[]
     >(
       `SELECT u.id, u.name, u.email, f.status AS connectionStatus
          FROM users u
@@ -97,11 +116,14 @@ export function registerFriendGetRoutes(router: Router): void {
       [userId, userId, userId, search, search],
     );
     response.json(
-      users.map((user) => ({ ...user, connectionStatus: user.connectionStatus ?? 'none' })),
+      users.map((user) => ({
+        ...user,
+        connectionStatus: user.connectionStatus ?? "none",
+      })),
     );
   });
 
-  router.get('/friends', async (_request, response) => {
+  router.get("/friends", async (_request, response) => {
     const userId = authenticatedUserId(response);
     response.json(
       await database.query(
@@ -115,17 +137,19 @@ export function registerFriendGetRoutes(router: Router): void {
     );
   });
 
-  router.get('/friends/requests', async (_request, response) => {
+  router.get("/friends/requests", async (_request, response) => {
     const userId = authenticatedUserId(response);
-    const rows = await database.query<{
-      id: string;
-      requesterId: string;
-      createdAt: string;
-      otherId: string;
-      otherName: string;
-      otherEmail: string;
-      otherRole: string;
-    }[]>(
+    const rows = await database.query<
+      {
+        id: string;
+        requesterId: string;
+        createdAt: string;
+        otherId: string;
+        otherName: string;
+        otherEmail: string;
+        otherRole: string;
+      }[]
+    >(
       `SELECT f.id, f.requester_id AS requesterId, CAST(f.created_at AS CHAR) AS createdAt,
               u.id AS otherId, u.name AS otherName, u.email AS otherEmail, u.role AS otherRole
          FROM friend_connections f
@@ -137,8 +161,13 @@ export function registerFriendGetRoutes(router: Router): void {
     response.json(
       rows.map((row) => ({
         id: row.id,
-        direction: row.requesterId === userId ? 'outgoing' : 'incoming',
-        user: { id: row.otherId, name: row.otherName, email: row.otherEmail, role: row.otherRole },
+        direction: row.requesterId === userId ? "outgoing" : "incoming",
+        user: {
+          id: row.otherId,
+          name: row.otherName,
+          email: row.otherEmail,
+          role: row.otherRole,
+        },
         createdAt: row.createdAt,
       })),
     );

@@ -4,12 +4,28 @@
       <span class="eyebrow">{{ 'liveActivity.inProgress' | transloco }}</span>
       <strong>{{ elapsed() }}</strong>
     </div>
-    <span class="pulse" aria-hidden="true"></span>
+    @for (pulseKey of [gpsPulseKey()]; track pulseKey) {
+      <span class="pulse" [class.gps-received]="pulseKey !== 'waiting'" aria-hidden="true"></span>
+    }
   </div>
   <p class="location" [class.warning]="activity().locationTracking === 'background-limited'">
     <span aria-hidden="true">⌖</span>
     {{ locationKey() | transloco }}
   </p>
+  @if (activity().lastCallbackAt) {
+    <p class="last-update">
+      {{ 'liveActivity.lastGpsUpdate' | transloco }}
+      <strong>{{ activity().lastCallbackAt | date: 'HH:mm:ss' }}</strong>
+    </p>
+  }
+  @if (activity().rejectionReason) {
+    <p class="sample-detail">
+      {{ 'liveActivity.rejection.' + activity().rejectionReason | transloco }}
+    </p>
+  }
+  @if (activity().storageWarning) {
+    <p class="storage-warning" role="alert">{{ 'liveActivity.storageWarning' | transloco }}</p>
+  }
   @if (canRetryLocation()) {
     <button type="button" class="retry-location" (click)="locationRetryRequested.emit()">
       {{ 'liveActivity.retryLocation' | transloco }}

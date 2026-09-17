@@ -29,8 +29,27 @@
                 @if (hike.author) {
                   <strong class="author">{{ hike.author.name }}</strong> ·
                 }
-                {{ hike.name }} <em>· {{ hike.people.join(', ') }}</em></span
+                @if (detailsEnabled()) {
+                  <a class="activity-link" [routerLink]="['/activities', hike.id]">{{
+                    hike.name
+                  }}</a>
+                } @else {
+                  {{ hike.name }}
+                }
+                <em>· {{ hike.people.join(', ') }}</em></span
               ><small>{{ format(hike.minutes) }} · {{ distance(hike.metres) }}</small>
+              @if (hike.hasGpsLocations) {
+                <span
+                  class="gps-route"
+                  [attr.title]="'activityMonthList.gpsTracked' | transloco"
+                  [attr.aria-label]="'activityMonthList.gpsTracked' | transloco"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 21s6-5.4 6-11a6 6 0 1 0-12 0c0 5.6 6 11 6 11Z" />
+                    <circle cx="12" cy="10" r="2.2" />
+                  </svg>
+                </span>
+              }
               @if (showLikes()) {
                 <span
                   class="likes"

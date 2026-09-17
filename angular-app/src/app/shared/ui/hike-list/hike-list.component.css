@@ -28,3 +28,12 @@ button {
   font-weight: 750;
   cursor: pointer;
 }
+a {
+  color: #245e3b;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+a:hover,
+a:focus-visible {
+  color: #d66d2f;
+}

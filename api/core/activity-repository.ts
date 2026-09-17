@@ -12,6 +12,7 @@ interface ActivityRow {
   date: string;
   minutes: number;
   metres: number;
+  hasGpsLocations: boolean | number;
   createdAt: number;
 }
 
@@ -47,13 +48,20 @@ export async function loadActivities(
   }
   const rows = await database.query<ActivityRow[]>(
     `SELECT a.id, a.user_id AS userId, a.activity_type AS activityType, a.name,
-            CAST(a.activity_date AS CHAR) AS date, a.minutes, a.metres, a.created_at AS createdAt
+            CAST(a.activity_date AS CHAR) AS date, a.minutes, a.metres,
+            EXISTS(SELECT 1 FROM activity_locations l WHERE l.activity_id = a.id) AS hasGpsLocations,
+            a.created_at AS createdAt
        FROM activities a
       ${clauses.length ? `WHERE ${clauses.join(" AND ")}` : ""}
       ORDER BY a.activity_date DESC, a.created_at DESC`,
     values,
   );
-  return attachPeople(rows);
+  return attachPeople(
+    rows.map((row) => ({
+      ...row,
+      hasGpsLocations: Boolean(row.hasGpsLocations),
+    })),
+  );
 }
 
 export async function attachPeople<T extends ActivityRow>(

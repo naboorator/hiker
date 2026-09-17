@@ -7,27 +7,35 @@
     "dev": "tsx watch server.ts",
     "start": "tsx server.ts",
     "start:prod": "node dist/server.js",
-    "build": "tsc -p tsconfig.json && cp openapi.yaml dist/openapi.yaml",
+    "build": "rm -rf dist && tsc -p tsconfig.json && cp openapi.yaml dist/openapi.yaml && cp -R email dist/email",
     "build:zip": "rm -rf dist && npm run build && rm -f api.zip && zip -rq api.zip dist package.json package-lock.json",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "seed:users": "tsx scripts/seed-random-users.ts",
     "seed:activities": "tsx scripts/seed-user-activities.ts",
     "seed:friend-activities": "tsx scripts/seed-friend-activities.ts",
-    "test:authorization": "tsx scripts/test-authorization.ts"
+    "test:authorization": "tsx scripts/test-authorization.ts",
+    "test:email": "tsx --test tests/email.test.ts tests/rate-limit.test.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.3",
-    "mariadb": "^3.5.4"
+    "mariadb": "^3.5.4",
+    "nodemailer": "^10.0.10"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.3.0",
+    "@types/nodemailer": "^8.0.2",
     "tsx": "^4.20.5",
     "typescript": "^6.0.2"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "fsevents@2.3.3": true
   }
 }

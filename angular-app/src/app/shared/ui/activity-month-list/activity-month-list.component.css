@@ -31,6 +31,16 @@ h2 {
 .entries .author {
   color: #245e3b;
 }
+.activity-link {
+  color: #245e3b;
+  font-weight: 800;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.activity-link:hover,
+.activity-link:focus-visible {
+  color: #d66d2f;
+}
 .entries .friend-reactions {
   display: inline-flex;
   flex-wrap: wrap;
@@ -66,6 +76,25 @@ h2 {
   color: #a44747;
   font-size: 0.75rem;
   font-weight: 800;
+}
+.entries .gps-route {
+  display: inline-grid;
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  border-radius: 999px;
+  background: #e4efe6;
+  color: #245e3b;
+}
+.entries .gps-route svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
 }
 .entries .slaps {
   position: relative;

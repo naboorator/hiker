@@ -1,0 +1,15 @@
+{
+  "activityDetail": {
+    "subtitle": "Activity details",
+    "back": "Back to my activities",
+    "loading": "Loading activity…",
+    "notFound": "The activity could not be found.",
+    "unavailable": "This activity is not available to you. You can only view your own activities or your friends’ activities.",
+    "date": "Date",
+    "time": "Time active",
+    "distance": "Distance",
+    "type": "Activity type",
+    "people": "People present",
+    "noPeople": "No people were added to this activity."
+  }
+}

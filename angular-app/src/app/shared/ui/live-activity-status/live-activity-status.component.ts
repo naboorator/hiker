@@ -8,10 +8,11 @@ import {
   output,
   signal,
 } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { LIVE_ACTIVITY_TIMER_INTERVAL_MS } from '../../../core/constants/live-activity.constants';
 import type { LiveActivity } from '../../../core/interface/live-activity.interface';
-import { formatTrackedDistance, trackedDistance } from '../../../core/utils/geo-distance.helpers';
+import { formatTrackedDistance } from '../../../core/utils/geo-distance.helpers';
 import {
   elapsedMilliseconds,
   formatElapsedTime,
@@ -19,7 +20,7 @@ import {
 
 @Component({
   selector: 'app-live-activity-status',
-  imports: [TranslocoPipe],
+  imports: [DatePipe, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './live-activity-status.component.html',
   styleUrl: './live-activity-status.component.css',
@@ -38,11 +39,10 @@ export class LiveActivityStatusComponent {
   readonly locationKey = computed(
     () => `liveActivity.location.${this.activity().locationTracking}`,
   );
-  readonly distance = computed(() =>
-    formatTrackedDistance(trackedDistance(this.activity().locations)),
-  );
+  readonly gpsPulseKey = computed(() => this.activity().lastAcceptedSampleAt ?? 'waiting');
+  readonly distance = computed(() => formatTrackedDistance(this.activity().trackedDistanceMetres));
   readonly canRetryLocation = computed(() =>
-    ['denied', 'error'].includes(this.activity().locationTracking),
+    ['denied', 'unavailable', 'stale', 'error'].includes(this.activity().locationTracking),
   );
 
   constructor() {

@@ -1,8 +1,8 @@
-import { randomInt, randomUUID } from 'node:crypto';
-import { database, withTransaction } from '../core/database.js';
+import { randomInt, randomUUID } from "node:crypto";
+import { database, withTransaction } from "../core/database.js";
 
-const targetEmail = process.env['TARGET_USER_EMAIL'] ?? 'zbarek@gmail.com';
-const targetMonth = process.env['TARGET_MONTH'] ?? '2026-09';
+const targetEmail = process.env["TARGET_USER_EMAIL"] ?? "zbarek@gmail.com";
+const targetMonth = process.env["TARGET_MONTH"] ?? "2026-09";
 
 interface FriendUser {
   id: string;
@@ -28,15 +28,20 @@ try {
     [target.id, target.id, target.id],
   );
 
-  const results: { name: string; email: string; activitiesAdded: number }[] = [];
+  const results: { name: string; email: string; activitiesAdded: number }[] =
+    [];
   await withTransaction(async (connection) => {
     for (const friend of friends) {
       const activityCount = randomInt(2, 11);
-      results.push({ name: friend.name, email: friend.email, activitiesAdded: activityCount });
+      results.push({
+        name: friend.name,
+        email: friend.email,
+        activitiesAdded: activityCount,
+      });
 
       for (let index = 0; index < activityCount; index++) {
         const activityId = randomUUID();
-        const day = String(randomInt(1, 31)).padStart(2, '0');
+        const day = String(randomInt(1, 31)).padStart(2, "0");
         await connection.query(
           `INSERT INTO activities
              (id, user_id, activity_type, name, activity_date, minutes, metres, created_at)
@@ -52,7 +57,7 @@ try {
           ],
         );
         await connection.query(
-          'INSERT INTO activity_people (activity_id, position, person_name) VALUES (?, 0, ?)',
+          "INSERT INTO activity_people (activity_id, position, person_name) VALUES (?, 0, ?)",
           [activityId, friend.name],
         );
       }
@@ -65,10 +70,13 @@ try {
       targetEmail,
       targetMonth,
       friends: results.length,
-      activitiesAdded: results.reduce((total, result) => total + result.activitiesAdded, 0),
+      activitiesAdded: results.reduce(
+        (total, result) => total + result.activitiesAdded,
+        0,
+      ),
       minimumMinutes: 30,
       maximumMinutes: 90,
-      activityType: 'hiking',
+      activityType: "hiking",
     }),
   );
 } finally {

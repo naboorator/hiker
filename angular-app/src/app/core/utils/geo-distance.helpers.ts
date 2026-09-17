@@ -1,10 +1,27 @@
-import { ACTIVITY_GPS_FILTERS } from '../constants/live-activity.constants';
+import {
+  ACTIVITY_GPS_FILTERS,
+  LIVE_ACTIVITY_MAX_DRIFT_THRESHOLD_METRES,
+} from '../constants/live-activity.constants';
 import type { ActivityType } from '../interface/activity-type.type';
 import type { LiveActivityLocation } from '../interface/live-activity-location.interface';
+import type { LocationRejectionReason } from '../interface/live-activity-status.type';
 
 const earthRadiusMetres = 6_371_000;
 
 const radians = (degrees: number): number => (degrees * Math.PI) / 180;
+
+export function minimumReliableMovement(
+  previous: Pick<LiveActivityLocation, 'accuracy'>,
+  next: Pick<LiveActivityLocation, 'accuracy'>,
+  activityType: ActivityType,
+): number {
+  const configuredMinimum = ACTIVITY_GPS_FILTERS[activityType].minimumMovementMetres;
+  const combinedGpsUncertainty = Math.hypot(previous.accuracy, next.accuracy);
+  return Math.max(
+    configuredMinimum,
+    Math.min(combinedGpsUncertainty, LIVE_ACTIVITY_MAX_DRIFT_THRESHOLD_METRES),
+  );
+}
 
 export function distanceBetweenLocations(
   first: Pick<LiveActivityLocation, 'latitude' | 'longitude'>,
@@ -47,9 +64,33 @@ export function canAppendLocation(
   const distance = distanceBetweenLocations(previous, next);
   const filter = ACTIVITY_GPS_FILTERS[activityType];
   return (
-    distance >= filter.minimumMovementMetres &&
+    distance >= minimumReliableMovement(previous, next, activityType) &&
     distance / elapsedSeconds <= filter.maximumSpeedMetresPerSecond
   );
+}
+
+export function locationRejectionReason(
+  previous: LiveActivityLocation | undefined,
+  next: LiveActivityLocation,
+  activityType: ActivityType,
+): LocationRejectionReason {
+  if (
+    !Number.isFinite(next.latitude) ||
+    !Number.isFinite(next.longitude) ||
+    !Number.isFinite(next.accuracy) ||
+    !Number.isFinite(Date.parse(next.recordedAt))
+  )
+    return 'coordinates';
+  if (next.accuracy < 0 || next.accuracy > ACTIVITY_GPS_FILTERS[activityType].maximumAccuracyMetres)
+    return 'accuracy';
+  if (!previous || previous.segment !== next.segment) return null;
+  const elapsedSeconds = (Date.parse(next.recordedAt) - Date.parse(previous.recordedAt)) / 1_000;
+  if (elapsedSeconds <= 0) return 'timestamp';
+  const distance = distanceBetweenLocations(previous, next);
+  if (distance < minimumReliableMovement(previous, next, activityType)) return 'movement';
+  if (distance / elapsedSeconds > ACTIVITY_GPS_FILTERS[activityType].maximumSpeedMetresPerSecond)
+    return 'speed';
+  return null;
 }
 
 export function trackedDistance(locations: readonly LiveActivityLocation[]): number {

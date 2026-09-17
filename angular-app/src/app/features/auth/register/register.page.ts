@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormField, email, form, required } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AuthService } from '../../../core/auth/auth.service';
 import type { RegisterDraft } from '../../../core/interface/register-draft.interface';
 import { apiErrorMessage } from '../../../core/utils/api-error.helpers';
@@ -15,6 +15,7 @@ import { apiErrorMessage } from '../../../core/utils/api-error.helpers';
 export class RegisterPage {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly transloco = inject(TranslocoService);
   readonly model = signal<RegisterDraft>({ name: '', email: '', password: '', repeatPassword: '' });
   readonly registerForm = form(this.model, (schema) => {
     required(schema.name);
@@ -44,7 +45,10 @@ export class RegisterPage {
     }
     this.submitting.set(true);
     try {
-      await this.auth.register(this.model());
+      await this.auth.register({
+        ...this.model(),
+        language: this.transloco.getActiveLang() === 'si' ? 'si' : 'en',
+      });
       await this.router.navigate(['/login'], { state: { registered: true } });
     } catch (error) {
       this.error.set(apiErrorMessage(error, 'Unable to register. Please try again.'));

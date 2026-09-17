@@ -107,7 +107,7 @@ export class HomePage {
   async save(draft: HikeDraft): Promise<void> {
     this.liveActivity.markSaving(draft);
     try {
-      await this.store.addMockHike(draft);
+      await this.store.addMockHike(await this.liveActivity.withGpsLocations(draft));
       this.liveActivity.completeSave();
       this.completionModalOpen.set(false);
       this.completionDraft.set(null);

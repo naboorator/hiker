@@ -4,5 +4,6 @@ export interface AdminUser {
   email: string;
   role: 'normal_user' | 'admin';
   status: 'active' | 'blocked';
+  emailConfirmed: number;
   createdAt: string;
 }

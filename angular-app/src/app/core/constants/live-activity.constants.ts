@@ -2,7 +2,14 @@ import type { ActivityType } from '../interface/activity-type.type';
 import type { ActivityGpsFilter } from '../interface/activity-gps-filter.interface';
 
 export const LIVE_ACTIVITY_STORAGE_KEY = 'my-hike-live-activity-v1';
-export const LIVE_ACTIVITY_VERSION = 1 as const;
+export const LIVE_ACTIVITY_VERSION = 2 as const;
+export const LIVE_ACTIVITY_STALE_TIMEOUT_MS = 45_000;
+export const LIVE_ACTIVITY_WATCHDOG_INTERVAL_MS = 5_000;
+export const LIVE_ACTIVITY_RETRY_DELAYS_MS = [1_000, 2_000, 5_000, 10_000, 20_000] as const;
+export const LIVE_ACTIVITY_PERSISTENCE_FLUSH_MS = 5_000;
+export const LIVE_ACTIVITY_MAX_PENDING_SAMPLES = 250;
+export const LIVE_ACTIVITY_MAX_ACCEPTED_SAMPLES = 20_000;
+export const LIVE_ACTIVITY_MAX_DRIFT_THRESHOLD_METRES = 12;
 export const ACTIVITY_GPS_FILTERS: Readonly<Record<ActivityType, ActivityGpsFilter>> = {
   hiking: {
     maximumAccuracyMetres: 40,

@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 
-type StoreName = 'hikes' | 'settings' | 'weights';
+type StoreName = 'hikes' | 'settings' | 'weights' | 'liveActivityLocations';
 
 @Injectable({ providedIn: 'root' })
 export class IndexedDbClient {
   private readonly database = new Promise<IDBDatabase>((resolve, reject) => {
-    const request = indexedDB.open('hike-log', 3);
+    const request = indexedDB.open('hike-log', 4);
     request.onupgradeneeded = () => {
       const db = request.result;
       if (!db.objectStoreNames.contains('hikes')) db.createObjectStore('hikes', { keyPath: 'id' });
@@ -13,6 +13,8 @@ export class IndexedDbClient {
         db.createObjectStore('settings', { keyPath: 'key' });
       if (!db.objectStoreNames.contains('weights'))
         db.createObjectStore('weights', { keyPath: 'id' });
+      if (!db.objectStoreNames.contains('liveActivityLocations'))
+        db.createObjectStore('liveActivityLocations', { keyPath: 'id' });
     };
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
@@ -58,6 +60,19 @@ export class IndexedDbClient {
       tx.objectStore(storeName).delete(key);
       tx.oncomplete = () => resolve();
       tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  async putMany<T>(storeName: StoreName, values: readonly T[]): Promise<void> {
+    if (!values.length) return;
+    const db = await this.database;
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readwrite');
+      const store = tx.objectStore(storeName);
+      values.forEach((value) => store.put(value));
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+      tx.onabort = () => reject(tx.error);
     });
   }
 }

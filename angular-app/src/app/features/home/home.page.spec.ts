@@ -17,6 +17,7 @@ describe('HomePage live activity flow', () => {
     stop: vi.fn(),
     draft: vi.fn(),
     markSaving: vi.fn(),
+    withGpsLocations: vi.fn(),
     saveFailed: vi.fn(),
     completeSave: vi.fn(),
     discard: vi.fn(),
@@ -28,6 +29,7 @@ describe('HomePage live activity flow', () => {
     Object.values(liveActivity).forEach((value) => {
       if (typeof value === 'function' && 'mockReset' in value) value.mockReset();
     });
+    liveActivity.withGpsLocations.mockImplementation(async (draft: HikeDraft) => draft);
     TestBed.configureTestingModule({
       providers: [
         {
@@ -95,6 +97,29 @@ describe('HomePage live activity flow', () => {
     expect(liveActivity.markSaving).toHaveBeenCalled();
     expect(addMockHike).toHaveBeenCalledWith(draft);
     expect(liveActivity.completeSave).toHaveBeenCalled();
+  });
+
+  it('adds available GPS samples to the activity sent to the API', async () => {
+    const draft: HikeDraft = {
+      activityType: 'hiking',
+      name: 'Hill',
+      date: '2026-09-10',
+      minutes: 30,
+      metres: 200,
+      people: ['Zoran'],
+    };
+    const gpsLocations = [
+      {
+        latitude: 46.05,
+        longitude: 14.5,
+        accuracy: 10,
+        recordedAt: '2026-09-10T10:00:00Z',
+        segment: 0,
+      },
+    ];
+    liveActivity.withGpsLocations.mockResolvedValue({ ...draft, gpsLocations });
+    await page.save(draft);
+    expect(addMockHike).toHaveBeenCalledWith({ ...draft, gpsLocations });
   });
 
   it('preserves the stopped activity when the API save fails', async () => {

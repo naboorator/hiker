@@ -67,6 +67,10 @@ p {
   background: linear-gradient(145deg, #fff1d7, #ffd69d);
 }
 
+.emails .icon {
+  background: linear-gradient(145deg, #e1f2ed, #b9dfd2);
+}
+
 .icon svg {
   width: 42px;
   height: 42px;
@@ -80,6 +84,14 @@ p {
 .icon .line {
   fill: none;
   stroke: #ef7d32;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+}
+
+.icon .paper {
+  fill: none;
+  stroke: #fff;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 4;

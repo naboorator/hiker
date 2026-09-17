@@ -22,6 +22,8 @@ import type { PaginatedResponse } from '../interface/paginated-response.interfac
 import type { AdminUserDraft } from '../interface/admin-user-draft.interface';
 import type { ChangePasswordDraft } from '../interface/change-password-draft.interface';
 import type { AdminActivityPage } from '../interface/admin-activity-page.interface';
+import type { AdminTestEmailDraft } from '../interface/admin-test-email-draft.interface';
+import type { ActivityGpsLocation } from '../interface/activity-gps-location.interface';
 import { environment } from '../../../environments/environment';
 
 type StoredSetting = { key: string; value: unknown };
@@ -58,6 +60,10 @@ export class HikeApiService {
     return firstValueFrom(this.http.get<Hike[]>(`${apiUrl}/activities`));
   }
 
+  async loadHike(id: string): Promise<Hike> {
+    return firstValueFrom(this.http.get<Hike>(`${apiUrl}/activities/${id}`));
+  }
+
   async saveHike(draft: HikeDraft): Promise<Hike> {
     await this.ensureMigration();
     return firstValueFrom(this.http.post<Hike>(`${apiUrl}/activities`, draft));
@@ -71,6 +77,12 @@ export class HikeApiService {
   async deleteHike(id: string): Promise<void> {
     await this.ensureMigration();
     return firstValueFrom(this.http.delete<void>(`${apiUrl}/activities/${id}`));
+  }
+
+  async loadActivityLocations(id: string): Promise<ActivityGpsLocation[]> {
+    return firstValueFrom(
+      this.http.get<ActivityGpsLocation[]>(`${apiUrl}/activities/${id}/locations`),
+    );
   }
 
   async loadSettings(): Promise<AppSettings> {
@@ -230,6 +242,10 @@ export class HikeApiService {
         params: { page, pageSize },
       }),
     );
+  }
+
+  async sendAdminTestEmail(draft: AdminTestEmailDraft): Promise<void> {
+    await firstValueFrom(this.http.post<void>(`${apiUrl}/admin/emails/send-test-email`, draft));
   }
 
   private async migrateIndexedDb(): Promise<void> {

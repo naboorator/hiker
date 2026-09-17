@@ -1,0 +1,41 @@
+<main>
+  <app-header
+    [appName]="store.settings().appName"
+    [subtitle]="'admin.emailsSubtitle' | transloco"
+  />
+  <a class="back" routerLink="/admin">← {{ 'admin.title' | transloco }}</a>
+  <section>
+    <h1>{{ 'admin.emails' | transloco }}</h1>
+    <p>{{ 'admin.emailsDashboardDescription' | transloco }}</p>
+    <div class="email-cards">
+      <a class="email-card test-email" routerLink="/admin/emails/send-test-email">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64">
+            <rect x="7" y="14" width="42" height="33" rx="7" />
+            <path class="light-line" d="m9 19 19 15 19-15" />
+            <path class="accent" d="m39 43 18-9-7 19-4-7-7-3Z" />
+          </svg>
+        </span>
+        <span>
+          <strong>{{ 'admin.sendTestEmail' | transloco }}</strong>
+          <small>{{ 'admin.sendTestEmailDescription' | transloco }}</small>
+        </span>
+        <b aria-hidden="true">→</b>
+      </a>
+      <article class="email-card more">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64">
+            <rect x="10" y="10" width="44" height="44" rx="13" />
+            <circle class="accent" cx="22" cy="32" r="4" />
+            <circle class="accent" cx="32" cy="32" r="4" />
+            <circle class="accent" cx="42" cy="32" r="4" />
+          </svg>
+        </span>
+        <span>
+          <strong>{{ 'admin.moreEmailOptions' | transloco }}</strong>
+          <small>{{ 'admin.moreEmailOptionsDescription' | transloco }}</small>
+        </span>
+      </article>
+    </div>
+  </section>
+</main>

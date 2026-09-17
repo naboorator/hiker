@@ -1,0 +1,8 @@
+Confirm your My Hike registration
+
+Hello {{name}},
+
+Confirm your email address before logging in:
+{{confirmationUrl}}
+
+This link expires in {{expiryHours}} hours. If you did not register, ignore this message.

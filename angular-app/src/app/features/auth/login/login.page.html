@@ -26,7 +26,22 @@
         />
       </label>
       @if (error()) {
-        <p class="error" role="alert">{{ error() }}</p>
+        <p class="error" role="alert">
+          {{ error().startsWith('auth.') ? (error() | transloco) : error() }}
+        </p>
+      }
+      @if (confirmationRequired()) {
+        <button
+          type="button"
+          class="secondary"
+          [disabled]="resending()"
+          (click)="resendConfirmation()"
+        >
+          {{ (resending() ? 'auth.resendingConfirmation' : 'auth.resendConfirmation') | transloco }}
+        </button>
+      }
+      @if (confirmationResent()) {
+        <p class="success" role="status">{{ 'auth.confirmationResent' | transloco }}</p>
       }
       <button type="submit" [disabled]="submitting()">
         {{ (submitting() ? 'auth.loggingIn' : 'auth.login') | transloco }}

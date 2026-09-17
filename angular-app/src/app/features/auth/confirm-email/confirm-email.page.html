@@ -1,0 +1,23 @@
+<main class="auth-page">
+  <section class="auth-card">
+    <img src="hike-logo.png" alt="" />
+    <h1>{{ 'auth.confirmEmailTitle' | transloco }}</h1>
+    @switch (status()) {
+      @case ('confirming') {
+        <p class="intro" role="status">{{ 'auth.confirmingEmail' | transloco }}</p>
+      }
+      @case ('confirmed') {
+        <p class="success" role="status">{{ 'auth.emailConfirmed' | transloco }}</p>
+        <p class="switch">
+          <a routerLink="/login">{{ 'auth.continueToLogin' | transloco }}</a>
+        </p>
+      }
+      @case ('invalid') {
+        <p class="error" role="alert">{{ 'auth.confirmationInvalid' | transloco }}</p>
+        <p class="switch">
+          <a routerLink="/login">{{ 'auth.backToLogin' | transloco }}</a>
+        </p>
+      }
+    }
+  </section>
+</main>

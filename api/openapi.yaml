@@ -1,10 +1,10 @@
 openapi: 3.0.3
 info:
   title: My Hike API
-  version: 1.0.0
+  version: 1.1.0
   description: |
-    REST API for My Hike. Except for registration, login, health, and this
-    document, endpoints require a JWT access token in the Authorization header.
+    REST API for My Hike. Except for registration, login, email confirmation, password recovery,
+    health, and this document, endpoints require a JWT access token in the Authorization header.
     Administrator endpoints additionally require the `admin` role.
 servers:
   - url: http://localhost:3000
@@ -62,7 +62,7 @@ paths:
               $ref: "#/components/schemas/RegisterRequest"
       responses:
         "201":
-          description: User registered
+          description: User registered as unconfirmed and a confirmation email queued for delivery
           content:
             application/json:
               schema:
@@ -75,6 +75,12 @@ paths:
           $ref: "#/components/responses/BadRequest"
         "409":
           description: Email is already registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Registration rate limit exceeded
           content:
             application/json:
               schema:
@@ -104,6 +110,96 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+  /api/auth/forgot-password:
+    post:
+      tags: [Authentication]
+      summary: Request password reset instructions
+      description: Always returns the same response so account existence is not disclosed.
+      operationId: forgotPassword
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ForgotPasswordRequest"
+      responses:
+        "202":
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [message]
+                properties:
+                  message:
+                    type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "429":
+          description: Password reset request rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /api/auth/confirm-email:
+    post:
+      tags: [Authentication]
+      summary: Confirm a newly registered email address
+      operationId: confirmEmail
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfirmEmailRequest"
+      responses:
+        "204":
+          description: Email address confirmed
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /api/auth/resend-confirmation:
+    post:
+      tags: [Authentication]
+      summary: Request another email confirmation message
+      description: Always returns the same response so account status is not disclosed.
+      operationId: resendEmailConfirmation
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResendConfirmationRequest"
+      responses:
+        "202":
+          description: Request accepted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "429":
+          description: Confirmation resend rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /api/auth/reset-password:
+    post:
+      tags: [Authentication]
+      summary: Reset a password with a single-use token
+      operationId: resetPassword
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPasswordRequest"
+      responses:
+        "204":
+          description: Password reset successfully
+        "400":
+          $ref: "#/components/responses/BadRequest"
   /api/account/password:
     put:
       tags: [Authentication]
@@ -153,7 +249,7 @@ paths:
       summary: Create an activity
       operationId: createActivity
       requestBody:
-        $ref: "#/components/requestBodies/ActivityInput"
+        $ref: "#/components/requestBodies/CreateActivityInput"
       responses:
         "201":
           description: Activity created
@@ -170,7 +266,7 @@ paths:
       - $ref: "#/components/parameters/IdPath"
     get:
       tags: [Activities]
-      summary: Get an activity owned by the user; administrators may read any activity
+      summary: Get an activity owned by the user or an accepted friend; administrators may read any activity
       operationId: getActivity
       responses:
         "200":
@@ -181,6 +277,12 @@ paths:
                 $ref: "#/components/schemas/Activity"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: Activity belongs neither to the authenticated user nor to an accepted friend
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "404":
           $ref: "#/components/responses/NotFound"
     put:
@@ -209,6 +311,26 @@ paths:
       responses:
         "204":
           description: Activity deleted
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/activities/{id}/locations:
+    parameters:
+      - $ref: "#/components/parameters/IdPath"
+    get:
+      tags: [Activities]
+      summary: Get the ordered GPS route for an owned activity; administrators may read any route
+      operationId: getActivityLocations
+      responses:
+        "200":
+          description: Ordered GPS samples grouped by their segment value
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityLocation"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -779,6 +901,38 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+  /api/admin/emails/send-test-email:
+    post:
+      tags: [Administration]
+      summary: Send a test email through the configured provider
+      operationId: sendAdminTestEmail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminTestEmailRequest"
+      responses:
+        "204":
+          description: Test email accepted by the provider
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          description: Test email rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "502":
+          description: Configured email provider rejected the message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /api/admin/users/{id}/block:
     put:
       tags: [Administration]
@@ -895,6 +1049,12 @@ components:
         maximum: 31
         default: 10
   requestBodies:
+    CreateActivityInput:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateActivityInput"
     ActivityInput:
       required: true
       content:
@@ -945,6 +1105,9 @@ components:
       properties:
         error:
           type: string
+        code:
+          type: string
+          description: Optional machine-readable error code, for example EMAIL_NOT_CONFIRMED
     Health:
       type: object
       required: [status, database]
@@ -979,10 +1142,14 @@ components:
       allOf:
         - $ref: "#/components/schemas/PublicUser"
         - type: object
-          required: [status, createdAt]
+          required: [status, emailConfirmed, createdAt]
           properties:
             status:
               $ref: "#/components/schemas/UserStatus"
+            emailConfirmed:
+              type: integer
+              enum: [0, 1]
+              description: Whether the registered email address is confirmed
             createdAt:
               type: string
               format: date-time
@@ -997,6 +1164,21 @@ components:
           format: email
         role:
           $ref: "#/components/schemas/UserRole"
+    AdminTestEmailRequest:
+      type: object
+      required: [email, subject, body]
+      properties:
+        email:
+          type: string
+          format: email
+        subject:
+          type: string
+          minLength: 1
+          maxLength: 200
+        body:
+          type: string
+          minLength: 1
+          maxLength: 10000
     RegisterRequest:
       type: object
       required: [name, email, password, repeatPassword]
@@ -1014,6 +1196,52 @@ components:
           type: string
           format: password
           minLength: 8
+        language:
+          $ref: "#/components/schemas/EmailLanguage"
+    EmailLanguage:
+      type: string
+      enum: [en, si]
+      default: en
+    ForgotPasswordRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+        language:
+          $ref: "#/components/schemas/EmailLanguage"
+    ResetPasswordRequest:
+      type: object
+      required: [token, password, repeatPassword]
+      properties:
+        token:
+          type: string
+          description: Opaque single-use token received by email
+        password:
+          type: string
+          format: password
+          minLength: 8
+        repeatPassword:
+          type: string
+          format: password
+          minLength: 8
+    ConfirmEmailRequest:
+      type: object
+      required: [token]
+      properties:
+        token:
+          type: string
+          minLength: 1
+    ResendConfirmationRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+        language:
+          $ref: "#/components/schemas/EmailLanguage"
     LoginRequest:
       type: object
       required: [email, password]
@@ -1052,7 +1280,17 @@ components:
           $ref: "#/components/schemas/PublicUser"
     ActivityType:
       type: string
-      enum: [hiking, fitness, cycling, tennis, badminton, table_tennis, construction, housework]
+      enum:
+        [
+          hiking,
+          fitness,
+          cycling,
+          tennis,
+          badminton,
+          table_tennis,
+          construction,
+          housework,
+        ]
     ActivityInput:
       type: object
       required: [activityType, name, date, minutes, metres, people]
@@ -1077,6 +1315,50 @@ components:
           minItems: 1
           items:
             type: string
+    CreateActivityInput:
+      allOf:
+        - $ref: "#/components/schemas/ActivityInput"
+        - type: object
+          properties:
+            gpsLocations:
+              type: array
+              maxItems: 20000
+              description: Ordered accepted GPS samples collected while tracking the activity
+              items:
+                $ref: "#/components/schemas/ActivityLocationInput"
+    ActivityLocationInput:
+      type: object
+      required: [latitude, longitude, accuracy, recordedAt, segment]
+      properties:
+        latitude:
+          type: number
+          format: double
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          format: double
+          minimum: -180
+          maximum: 180
+        accuracy:
+          type: number
+          format: double
+          minimum: 0
+        recordedAt:
+          type: string
+          format: date-time
+        segment:
+          type: integer
+          minimum: 0
+    ActivityLocation:
+      allOf:
+        - $ref: "#/components/schemas/ActivityLocationInput"
+        - type: object
+          required: [sequence]
+          properties:
+            sequence:
+              type: integer
+              minimum: 0
     ActivityMigrationItem:
       allOf:
         - $ref: "#/components/schemas/ActivityInput"
@@ -1092,11 +1374,14 @@ components:
       allOf:
         - $ref: "#/components/schemas/ActivityMigrationItem"
         - type: object
-          required: [userId, likes, likedBy, slaps, slappedBy]
+          required: [userId, hasGpsLocations, likes, likedBy, slaps, slappedBy]
           properties:
             userId:
               type: string
               format: uuid
+            hasGpsLocations:
+              type: boolean
+              description: Whether at least one stored GPS route sample exists for the activity
             likes:
               type: integer
               minimum: 0

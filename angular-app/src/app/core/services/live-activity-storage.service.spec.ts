@@ -5,7 +5,7 @@ import { LogWrapper } from '../logging/log-wrapper.service';
 import { LiveActivityStorageService } from './live-activity-storage.service';
 
 const activity = {
-  version: 1 as const,
+  version: 2 as const,
   id: 'activity-1',
   userId: 'user-1',
   activityType: 'hiking' as const,
@@ -15,6 +15,12 @@ const activity = {
   locationTracking: 'pending' as const,
   currentSegment: 0,
   locations: [],
+  trackedDistanceMetres: 0,
+  lastCallbackAt: null,
+  lastValidSampleAt: null,
+  lastAcceptedSampleAt: null,
+  rejectionReason: null,
+  storageWarning: false,
   completionDraft: null,
 };
 
@@ -34,6 +40,9 @@ describe('LiveActivityStorageService', () => {
   it('stores and restores only the matching user activity', () => {
     expect(service.write(activity)).toBe(true);
     expect(service.read('user-1')).toEqual(activity);
+    expect(JSON.parse(localStorage.getItem(LIVE_ACTIVITY_STORAGE_KEY) ?? '{}')).not.toHaveProperty(
+      'locations',
+    );
     expect(service.read('user-2')).toBeNull();
   });
 
@@ -45,7 +54,7 @@ describe('LiveActivityStorageService', () => {
   });
 
   it('ignores an unsupported storage version', () => {
-    localStorage.setItem(LIVE_ACTIVITY_STORAGE_KEY, JSON.stringify({ ...activity, version: 2 }));
+    localStorage.setItem(LIVE_ACTIVITY_STORAGE_KEY, JSON.stringify({ ...activity, version: 3 }));
     expect(service.read('user-1')).toBeNull();
   });
 

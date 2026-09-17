@@ -12,12 +12,16 @@ import { FriendsStore } from './core/stores/friends.store';
 import { MockHikeStore } from './core/stores/mock-hike.store';
 import { LiveActivityStore } from './core/stores/live-activity.store';
 import { ActivitiesPage } from './features/activities/activities.page';
+import { ActivityDetailPage } from './features/activity-detail/activity-detail.page';
 import { AdminActivitiesPage } from './features/admin/activities/admin-activities.page';
+import { AdminEmailsPage } from './features/admin/emails/admin-emails.page';
+import { AdminSendTestEmailPage } from './features/admin/emails/send-test-email/admin-send-test-email.page';
 import { AdminPage } from './features/admin/admin.page';
 import { AdminUsersPage } from './features/admin/users/admin-users.page';
 import { AdminUserEditPage } from './features/admin/users/edit/admin-user-edit.page';
 import { LoginPage } from './features/auth/login/login.page';
 import { RegisterPage } from './features/auth/register/register.page';
+import { ConfirmEmailPage } from './features/auth/confirm-email/confirm-email.page';
 import { FriendComparisonPage } from './features/friend-comparison/friend-comparison.page';
 import { FriendsActivitiesPage } from './features/friends-activities/friends-activities.page';
 import { FriendsDashboardPage } from './features/friends-dashboard/friends-dashboard.page';
@@ -51,12 +55,16 @@ interface ComponentCase {
 const componentCases: ComponentCase[] = [
   { name: 'App', component: App },
   { name: 'ActivitiesPage', component: ActivitiesPage },
+  { name: 'ActivityDetailPage', component: ActivityDetailPage },
   { name: 'AdminActivitiesPage', component: AdminActivitiesPage },
+  { name: 'AdminEmailsPage', component: AdminEmailsPage },
+  { name: 'AdminSendTestEmailPage', component: AdminSendTestEmailPage },
   { name: 'AdminPage', component: AdminPage },
   { name: 'AdminUsersPage', component: AdminUsersPage },
   { name: 'AdminUserEditPage', component: AdminUserEditPage },
   { name: 'LoginPage', component: LoginPage },
   { name: 'RegisterPage', component: RegisterPage },
+  { name: 'ConfirmEmailPage', component: ConfirmEmailPage },
   { name: 'FriendComparisonPage', component: FriendComparisonPage },
   { name: 'FriendsActivitiesPage', component: FriendsActivitiesPage },
   { name: 'FriendsDashboardPage', component: FriendsDashboardPage },
@@ -108,7 +116,7 @@ const componentCases: ComponentCase[] = [
     component: LiveActivityStatusComponent,
     inputs: {
       activity: {
-        version: 1,
+        version: 2,
         id: 'live-1',
         userId: 'user-1',
         activityType: 'hiking',
@@ -118,6 +126,12 @@ const componentCases: ComponentCase[] = [
         locationTracking: 'active',
         currentSegment: 0,
         locations: [],
+        trackedDistanceMetres: 0,
+        lastCallbackAt: null,
+        lastValidSampleAt: null,
+        lastAcceptedSampleAt: null,
+        rejectionReason: null,
+        storageWarning: false,
         completionDraft: null,
       },
     },
@@ -191,6 +205,8 @@ describe('Angular components', () => {
             isAuthenticated: signal(false),
             login: vi.fn(),
             register: vi.fn(),
+            confirmEmail: vi.fn().mockResolvedValue(undefined),
+            resendConfirmation: vi.fn().mockResolvedValue(undefined),
             logout: vi.fn(),
           },
         },
@@ -234,6 +250,7 @@ describe('Angular components', () => {
               totalDays: 0,
               totalPages: 1,
             }),
+            sendAdminTestEmail: vi.fn().mockResolvedValue(undefined),
             loadFriendComparison: vi.fn().mockResolvedValue([]),
             changePassword: vi.fn().mockResolvedValue(undefined),
           },

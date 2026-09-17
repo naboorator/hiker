@@ -1,0 +1,66 @@
+<main>
+  <app-header
+    [appName]="store.settings().appName"
+    [subtitle]="'activityDetail.subtitle' | transloco"
+  />
+
+  <a class="back-link" routerLink="/my-activities">← {{ 'activityDetail.back' | transloco }}</a>
+
+  @if (loading()) {
+    <section class="state" aria-live="polite">{{ 'activityDetail.loading' | transloco }}</section>
+  } @else if (unavailable()) {
+    <section class="state error" role="alert">
+      {{ 'activityDetail.unavailable' | transloco }}
+    </section>
+  } @else if (loadFailed()) {
+    <section class="state error" role="alert">{{ 'activityDetail.notFound' | transloco }}</section>
+  } @else if (activity(); as item) {
+    <section class="detail-card">
+      <div class="heading">
+        <span class="activity-icon" aria-hidden="true">⌁</span>
+        <div>
+          <p>{{ typeTranslationKey(item) | transloco }}</p>
+          <h1>{{ item.name }}</h1>
+        </div>
+      </div>
+
+      <dl class="metrics">
+        <div>
+          <dt>{{ 'activityDetail.date' | transloco }}</dt>
+          <dd>{{ formattedDate(item.date) }}</dd>
+        </div>
+        <div>
+          <dt>{{ 'activityDetail.time' | transloco }}</dt>
+          <dd>{{ item.minutes }} {{ 'common.minuteShort' | transloco }}</dd>
+        </div>
+        <div>
+          <dt>{{ 'activityDetail.distance' | transloco }}</dt>
+          <dd>
+            @if (item.metres >= 1000) {
+              {{ (item.metres / 1000).toFixed(2) }} {{ 'common.kilometreShort' | transloco }}
+            } @else {
+              {{ item.metres }} {{ 'common.metreShort' | transloco }}
+            }
+          </dd>
+        </div>
+        <div>
+          <dt>{{ 'activityDetail.type' | transloco }}</dt>
+          <dd>{{ typeTranslationKey(item) | transloco }}</dd>
+        </div>
+      </dl>
+
+      <div class="people">
+        <h2>{{ 'activityDetail.people' | transloco }}</h2>
+        @if (item.people.length) {
+          <ul>
+            @for (person of item.people; track person) {
+              <li><span aria-hidden="true">●</span>{{ person }}</li>
+            }
+          </ul>
+        } @else {
+          <p>{{ 'activityDetail.noPeople' | transloco }}</p>
+        }
+      </div>
+    </section>
+  }
+</main>

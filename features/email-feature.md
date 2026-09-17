@@ -82,17 +82,16 @@ User-facing email text should support the same languages as the frontend. Store
 the selected language with the user or pass it as part of the registration
 context before localized templates are introduced.
 
-## Possible later phase: email verification
+## Email confirmation
 
-The welcome email does not prove ownership of an address. If verification is
-required later, add:
-
-- `email_verified_at` to the user record;
-- single-use, securely hashed verification tokens with an expiry time;
-- an endpoint that consumes a token and verifies the account;
-- an endpoint for resending verification email with rate limiting;
-- frontend states for pending, successful, expired, and invalid verification;
-- corresponding changes to `api/openapi.yaml`.
+New accounts are stored with `email_confirmed = 0`. Registration creates a
+cryptographically random, single-use confirmation token, stores only its
+SHA-256 hash, and emails a frontend link in the user's selected language. The
+link expires after 24 hours. The frontend exchanges it through
+`POST /api/auth/confirm-email`; only then is login allowed. A rate-limited
+`POST /api/auth/resend-confirmation` endpoint replaces outstanding tokens and
+always returns a generic response to prevent account discovery. Existing users
+are marked confirmed by migration `006_add_email_confirmation.sql`.
 
 ## Security and operational requirements
 

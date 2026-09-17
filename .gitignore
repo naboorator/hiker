@@ -1,3 +1,6 @@
 .idea
 /api/.env
 /api/node_modules/
+/api/dist/
+/angular-app/dist/
+/angular-app/node_modules/

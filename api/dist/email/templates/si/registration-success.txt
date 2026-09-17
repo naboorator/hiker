@@ -1,8 +1,0 @@
-Dobrodošli v My Hike
-
-Pozdravljeni, {{name}}!
-
-Vaš račun je bil uspešno registriran.
-Prijava: {{loginUrl}}
-
-Ta poštni predal ni nadzorovan. Na sporočilo ne odgovarjajte.

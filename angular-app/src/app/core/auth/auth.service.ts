@@ -28,6 +28,14 @@ export class AuthService {
     await firstValueFrom(this.http.post(`${apiUrl}/register`, details));
   }
 
+  async confirmEmail(token: string): Promise<void> {
+    await firstValueFrom(this.http.post<void>(`${apiUrl}/confirm-email`, { token }));
+  }
+
+  async resendConfirmation(email: string, language: 'en' | 'si'): Promise<void> {
+    await firstValueFrom(this.http.post(`${apiUrl}/resend-confirmation`, { email, language }));
+  }
+
   logout(): void {
     localStorage.removeItem(tokenStorageKey);
     localStorage.removeItem(userStorageKey);

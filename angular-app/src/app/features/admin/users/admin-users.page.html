@@ -45,6 +45,12 @@
             @if (user.status === 'blocked') {
               <span class="status blocked">{{ 'admin.statusBlocked' | transloco }}</span>
             }
+            <span class="status" [class.blocked]="!user.emailConfirmed">
+              {{
+                (user.emailConfirmed ? 'admin.emailConfirmed' : 'admin.emailNotConfirmed')
+                  | transloco
+              }}
+            </span>
             <time [attr.datetime]="user.createdAt">
               <span aria-hidden="true">▣</span>
               {{ registrationDate(user) }}

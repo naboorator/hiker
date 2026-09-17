@@ -1,12 +1,12 @@
-import { randomUUID } from 'node:crypto';
-import { authenticatedUserId } from '../../core/auth.js';
-import { withTransaction } from '../../core/database.js';
-import { HttpError } from '../../core/http-error.js';
-import { toSqlDateTime } from '../../core/sql-date.js';
-import { activityInput, settingsInput, weightInput } from '../../core/validation.js';
-import { replaceActivityPeople } from '../../core/activity-repository.js';
+import { randomUUID } from "node:crypto";
+import { authenticatedUserId } from "../../core/auth.js";
+import { withTransaction } from "../../core/database.js";
+import { HttpError } from "../../core/http-error.js";
+import { toSqlDateTime } from "../../core/sql-date.js";
+import { activityInput, settingsInput, weightInput, } from "../../core/validation.js";
+import { replaceActivityPeople } from "../../core/activity-repository.js";
 export function registerBackupPostRoutes(router) {
-    router.post('/backup/import', async (request, response) => {
+    router.post("/backup/import", async (request, response) => {
         const userId = authenticatedUserId(response);
         const payload = backupPayload(request.body);
         const result = await withTransaction(async (connection) => {
@@ -16,10 +16,10 @@ export function registerBackupPostRoutes(router) {
             let skippedWeights = 0;
             if (payload.settings) {
                 const settings = settingsInput(payload.settings);
-                const [user] = await connection.query('SELECT name FROM users WHERE id = ? FOR UPDATE', [userId]);
+                const [user] = await connection.query("SELECT name FROM users WHERE id = ? FOR UPDATE", [userId]);
                 if (!user)
-                    throw new HttpError(404, 'User not found');
-                await connection.query('UPDATE users SET name = ? WHERE id = ?', [
+                    throw new HttpError(404, "User not found");
+                await connection.query("UPDATE users SET name = ? WHERE id = ?", [
                     settings.ownerName,
                     userId,
                 ]);
@@ -35,7 +35,7 @@ export function registerBackupPostRoutes(router) {
                     const source = candidate;
                     const input = activityInput(source);
                     if (input.minutes <= 0)
-                        throw new HttpError(400, 'Activity duration must be positive');
+                        throw new HttpError(400, "Activity duration must be positive");
                     const existing = await connection.query(`SELECT id FROM activities
               WHERE user_id = ? AND activity_type = ? AND name = ? AND activity_date = ?
                 AND minutes = ? AND metres = ?
@@ -112,20 +112,21 @@ export function registerBackupPostRoutes(router) {
     });
 }
 function backupPayload(value) {
-    if (!value || typeof value !== 'object')
-        throw new HttpError(400, 'Invalid backup file');
+    if (!value || typeof value !== "object")
+        throw new HttpError(400, "Invalid backup file");
     const source = value;
-    if (source['version'] !== 2)
-        throw new HttpError(400, 'Unsupported backup version');
-    if (!Array.isArray(source['activities']) || !Array.isArray(source['weights'])) {
-        throw new HttpError(400, 'Invalid backup file');
+    if (source["version"] !== 2)
+        throw new HttpError(400, "Unsupported backup version");
+    if (!Array.isArray(source["activities"]) ||
+        !Array.isArray(source["weights"])) {
+        throw new HttpError(400, "Invalid backup file");
     }
     return {
-        settings: source['settings'] && typeof source['settings'] === 'object'
-            ? source['settings']
+        settings: source["settings"] && typeof source["settings"] === "object"
+            ? source["settings"]
             : null,
-        activities: source['activities'],
-        weights: source['weights'],
+        activities: source["activities"],
+        weights: source["weights"],
     };
 }
 function validTimestamp(value) {

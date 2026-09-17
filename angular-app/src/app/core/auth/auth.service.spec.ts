@@ -46,4 +46,19 @@ describe('AuthService', () => {
     expect(service.user()).toBeNull();
     expect(localStorage.getItem(tokenStorageKey)).toBeNull();
   });
+
+  it('confirms an email and requests a replacement confirmation', async () => {
+    const confirmation = service.confirmEmail('confirmation-token');
+    const confirmRequest = http.expectOne('http://localhost:3000/api/auth/confirm-email');
+    expect(confirmRequest.request.method).toBe('POST');
+    expect(confirmRequest.request.body).toEqual({ token: 'confirmation-token' });
+    confirmRequest.flush(null);
+    await confirmation;
+
+    const resend = service.resendConfirmation('user@example.test', 'en');
+    const resendRequest = http.expectOne('http://localhost:3000/api/auth/resend-confirmation');
+    expect(resendRequest.request.body).toEqual({ email: 'user@example.test', language: 'en' });
+    resendRequest.flush({});
+    await resend;
+  });
 });

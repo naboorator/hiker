@@ -22,6 +22,7 @@ import type { PaginatedResponse } from '../interface/paginated-response.interfac
 import type { AdminUserDraft } from '../interface/admin-user-draft.interface';
 import type { ChangePasswordDraft } from '../interface/change-password-draft.interface';
 import type { AdminActivityPage } from '../interface/admin-activity-page.interface';
+import type { AdminTestEmailDraft } from '../interface/admin-test-email-draft.interface';
 import { environment } from '../../../environments/environment';
 
 type StoredSetting = { key: string; value: unknown };
@@ -230,6 +231,10 @@ export class HikeApiService {
         params: { page, pageSize },
       }),
     );
+  }
+
+  async sendAdminTestEmail(draft: AdminTestEmailDraft): Promise<void> {
+    await firstValueFrom(this.http.post<void>(`${apiUrl}/admin/emails/send-test-email`, draft));
   }
 
   private async migrateIndexedDb(): Promise<void> {

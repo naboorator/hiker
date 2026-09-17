@@ -1,5 +1,5 @@
-import { randomInt, randomUUID } from 'node:crypto';
-import { database, withTransaction } from '../core/database.js';
+import { randomInt, randomUUID } from "node:crypto";
+import { database, withTransaction } from "../core/database.js";
 
 interface SeedUser {
   id: string;
@@ -7,17 +7,21 @@ interface SeedUser {
 }
 
 const hikingNames = [
-  'Morning hike',
-  'Forest trail',
-  'Hill walk',
-  'Mountain adventure',
-  'Evening hike',
+  "Morning hike",
+  "Forest trail",
+  "Hill walk",
+  "Mountain adventure",
+  "Evening hike",
 ] as const;
 
 function randomDate(): string {
   const today = new Date();
   const date = new Date(
-    Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - randomInt(0, 366)),
+    Date.UTC(
+      today.getUTCFullYear(),
+      today.getUTCMonth(),
+      today.getUTCDate() - randomInt(0, 366),
+    ),
   );
   return date.toISOString().slice(0, 10);
 }
@@ -39,8 +43,10 @@ try {
       for (let index = 0; index < count; index++) {
         const activityId = randomUUID();
         const isFitness = randomInt(0, 4) === 0;
-        const activityType = isFitness ? 'fitness' : 'hiking';
-        const name = isFitness ? 'Fitness' : hikingNames[randomInt(0, hikingNames.length)];
+        const activityType = isFitness ? "fitness" : "hiking";
+        const name = isFitness
+          ? "Fitness"
+          : hikingNames[randomInt(0, hikingNames.length)];
         const createdAt = Date.now() - randomInt(0, 31_536_000_000);
 
         await connection.query(

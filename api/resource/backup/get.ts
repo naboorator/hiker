@@ -1,13 +1,15 @@
-import type { Router } from 'express';
-import { authenticatedUserId } from '../../core/auth.js';
-import { database } from '../../core/database.js';
-import { loadActivities } from '../../core/activity-repository.js';
+import type { Router } from "express";
+import { authenticatedUserId } from "../../core/auth.js";
+import { database } from "../../core/database.js";
+import { loadActivities } from "../../core/activity-repository.js";
 
 export function registerBackupGetRoutes(router: Router): void {
-  router.get('/backup', async (_request, response) => {
+  router.get("/backup", async (_request, response) => {
     const userId = authenticatedUserId(response);
-    const [settings] = await database.query<{ appName: string; ownerName: string }[]>(
-      'SELECT app_name AS appName, owner_name AS ownerName FROM settings WHERE user_id = ?',
+    const [settings] = await database.query<
+      { appName: string; ownerName: string }[]
+    >(
+      "SELECT app_name AS appName, owner_name AS ownerName FROM settings WHERE user_id = ?",
       [userId],
     );
     const weights = await database.query(

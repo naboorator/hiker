@@ -1,0 +1,57 @@
+<main>
+  <app-header
+    [appName]="store.settings().appName"
+    [subtitle]="'admin.sendTestEmailSubtitle' | transloco"
+  />
+  <a class="back" routerLink="/admin/emails">← {{ 'admin.emails' | transloco }}</a>
+  <section>
+    <h1>{{ 'admin.sendTestEmail' | transloco }}</h1>
+    <p>{{ 'admin.sendTestEmailPageDescription' | transloco }}</p>
+    <form #emailForm="ngForm" (ngSubmit)="send(emailForm)" novalidate>
+      <label for="test-email">{{ 'admin.recipientEmail' | transloco }}</label>
+      <input
+        id="test-email"
+        name="email"
+        type="email"
+        required
+        email
+        [(ngModel)]="draft.email"
+        #emailControl="ngModel"
+        [class.invalid]="(submitted() || emailControl.touched) && emailControl.invalid"
+      />
+      <label for="test-subject">{{ 'admin.emailSubject' | transloco }}</label>
+      <input
+        id="test-subject"
+        name="subject"
+        type="text"
+        required
+        maxlength="200"
+        [(ngModel)]="draft.subject"
+        #subjectControl="ngModel"
+        [class.invalid]="(submitted() || subjectControl.touched) && subjectControl.invalid"
+      />
+      <label for="test-body">{{ 'admin.emailBody' | transloco }}</label>
+      <textarea
+        id="test-body"
+        name="body"
+        required
+        maxlength="10000"
+        rows="9"
+        [(ngModel)]="draft.body"
+        #bodyControl="ngModel"
+        [class.invalid]="(submitted() || bodyControl.touched) && bodyControl.invalid"
+      ></textarea>
+      <button type="submit" [disabled]="sending()">
+        {{ (sending() ? 'admin.sendingTestEmail' : 'admin.sendTestEmail') | transloco }}
+      </button>
+    </form>
+    @if (success()) {
+      <p class="success" role="status">{{ 'admin.testEmailSent' | transloco }}</p>
+    }
+    @if (error(); as errorMessage) {
+      <p class="error" role="alert">
+        {{ errorMessage.startsWith('admin.') ? (errorMessage | transloco) : errorMessage }}
+      </p>
+    }
+  </section>
+</main>

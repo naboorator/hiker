@@ -84,4 +84,18 @@ describe('HikeApiService', () => {
     });
     await expect(result).resolves.toMatchObject({ page: 2, totalActivities: 25 });
   });
+
+  it('sends administrator test email data to the protected endpoint', async () => {
+    const draft = {
+      email: 'recipient@example.test',
+      subject: 'Delivery test',
+      body: 'Test message',
+    };
+    const result = service.sendAdminTestEmail(draft);
+    const request = http.expectOne('http://localhost:3000/api/admin/emails/send-test-email');
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual(draft);
+    request.flush(null);
+    await result;
+  });
 });

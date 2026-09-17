@@ -2,16 +2,19 @@ import { readFile } from "node:fs/promises";
 import type { EmailLanguage } from "../../interface/email-language.type.js";
 import type { EmailMessage } from "../../interface/email-message.interface.js";
 
-type TemplateName = "registration-success" | "password-reset";
+type TemplateName =
+  "registration-success" | "password-reset" | "confirm-registration";
 
 const subjects: Record<EmailLanguage, Record<TemplateName, string>> = {
   en: {
     "registration-success": "Welcome to My Hike",
     "password-reset": "Reset your My Hike password",
+    "confirm-registration": "Confirm your My Hike registration",
   },
   si: {
     "registration-success": "Dobrodošli v My Hike",
     "password-reset": "Ponastavite geslo za My Hike",
+    "confirm-registration": "Potrdite registracijo v My Hike",
   },
 };
 

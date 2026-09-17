@@ -3,10 +3,12 @@ const subjects = {
     en: {
         "registration-success": "Welcome to My Hike",
         "password-reset": "Reset your My Hike password",
+        "confirm-registration": "Confirm your My Hike registration",
     },
     si: {
         "registration-success": "Dobrodošli v My Hike",
         "password-reset": "Ponastavite geslo za My Hike",
+        "confirm-registration": "Potrdite registracijo v My Hike",
     },
 };
 export function emailLanguage(value) {

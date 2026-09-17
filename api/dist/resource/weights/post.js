@@ -1,10 +1,10 @@
-import { randomUUID } from 'node:crypto';
-import { database, withTransaction } from '../../core/database.js';
-import { weightInput } from '../../core/validation.js';
-import { authenticatedUserId } from '../../core/auth.js';
-import { toSqlDateTime } from '../../core/sql-date.js';
+import { randomUUID } from "node:crypto";
+import { database, withTransaction } from "../../core/database.js";
+import { weightInput } from "../../core/validation.js";
+import { authenticatedUserId } from "../../core/auth.js";
+import { toSqlDateTime } from "../../core/sql-date.js";
 export function registerWeightPostRoutes(router) {
-    router.post('/weights/migrate', async (request, response) => {
+    router.post("/weights/migrate", async (request, response) => {
         const userId = authenticatedUserId(response);
         const candidates = Array.isArray(request.body) ? request.body : [];
         const result = await withTransaction(async (connection) => {
@@ -17,7 +17,7 @@ export function registerWeightPostRoutes(router) {
                     continue;
                 }
                 const input = weightInput(source);
-                const existing = await connection.query('SELECT id FROM weights WHERE id = ?', [source.id]);
+                const existing = await connection.query("SELECT id FROM weights WHERE id = ?", [source.id]);
                 if (existing.length) {
                     skipped++;
                     continue;
@@ -36,7 +36,7 @@ export function registerWeightPostRoutes(router) {
         });
         response.json(result);
     });
-    router.post('/weights', async (request, response) => {
+    router.post("/weights", async (request, response) => {
         const userId = authenticatedUserId(response);
         const input = weightInput(request.body);
         const weight = {
@@ -46,7 +46,13 @@ export function registerWeightPostRoutes(router) {
             createdAt: new Date().toISOString(),
         };
         await database.query(`INSERT INTO weights (id, user_id, weight_kg, recorded_on, created_at)
-       VALUES (?, ?, ?, ?, ?)`, [weight.id, weight.userId, weight.weightKg, weight.recordedOn, toSqlDateTime(weight.createdAt)]);
+       VALUES (?, ?, ?, ?, ?)`, [
+            weight.id,
+            weight.userId,
+            weight.weightKg,
+            weight.recordedOn,
+            toSqlDateTime(weight.createdAt),
+        ]);
         response.status(201).json(weight);
     });
 }

@@ -1,13 +1,13 @@
-import { randomUUID } from 'node:crypto';
-import type { Router } from 'express';
-import { database, withTransaction } from '../../core/database.js';
-import { replaceActivityPeople } from '../../core/activity-repository.js';
-import { activityInput } from '../../core/validation.js';
-import type { Activity } from '../../interface/activity.interface.js';
-import { authenticatedUserId } from '../../core/auth.js';
+import { randomUUID } from "node:crypto";
+import type { Router } from "express";
+import { database, withTransaction } from "../../core/database.js";
+import { replaceActivityPeople } from "../../core/activity-repository.js";
+import { activityInput } from "../../core/validation.js";
+import type { Activity } from "../../interface/activity.interface.js";
+import { authenticatedUserId } from "../../core/auth.js";
 
 export function registerActivityPostRoutes(router: Router): void {
-  router.post('/activities/migrate', async (request, response) => {
+  router.post("/activities/migrate", async (request, response) => {
     const userId = authenticatedUserId(response);
     const candidates = Array.isArray(request.body) ? request.body : [];
     const result = await withTransaction(async (connection) => {
@@ -21,7 +21,7 @@ export function registerActivityPostRoutes(router: Router): void {
         }
         const input = activityInput(source);
         const existing = await connection.query<{ id: string }[]>(
-          'SELECT id FROM activities WHERE id = ?',
+          "SELECT id FROM activities WHERE id = ?",
           [source.id],
         );
         if (existing.length) {
@@ -40,7 +40,9 @@ export function registerActivityPostRoutes(router: Router): void {
             input.date,
             input.minutes,
             input.metres ?? 0,
-            Number.isFinite(source.createdAt) ? Number(source.createdAt) : Date.now(),
+            Number.isFinite(source.createdAt)
+              ? Number(source.createdAt)
+              : Date.now(),
           ],
         );
         await replaceActivityPeople(connection, source.id, input.people);
@@ -51,7 +53,7 @@ export function registerActivityPostRoutes(router: Router): void {
     response.json(result);
   });
 
-  router.post('/activities', async (request, response) => {
+  router.post("/activities", async (request, response) => {
     const userId = authenticatedUserId(response);
     const input = activityInput(request.body);
     const activity: Activity = {
@@ -79,6 +81,8 @@ export function registerActivityPostRoutes(router: Router): void {
       );
       await replaceActivityPeople(connection, activity.id, activity.people);
     });
-    response.status(201).json({ ...activity, likes: 0, likedBy: [], slaps: 0, slappedBy: [] });
+    response
+      .status(201)
+      .json({ ...activity, likes: 0, likedBy: [], slaps: 0, slappedBy: [] });
   });
 }

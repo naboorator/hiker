@@ -1,7 +1,7 @@
-import { randomInt, randomUUID } from 'node:crypto';
-import { database, withTransaction } from '../core/database.js';
-const targetEmail = process.env['TARGET_USER_EMAIL'] ?? 'zbarek@gmail.com';
-const targetMonth = process.env['TARGET_MONTH'] ?? '2026-09';
+import { randomInt, randomUUID } from "node:crypto";
+import { database, withTransaction } from "../core/database.js";
+const targetEmail = process.env["TARGET_USER_EMAIL"] ?? "zbarek@gmail.com";
+const targetMonth = process.env["TARGET_MONTH"] ?? "2026-09";
 try {
     const [target] = await database.query("SELECT id FROM users WHERE email = ? AND status <> 'deleted'", [targetEmail]);
     if (!target)
@@ -17,10 +17,14 @@ try {
     await withTransaction(async (connection) => {
         for (const friend of friends) {
             const activityCount = randomInt(2, 11);
-            results.push({ name: friend.name, email: friend.email, activitiesAdded: activityCount });
+            results.push({
+                name: friend.name,
+                email: friend.email,
+                activitiesAdded: activityCount,
+            });
             for (let index = 0; index < activityCount; index++) {
                 const activityId = randomUUID();
-                const day = String(randomInt(1, 31)).padStart(2, '0');
+                const day = String(randomInt(1, 31)).padStart(2, "0");
                 await connection.query(`INSERT INTO activities
              (id, user_id, activity_type, name, activity_date, minutes, metres, created_at)
            VALUES (?, ?, 'hiking', ?, ?, ?, ?, ?)`, [
@@ -32,7 +36,7 @@ try {
                     randomInt(1000, 15_001),
                     Date.now() + index,
                 ]);
-                await connection.query('INSERT INTO activity_people (activity_id, position, person_name) VALUES (?, 0, ?)', [activityId, friend.name]);
+                await connection.query("INSERT INTO activity_people (activity_id, position, person_name) VALUES (?, 0, ?)", [activityId, friend.name]);
             }
         }
     });
@@ -44,7 +48,7 @@ try {
         activitiesAdded: results.reduce((total, result) => total + result.activitiesAdded, 0),
         minimumMinutes: 30,
         maximumMinutes: 90,
-        activityType: 'hiking',
+        activityType: "hiking",
     }));
 }
 finally {

@@ -1,19 +1,19 @@
-import { requireAdministrator } from '../../core/auth.js';
-import { database } from '../../core/database.js';
-import { HttpError } from '../../core/http-error.js';
-import { activitiesWithReactionSummaries, attachPeople } from '../../core/activity-repository.js';
+import { requireAdministrator } from "../../core/auth.js";
+import { database } from "../../core/database.js";
+import { HttpError } from "../../core/http-error.js";
+import { activitiesWithReactionSummaries, attachPeople, } from "../../core/activity-repository.js";
 const defaultPageSize = 10;
 const maximumPageSize = 50;
 export function registerAdminUserGetRoutes(router) {
-    router.get('/admin/users/:id/activities', async (request, response) => {
+    router.get("/admin/users/:id/activities", async (request, response) => {
         requireAdministrator(response);
-        const userId = request.params['id'] ?? '';
-        const [user] = await database.query('SELECT id FROM users WHERE id = ?', [userId]);
+        const userId = request.params["id"] ?? "";
+        const [user] = await database.query("SELECT id FROM users WHERE id = ?", [userId]);
         if (!user)
-            throw new HttpError(404, 'User not found');
-        const page = positiveInteger(request.query['page'], 1);
-        const pageSize = Math.min(positiveInteger(request.query['pageSize'], defaultPageSize), maximumPageSize);
-        const [count] = await database.query('SELECT COUNT(*) AS total FROM activities WHERE user_id = ?', [userId]);
+            throw new HttpError(404, "User not found");
+        const page = positiveInteger(request.query["page"], 1);
+        const pageSize = Math.min(positiveInteger(request.query["pageSize"], defaultPageSize), maximumPageSize);
+        const [count] = await database.query("SELECT COUNT(*) AS total FROM activities WHERE user_id = ?", [userId]);
         const total = Number(count?.total ?? 0);
         const totalPages = Math.max(1, Math.ceil(total / pageSize));
         const normalizedPage = Math.min(page, totalPages);
@@ -32,25 +32,30 @@ export function registerAdminUserGetRoutes(router) {
             totalPages,
         });
     });
-    router.get('/admin/users/:id', async (request, response) => {
+    router.get("/admin/users/:id", async (request, response) => {
         requireAdministrator(response);
         const [user] = await database.query(`SELECT id, name, email, role, status,
+              email_confirmed AS emailConfirmed,
               CONCAT(
                 DATE_FORMAT(created_at, '%Y-%m-%dT%H:%i:%s.'),
                 LEFT(DATE_FORMAT(created_at, '%f'), 3),
                 'Z'
               ) AS createdAt
-         FROM users WHERE id = ? AND status <> 'deleted'`, [request.params['id']]);
+         FROM users WHERE id = ? AND status <> 'deleted'`, [request.params["id"]]);
         if (!user)
-            throw new HttpError(404, 'User not found');
+            throw new HttpError(404, "User not found");
         response.json(user);
     });
-    router.get('/admin/users', async (request, response) => {
+    router.get("/admin/users", async (request, response) => {
         requireAdministrator(response);
-        const page = positiveInteger(request.query['page'], 1);
-        const pageSize = Math.min(positiveInteger(request.query['pageSize'], defaultPageSize), maximumPageSize);
-        const search = typeof request.query['search'] === 'string' ? request.query['search'].trim().slice(0, 320) : '';
-        const searchClause = search ? ' AND (LOCATE(?, name) > 0 OR LOCATE(?, email) > 0)' : '';
+        const page = positiveInteger(request.query["page"], 1);
+        const pageSize = Math.min(positiveInteger(request.query["pageSize"], defaultPageSize), maximumPageSize);
+        const search = typeof request.query["search"] === "string"
+            ? request.query["search"].trim().slice(0, 320)
+            : "";
+        const searchClause = search
+            ? " AND (LOCATE(?, name) > 0 OR LOCATE(?, email) > 0)"
+            : "";
         const searchValues = search ? [search, search] : [];
         const [count] = await database.query(`SELECT COUNT(*) AS total
          FROM users
@@ -60,6 +65,7 @@ export function registerAdminUserGetRoutes(router) {
         const normalizedPage = Math.min(page, totalPages);
         const offset = (normalizedPage - 1) * pageSize;
         const items = await database.query(`SELECT id, name, email, role, status,
+              email_confirmed AS emailConfirmed,
               CONCAT(
                 DATE_FORMAT(created_at, '%Y-%m-%dT%H:%i:%s.'),
                 LEFT(DATE_FORMAT(created_at, '%f'), 3),
@@ -73,7 +79,7 @@ export function registerAdminUserGetRoutes(router) {
     });
 }
 function positiveInteger(value, fallback) {
-    if (typeof value !== 'string' || !/^\d+$/.test(value))
+    if (typeof value !== "string" || !/^\d+$/.test(value))
         return fallback;
     const parsed = Number(value);
     return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;

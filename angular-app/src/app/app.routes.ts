@@ -14,6 +14,11 @@ export const routes: Routes = [
       import('./features/auth/register/register.page').then((m) => m.RegisterPage),
   },
   {
+    path: 'confirm-email',
+    loadComponent: () =>
+      import('./features/auth/confirm-email/confirm-email.page').then((m) => m.ConfirmEmailPage),
+  },
+  {
     path: 'service-unavailable',
     loadComponent: () =>
       import('./features/service-unavailable/service-unavailable.page').then(
@@ -99,6 +104,20 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/admin/activities/admin-activities.page').then(
         (m) => m.AdminActivitiesPage,
+      ),
+  },
+  {
+    path: 'admin/emails',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () =>
+      import('./features/admin/emails/admin-emails.page').then((m) => m.AdminEmailsPage),
+  },
+  {
+    path: 'admin/emails/send-test-email',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () =>
+      import('./features/admin/emails/send-test-email/admin-send-test-email.page').then(
+        (m) => m.AdminSendTestEmailPage,
       ),
   },
   { path: '**', redirectTo: '' },

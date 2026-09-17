@@ -1,0 +1,8 @@
+Potrdite registracijo v My Hike
+
+Pozdravljeni, {{name}}!
+
+Pred prijavo potrdite svoj e-poštni naslov:
+{{confirmationUrl}}
+
+Povezava poteče čez {{expiryHours}} ur. Če se niste registrirali, sporočilo prezrite.

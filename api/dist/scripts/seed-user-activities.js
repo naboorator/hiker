@@ -1,11 +1,11 @@
-import { randomInt, randomUUID } from 'node:crypto';
-import { database, withTransaction } from '../core/database.js';
+import { randomInt, randomUUID } from "node:crypto";
+import { database, withTransaction } from "../core/database.js";
 const hikingNames = [
-    'Morning hike',
-    'Forest trail',
-    'Hill walk',
-    'Mountain adventure',
-    'Evening hike',
+    "Morning hike",
+    "Forest trail",
+    "Hill walk",
+    "Mountain adventure",
+    "Evening hike",
 ];
 function randomDate() {
     const today = new Date();
@@ -25,8 +25,10 @@ try {
             for (let index = 0; index < count; index++) {
                 const activityId = randomUUID();
                 const isFitness = randomInt(0, 4) === 0;
-                const activityType = isFitness ? 'fitness' : 'hiking';
-                const name = isFitness ? 'Fitness' : hikingNames[randomInt(0, hikingNames.length)];
+                const activityType = isFitness ? "fitness" : "hiking";
+                const name = isFitness
+                    ? "Fitness"
+                    : hikingNames[randomInt(0, hikingNames.length)];
                 const createdAt = Date.now() - randomInt(0, 31_536_000_000);
                 await connection.query(`INSERT INTO activities
              (id, user_id, activity_type, name, activity_date, minutes, metres, created_at)

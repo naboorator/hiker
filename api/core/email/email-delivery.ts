@@ -23,7 +23,7 @@ export async function deliverEmailSafely(
 
 export async function deliverTemplatedEmailSafely(
   service: EmailService,
-  template: "registration-success" | "password-reset",
+  template: "registration-success" | "password-reset" | "confirm-registration",
   language: EmailLanguage,
   to: string,
   idempotencyKey: string,

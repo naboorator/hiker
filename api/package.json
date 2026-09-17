@@ -19,6 +19,7 @@
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.3",
     "mariadb": "^3.5.4",
@@ -32,5 +33,9 @@
     "@types/nodemailer": "^8.0.2",
     "tsx": "^4.20.5",
     "typescript": "^6.0.2"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "fsevents@2.3.3": true
   }
 }

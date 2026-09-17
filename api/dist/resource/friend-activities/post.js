@@ -1,13 +1,13 @@
-import { authenticatedUserId } from '../../core/auth.js';
-import { database } from '../../core/database.js';
-import { HttpError } from '../../core/http-error.js';
+import { authenticatedUserId } from "../../core/auth.js";
+import { database } from "../../core/database.js";
+import { HttpError } from "../../core/http-error.js";
 export function registerFriendActivityPostRoutes(router) {
-    router.post('/friends/activities/:activityId/reactions', async (request, response) => {
+    router.post("/friends/activities/:activityId/reactions", async (request, response) => {
         const userId = authenticatedUserId(response);
-        const activityId = request.params['activityId'] ?? '';
+        const activityId = request.params["activityId"] ?? "";
         const type = request.body?.type;
-        if (type !== 'like' && type !== 'slap')
-            throw new HttpError(400, 'Reaction must be like or slap');
+        if (type !== "like" && type !== "slap")
+            throw new HttpError(400, "Reaction must be like or slap");
         const [activity] = await database.query(`SELECT a.user_id AS userId
          FROM activities a
          JOIN friend_connections f
@@ -16,7 +16,7 @@ export function registerFriendActivityPostRoutes(router) {
             OR (f.user_id_2 = ? AND f.user_id_1 = a.user_id))
         WHERE a.id = ? AND a.user_id <> ?`, [userId, userId, activityId, userId]);
         if (!activity)
-            throw new HttpError(404, 'Activity not found');
+            throw new HttpError(404, "Activity not found");
         const reaction = {
             activityId,
             activityOwnerId: activity.userId,

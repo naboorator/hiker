@@ -1,3 +1,4 @@
+import "dotenv/config";
 import cors from "cors";
 import express, { Router } from "express";
 import { fileURLToPath } from "node:url";
@@ -29,6 +30,7 @@ import { registerBackupGetRoutes } from "./resource/backup/get.js";
 import { registerBackupPostRoutes } from "./resource/backup/post.js";
 import { registerAccountPutRoutes } from "./resource/account/put.js";
 import { registerAdminActivityGetRoutes } from "./resource/admin-activities/get.js";
+import { registerAdminEmailPostRoutes } from "./resource/admin-emails/post.js";
 const app = express();
 const router = Router();
 const port = Number(process.env["PORT"] ?? 3000);
@@ -42,6 +44,7 @@ app.get("/openapi.yaml", (_request, response) => {
 registerAuthPostRoutes(router);
 router.use(requireAuthentication);
 registerAdminActivityGetRoutes(router);
+registerAdminEmailPostRoutes(router);
 registerAdminUserGetRoutes(router);
 registerAdminUserPutRoutes(router);
 registerAdminUserDeleteRoutes(router);
@@ -79,7 +82,10 @@ app.use((_request, response) => response.status(404).json({ error: "Endpoint not
 const errorHandler = (error, _request, response, _next) => {
     const status = error instanceof HttpError ? error.status : 500;
     const message = error instanceof Error ? error.message : "Unexpected server error";
-    response.status(status).json({ error: message });
+    const code = error instanceof HttpError ? error.code : undefined;
+    response
+        .status(status)
+        .json(code ? { error: message, code } : { error: message });
 };
 app.use(errorHandler);
 async function start() {

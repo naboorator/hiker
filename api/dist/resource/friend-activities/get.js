@@ -1,8 +1,8 @@
-import { authenticatedUserId } from '../../core/auth.js';
-import { database } from '../../core/database.js';
-import { attachPeople, reactionSummaries } from '../../core/activity-repository.js';
+import { authenticatedUserId } from "../../core/auth.js";
+import { database } from "../../core/database.js";
+import { attachPeople, reactionSummaries, } from "../../core/activity-repository.js";
 export function registerFriendActivityGetRoutes(router) {
-    router.get('/friends/activities', async (_request, response) => {
+    router.get("/friends/activities", async (_request, response) => {
         const userId = authenticatedUserId(response);
         const rows = await database.query(`SELECT a.id, a.user_id AS userId, a.activity_type AS activityType, a.name,
               CAST(a.activity_date AS CHAR) AS date, a.minutes, a.metres,
@@ -21,7 +21,7 @@ export function registerFriendActivityGetRoutes(router) {
         const myReactionRows = ids.length
             ? await database.query(`SELECT activity_id AS activityId, reaction_type AS type
              FROM activity_reactions
-            WHERE user_id = ? AND activity_id IN (${ids.map(() => '?').join(', ')})`, [userId, ...ids])
+            WHERE user_id = ? AND activity_id IN (${ids.map(() => "?").join(", ")})`, [userId, ...ids])
             : [];
         const myReactions = new Map();
         for (const reaction of myReactionRows) {

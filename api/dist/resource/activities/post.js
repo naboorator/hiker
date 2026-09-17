@@ -1,10 +1,10 @@
-import { randomUUID } from 'node:crypto';
-import { withTransaction } from '../../core/database.js';
-import { replaceActivityPeople } from '../../core/activity-repository.js';
-import { activityInput } from '../../core/validation.js';
-import { authenticatedUserId } from '../../core/auth.js';
+import { randomUUID } from "node:crypto";
+import { withTransaction } from "../../core/database.js";
+import { replaceActivityPeople } from "../../core/activity-repository.js";
+import { activityInput } from "../../core/validation.js";
+import { authenticatedUserId } from "../../core/auth.js";
 export function registerActivityPostRoutes(router) {
-    router.post('/activities/migrate', async (request, response) => {
+    router.post("/activities/migrate", async (request, response) => {
         const userId = authenticatedUserId(response);
         const candidates = Array.isArray(request.body) ? request.body : [];
         const result = await withTransaction(async (connection) => {
@@ -17,7 +17,7 @@ export function registerActivityPostRoutes(router) {
                     continue;
                 }
                 const input = activityInput(source);
-                const existing = await connection.query('SELECT id FROM activities WHERE id = ?', [source.id]);
+                const existing = await connection.query("SELECT id FROM activities WHERE id = ?", [source.id]);
                 if (existing.length) {
                     skipped++;
                     continue;
@@ -32,7 +32,9 @@ export function registerActivityPostRoutes(router) {
                     input.date,
                     input.minutes,
                     input.metres ?? 0,
-                    Number.isFinite(source.createdAt) ? Number(source.createdAt) : Date.now(),
+                    Number.isFinite(source.createdAt)
+                        ? Number(source.createdAt)
+                        : Date.now(),
                 ]);
                 await replaceActivityPeople(connection, source.id, input.people);
                 imported++;
@@ -41,7 +43,7 @@ export function registerActivityPostRoutes(router) {
         });
         response.json(result);
     });
-    router.post('/activities', async (request, response) => {
+    router.post("/activities", async (request, response) => {
         const userId = authenticatedUserId(response);
         const input = activityInput(request.body);
         const activity = {
@@ -66,6 +68,8 @@ export function registerActivityPostRoutes(router) {
             ]);
             await replaceActivityPeople(connection, activity.id, activity.people);
         });
-        response.status(201).json({ ...activity, likes: 0, likedBy: [], slaps: 0, slappedBy: [] });
+        response
+            .status(201)
+            .json({ ...activity, likes: 0, likedBy: [], slaps: 0, slappedBy: [] });
     });
 }

@@ -3,4 +3,5 @@ export interface RegisterDraft {
   email: string;
   password: string;
   repeatPassword: string;
+  language?: 'en' | 'si';
 }

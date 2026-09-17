@@ -1,14 +1,17 @@
-import type { Router } from 'express';
-import { authenticatedUserId } from '../../core/auth.js';
-import { database } from '../../core/database.js';
-import { attachPeople, reactionSummaries } from '../../core/activity-repository.js';
-import type { Activity } from '../../interface/activity.interface.js';
+import type { Router } from "express";
+import { authenticatedUserId } from "../../core/auth.js";
+import { database } from "../../core/database.js";
+import {
+  attachPeople,
+  reactionSummaries,
+} from "../../core/activity-repository.js";
+import type { Activity } from "../../interface/activity.interface.js";
 
 export function registerFriendActivityGetRoutes(router: Router): void {
-  router.get('/friends/activities', async (_request, response) => {
+  router.get("/friends/activities", async (_request, response) => {
     const userId = authenticatedUserId(response);
     const rows = await database.query<
-      (Omit<Activity, 'people'> & { authorName: string })[]
+      (Omit<Activity, "people"> & { authorName: string })[]
     >(
       `SELECT a.id, a.user_id AS userId, a.activity_type AS activityType, a.name,
               CAST(a.activity_date AS CHAR) AS date, a.minutes, a.metres,
@@ -27,14 +30,14 @@ export function registerFriendActivityGetRoutes(router: Router): void {
     const ids = activities.map(({ id }) => id);
     const summaries = await reactionSummaries(ids);
     const myReactionRows = ids.length
-      ? await database.query<{ activityId: string; type: 'like' | 'slap' }[]>(
+      ? await database.query<{ activityId: string; type: "like" | "slap" }[]>(
           `SELECT activity_id AS activityId, reaction_type AS type
              FROM activity_reactions
-            WHERE user_id = ? AND activity_id IN (${ids.map(() => '?').join(', ')})`,
+            WHERE user_id = ? AND activity_id IN (${ids.map(() => "?").join(", ")})`,
           [userId, ...ids],
         )
       : [];
-    const myReactions = new Map<string, ('like' | 'slap')[]>();
+    const myReactions = new Map<string, ("like" | "slap")[]>();
     for (const reaction of myReactionRows) {
       const types = myReactions.get(reaction.activityId) ?? [];
       types.push(reaction.type);

@@ -3,7 +3,7 @@ info:
   title: My Hike API
   version: 1.1.0
   description: |
-    REST API for My Hike. Except for registration, login, password recovery,
+    REST API for My Hike. Except for registration, login, email confirmation, password recovery,
     health, and this document, endpoints require a JWT access token in the Authorization header.
     Administrator endpoints additionally require the `admin` role.
 servers:
@@ -62,7 +62,7 @@ paths:
               $ref: "#/components/schemas/RegisterRequest"
       responses:
         "201":
-          description: User registered
+          description: User registered as unconfirmed and a confirmation email queued for delivery
           content:
             application/json:
               schema:
@@ -138,6 +138,47 @@ paths:
           $ref: "#/components/responses/BadRequest"
         "429":
           description: Password reset request rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /api/auth/confirm-email:
+    post:
+      tags: [Authentication]
+      summary: Confirm a newly registered email address
+      operationId: confirmEmail
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfirmEmailRequest"
+      responses:
+        "204":
+          description: Email address confirmed
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /api/auth/resend-confirmation:
+    post:
+      tags: [Authentication]
+      summary: Request another email confirmation message
+      description: Always returns the same response so account status is not disclosed.
+      operationId: resendEmailConfirmation
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResendConfirmationRequest"
+      responses:
+        "202":
+          description: Request accepted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "429":
+          description: Confirmation resend rate limit exceeded
           content:
             application/json:
               schema:
@@ -834,6 +875,38 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+  /api/admin/emails/send-test-email:
+    post:
+      tags: [Administration]
+      summary: Send a test email through the configured provider
+      operationId: sendAdminTestEmail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminTestEmailRequest"
+      responses:
+        "204":
+          description: Test email accepted by the provider
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          description: Test email rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "502":
+          description: Configured email provider rejected the message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /api/admin/users/{id}/block:
     put:
       tags: [Administration]
@@ -1000,6 +1073,9 @@ components:
       properties:
         error:
           type: string
+        code:
+          type: string
+          description: Optional machine-readable error code, for example EMAIL_NOT_CONFIRMED
     Health:
       type: object
       required: [status, database]
@@ -1034,10 +1110,14 @@ components:
       allOf:
         - $ref: "#/components/schemas/PublicUser"
         - type: object
-          required: [status, createdAt]
+          required: [status, emailConfirmed, createdAt]
           properties:
             status:
               $ref: "#/components/schemas/UserStatus"
+            emailConfirmed:
+              type: integer
+              enum: [0, 1]
+              description: Whether the registered email address is confirmed
             createdAt:
               type: string
               format: date-time
@@ -1052,6 +1132,21 @@ components:
           format: email
         role:
           $ref: "#/components/schemas/UserRole"
+    AdminTestEmailRequest:
+      type: object
+      required: [email, subject, body]
+      properties:
+        email:
+          type: string
+          format: email
+        subject:
+          type: string
+          minLength: 1
+          maxLength: 200
+        body:
+          type: string
+          minLength: 1
+          maxLength: 10000
     RegisterRequest:
       type: object
       required: [name, email, password, repeatPassword]
@@ -1099,6 +1194,22 @@ components:
           type: string
           format: password
           minLength: 8
+    ConfirmEmailRequest:
+      type: object
+      required: [token]
+      properties:
+        token:
+          type: string
+          minLength: 1
+    ResendConfirmationRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+        language:
+          $ref: "#/components/schemas/EmailLanguage"
     LoginRequest:
       type: object
       required: [email, password]

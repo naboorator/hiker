@@ -80,9 +80,27 @@ try {
   await register("Authorization Owner", testEmails[0]);
   await register("Authorization Other", testEmails[1]);
   await register("Authorization Admin", testEmails[2]);
-  await database.query("UPDATE users SET role = 'admin' WHERE email = ?", [
-    testEmails[2],
-  ]);
+
+  const unconfirmedLogin = await login(testEmails[0]);
+  record(
+    "login rejects an unconfirmed email address",
+    403,
+    unconfirmedLogin.status,
+  );
+  const unconfirmedError = await json<{ code?: string }>(unconfirmedLogin);
+  record(
+    "unconfirmed login returns its machine-readable error code",
+    1,
+    Number(unconfirmedError.code === "EMAIL_NOT_CONFIRMED"),
+  );
+
+  await database.query(
+    `UPDATE users
+        SET email_confirmed = 1, email_confirmed_at = NOW(),
+            role = IF(email = ?, 'admin', role)
+      WHERE email IN (?, ?, ?)`,
+    [testEmails[2], ...testEmails],
+  );
 
   const missingToken = await request("/api/activities");
   record("protected endpoint rejects missing token", 401, missingToken.status);
@@ -101,6 +119,24 @@ try {
   ownerUserId = owner.user.id;
   otherUserId = other.user.id;
   adminUserId = admin.user.id;
+
+  const nonAdminTestEmail = await request("/api/admin/emails/send-test-email", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...authorization(owner.token),
+    },
+    body: JSON.stringify({
+      email: "recipient@example.test",
+      subject: "Authorization test",
+      body: "This message must not be sent.",
+    }),
+  });
+  record(
+    "non-administrator cannot send test email",
+    403,
+    nonAdminTestEmail.status,
+  );
 
   const incorrectCurrentPassword = await request("/api/account/password", {
     method: "PUT",
@@ -419,6 +455,10 @@ try {
     409,
     duplicateEmailUpdate.status,
   );
+  await database.query(
+    "UPDATE users SET email_confirmed = 1, email_confirmed_at = NOW() WHERE id = ?",
+    [owner.user.id],
+  );
 
   const blockOther = await request(`/api/admin/users/${other.user.id}/block`, {
     method: "PUT",
@@ -483,6 +523,10 @@ try {
     200,
     backupResponse.status,
   );
+  if (!backupResponse.ok)
+    throw new Error(
+      `Backup endpoint returned ${backupResponse.status}: ${await backupResponse.text()}`,
+    );
   const backup = await json<{
     version: number;
     activities: { id: string }[];

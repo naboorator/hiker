@@ -5,6 +5,7 @@ import type { EmailService } from "../core/email/email-service.interface.js";
 import { IdempotentEmailService } from "../core/email/idempotent-email.service.js";
 import { renderEmail } from "../core/email/email-template.js";
 import type { EmailMessage } from "../interface/email-message.interface.js";
+import { textToHtml } from "../core/email/text-to-html.js";
 
 const message: EmailMessage = {
   to: "walker@example.com",
@@ -54,4 +55,27 @@ test("localized template escapes user HTML", async () => {
   assert.match(rendered.subject, /Dobrodošli/);
   assert.doesNotMatch(rendered.html, /<script>/);
   assert.match(rendered.html, /&lt;script&gt;/);
+});
+
+test("email confirmation template contains its localized link and expiry", async () => {
+  const rendered = await renderEmail(
+    "confirm-registration",
+    "en",
+    message.to,
+    "confirm-registration:1",
+    {
+      name: "Alex",
+      confirmationUrl: "https://example.com/confirm-email?token=secret",
+      expiryHours: "24",
+    },
+  );
+  assert.match(rendered.subject, /Confirm/);
+  assert.match(rendered.html, /confirm-email\?token=secret/);
+  assert.match(rendered.text, /24/);
+});
+
+test("plain text email body is converted to safe HTML", () => {
+  const html = textToHtml('<script>alert("x")</script>');
+  assert.doesNotMatch(html, /<script>/);
+  assert.match(html, /&lt;script&gt;/);
 });

@@ -14,8 +14,17 @@ body {
   background: linear-gradient(145deg, #dcebdc, #f5f8f1);
 }
 button,
-input {
+input,
+select,
+textarea {
   font: inherit;
+}
+
+input,
+select,
+textarea {
+  /* iOS Safari zooms focused form controls whose computed font size is below 16px. */
+  font-size: 16px !important;
 }
 
 input.field-invalid,

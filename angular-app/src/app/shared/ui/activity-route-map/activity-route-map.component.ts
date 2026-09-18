@@ -16,6 +16,7 @@ import type { ActivityGpsLocation } from '../../../core/interface/activity-gps-l
 import { LogWrapper } from '../../../core/logging/log-wrapper.service';
 import { MAPBOX_LOAD_TIMEOUT_MS } from './activity-route-map.constants';
 import { routeBounds, routeGeoJson } from './activity-route-map.helpers';
+import { configureMapboxWorker } from './mapbox-worker.helpers';
 
 @Component({
   selector: 'app-activity-route-map',
@@ -71,6 +72,7 @@ export class ActivityRouteMapComponent {
       const mapboxModule = await import('mapbox-gl');
       if (currentInitialization !== this.initialization) return;
       const mapbox = mapboxModule.default;
+      configureMapboxWorker(mapbox);
       mapbox.accessToken = this.accessToken();
       const map = new mapbox.Map({
         container,

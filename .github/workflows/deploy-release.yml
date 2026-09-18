@@ -54,6 +54,20 @@ jobs:
         working-directory: angular-app
         run: npx ng build --configuration production
 
+      - name: Verify Mapbox configuration in frontend build
+        working-directory: angular-app
+        env:
+          MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
+        run: |
+          if ! grep -R --include='*.js' -Fq "$MAPBOX_ACCESS_TOKEN" dist/angular-app/browser; then
+            echo "Mapbox access token is missing from the production build"
+            exit 1
+          fi
+          if grep -R --include='*.js' -Fq '__MAPBOX_ACCESS_TOKEN__' dist/angular-app/browser; then
+            echo "Mapbox access token placeholder remains in the production build"
+            exit 1
+          fi
+
       - name: Install API dependencies
         working-directory: api
         run: npm ci

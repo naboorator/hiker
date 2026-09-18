@@ -20,7 +20,7 @@ export const ACTIVITY_TYPE_OPTIONS: readonly ActivityTypeOption[] = [
     translationKey: 'hikeForm.cycling',
     defaultName: 'Cycling',
     hasCustomName: false,
-    hasDistance: false,
+    hasDistance: true,
   },
   {
     type: 'tennis',

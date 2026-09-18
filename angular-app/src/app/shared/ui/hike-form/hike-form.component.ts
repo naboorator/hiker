@@ -1,5 +1,5 @@
 import type { OnInit } from '@angular/core';
-import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { FormField, form, min, required } from '@angular/forms/signals';
 import { TranslocoPipe } from '@jsverse/transloco';
 import type { ActivityType } from '../../../core/interface/activity-type.type';
@@ -23,6 +23,7 @@ export class HikeFormComponent implements OnInit {
   readonly draft = input<HikeDraft | null>(null);
   readonly buttonText = input('Add activity');
   readonly submitting = input(false);
+  readonly preserveHiddenMetres = input(false);
   readonly saved = output<HikeDraft>();
   readonly cancelled = output<void>();
   readonly model = signal<HikeDraft>({
@@ -41,6 +42,9 @@ export class HikeFormComponent implements OnInit {
     min(s.metres, 0);
   });
   readonly sortedNames = () => [...new Set(this.hikeNames())].sort((a, b) => a.localeCompare(b));
+  readonly showsDistanceField = computed(
+    () => activityTypeOption(this.model().activityType).hasDistance,
+  );
   ngOnInit() {
     const d = this.draft();
     this.model.set(
@@ -74,7 +78,10 @@ export class HikeFormComponent implements OnInit {
         (activityTypeOption(draft.activityType).hasCustomName
           ? draft.name
           : this.defaultHikingName() || this.hikeNames()[0] || ''),
-      metres: activityTypeOption(activityType).hasDistance ? draft.metres : null,
+      metres:
+        activityTypeOption(activityType).hasDistance || this.preserveHiddenMetres()
+          ? draft.metres
+          : null,
     }));
   }
   submit(e: SubmitEvent) {
@@ -85,7 +92,10 @@ export class HikeFormComponent implements OnInit {
       this.saved.emit({
         ...draft,
         name: activityTypeOption(draft.activityType).defaultName || draft.name,
-        metres: activityTypeOption(draft.activityType).hasDistance ? draft.metres : null,
+        metres:
+          activityTypeOption(draft.activityType).hasDistance || this.preserveHiddenMetres()
+            ? draft.metres
+            : null,
       });
     }
   }

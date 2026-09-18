@@ -114,6 +114,7 @@
         [defaultHikingName]="store.lastHikingName()"
         [peopleSuggestions]="store.people()"
         [draft]="draft"
+        [preserveHiddenMetres]="true"
         [buttonText]="'common.save' | transloco"
         [submitting]="liveActivity.activity()?.status === 'saving'"
         (saved)="save($event)"

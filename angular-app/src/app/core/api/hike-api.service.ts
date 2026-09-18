@@ -289,7 +289,9 @@ export class HikeApiService {
       name: activityTypeOption(activityType).defaultName || (entry.name ?? 'Unnamed activity'),
       date: entry.date ?? new Date().toISOString().slice(0, 10),
       minutes: Number(entry.minutes ?? 0),
-      metres: activityType === 'hiking' ? Number(entry.metres ?? entry.distance ?? 0) : 0,
+      metres: activityTypeOption(activityType).hasDistance
+        ? Number(entry.metres ?? entry.distance ?? 0)
+        : 0,
       people:
         Array.isArray(entry.people) && entry.people.length ? entry.people : [defaults.ownerName],
       createdAt: Number(entry.createdAt ?? entry.created ?? Date.now()),

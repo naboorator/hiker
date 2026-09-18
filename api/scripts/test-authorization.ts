@@ -821,17 +821,22 @@ try {
       name: "Fitness",
       date: "2099-12-31",
       minutes: 40,
-      metres: null,
+      metres: 850,
       people: ["Authorization Other"],
     }),
   });
-  const otherAdminListActivity = await json<{ id: string }>(
+  const otherAdminListActivity = await json<{ id: string; metres: number }>(
     otherAdminListActivityResponse,
   );
   record(
     "other user creates activity for administrator list",
     201,
     otherAdminListActivityResponse.status,
+  );
+  record(
+    "API preserves tracked distance for a non-hiking activity",
+    850,
+    otherAdminListActivity.metres,
   );
   const regularUserReadsAllAdminActivities = await request(
     "/api/admin/activities?page=1&pageSize=1",

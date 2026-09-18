@@ -16,7 +16,7 @@
     </datalist>
   }
   <input [formField]="hikeForm.date" type="date" />
-  @if (model().activityType === 'hiking') {
+  @if (showsDistanceField()) {
     <input
       [formField]="hikeForm.metres"
       type="number"

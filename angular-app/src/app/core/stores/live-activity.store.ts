@@ -240,8 +240,7 @@ export class LiveActivityStore {
       name: activityTypeOption(activity.activityType).defaultName,
       date: localDateFromTimestamp(activity.startedAt),
       minutes: elapsedMinutes(activity.startedAt, endedAt),
-      metres:
-        activity.activityType === 'hiking' ? Math.round(activity.trackedDistanceMetres) : null,
+      metres: Math.round(activity.trackedDistanceMetres),
       people: [],
     };
   }

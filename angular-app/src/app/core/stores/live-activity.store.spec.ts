@@ -92,6 +92,25 @@ describe('LiveActivityStore', () => {
     expect(store.stop('2026-09-10T10:01:00Z')?.metres).toBeGreaterThan(20);
   });
 
+  it('includes tracked metres when stopping a non-hiking activity', () => {
+    store.start('fitness', '2026-09-10T10:00:00Z');
+    const onPosition = geolocation.start.mock.calls.at(-1)?.[0];
+    onPosition({
+      coords: { latitude: 46.0569, longitude: 14.5058, accuracy: 5 },
+      timestamp: Date.parse('2026-09-10T10:00:00Z'),
+    });
+    onPosition({
+      coords: { latitude: 46.0569, longitude: 14.5061, accuracy: 5 },
+      timestamp: Date.parse('2026-09-10T10:00:10Z'),
+    });
+
+    expect(store.stop('2026-09-10T10:01:00Z')).toMatchObject({
+      activityType: 'fitness',
+      metres: expect.any(Number),
+    });
+    expect(store.draft()!.metres).toBeGreaterThan(20);
+  });
+
   it('batches accepted samples in IndexedDB instead of writing them to local storage', async () => {
     vi.useFakeTimers();
     store.start('hiking', '2026-09-10T10:00:00Z');

@@ -36,6 +36,41 @@ describe('HikeFormComponent', () => {
     expect(saved).toHaveBeenCalledWith(expect.objectContaining({ name: 'Fitness', metres: null }));
   });
 
+  it('preserves GPS-tracked metres for activity types without a distance field', () => {
+    TestBed.configureTestingModule({ imports: [HikeFormComponent] });
+    TestBed.overrideComponent(HikeFormComponent, { set: { template: '' } });
+    const fixture = TestBed.createComponent(HikeFormComponent);
+    fixture.componentRef.setInput('ownerName', 'Zoran');
+    fixture.componentRef.setInput('preserveHiddenMetres', true);
+    fixture.componentRef.setInput('draft', {
+      activityType: 'fitness',
+      name: 'Fitness',
+      date: '2026-09-10',
+      minutes: 30,
+      metres: 500,
+      people: ['Zoran'],
+    });
+    fixture.detectChanges();
+    const saved = vi.fn();
+    fixture.componentInstance.saved.subscribe(saved);
+
+    fixture.componentInstance.submit({ preventDefault: vi.fn() } as unknown as SubmitEvent);
+
+    expect(saved).toHaveBeenCalledWith(expect.objectContaining({ metres: 500 }));
+  });
+
+  it('offers manual distance editing for cycling', () => {
+    TestBed.configureTestingModule({ imports: [HikeFormComponent] });
+    TestBed.overrideComponent(HikeFormComponent, { set: { template: '' } });
+    const fixture = TestBed.createComponent(HikeFormComponent);
+    fixture.componentRef.setInput('ownerName', 'Zoran');
+    fixture.detectChanges();
+
+    fixture.componentInstance.selectActivityType('cycling');
+
+    expect(fixture.componentInstance.showsDistanceField()).toBe(true);
+  });
+
   it('uses the canonical name and removes metres for a newly selected type', () => {
     TestBed.configureTestingModule({ imports: [HikeFormComponent] });
     TestBed.overrideComponent(HikeFormComponent, { set: { template: '' } });

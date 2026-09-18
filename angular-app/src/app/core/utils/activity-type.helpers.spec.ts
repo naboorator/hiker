@@ -4,6 +4,7 @@ describe('activity type helpers', () => {
   it('finds configuration for supported activity types', () => {
     expect(activityTypeOption('table_tennis').defaultName).toBe('Table tennis');
     expect(activityTypeOption('hiking').hasCustomName).toBe(true);
+    expect(activityTypeOption('cycling').hasDistance).toBe(true);
   });
 
   it('validates activity types', () => {

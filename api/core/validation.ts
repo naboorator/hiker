@@ -25,12 +25,10 @@ export function activityInput(value: unknown): ActivityInput {
   const name = activityTypeNames[activityType] || text(body["name"]);
   const date = text(body["date"]);
   const minutes = finiteNumber(body["minutes"]);
-  const metres =
-    activityType === "hiking" ? finiteNumber(body["metres"]) : null;
+  const metres = optionalFiniteNumber(body["metres"]) ?? 0;
   if (!name) invalid("Activity name is required");
   if (!datePattern.test(date)) invalid("Date must use YYYY-MM-DD format");
-  if (minutes < 0 || (metres !== null && metres < 0))
-    invalid("Values cannot be negative");
+  if (minutes < 0 || metres < 0) invalid("Values cannot be negative");
   return {
     activityType: activityType as ActivityType,
     name,

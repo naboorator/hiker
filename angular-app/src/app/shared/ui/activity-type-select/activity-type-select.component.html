@@ -2,9 +2,7 @@
   <span class="activity-label">{{ 'hikeForm.activityType' | transloco }}</span>
   <details class="activity-select" #activityMenu>
     <summary>
-      <ng-container
-        *ngTemplateOutlet="activityIcon; context: { $implicit: selectedOption().type }"
-      />
+      <app-activity-type-icon [type]="selectedOption().type" />
       <strong>{{ selectedOption().translationKey | transloco }}</strong>
       <span class="chevron" aria-hidden="true">⌄</span>
     </summary>
@@ -16,75 +14,10 @@
           [attr.aria-selected]="value() === option.type"
           (click)="valueChange.emit(option.type); activityMenu.open = false"
         >
-          <ng-container *ngTemplateOutlet="activityIcon; context: { $implicit: option.type }" />
+          <app-activity-type-icon [type]="option.type" />
           <span>{{ option.translationKey | transloco }}</span>
         </button>
       }
     </div>
   </details>
 </div>
-
-<ng-template #activityIcon let-type>
-  <span [class]="'activity-icon ' + type" aria-hidden="true">
-    @switch (type) {
-      @case ('hiking') {
-        <svg viewBox="0 0 32 32">
-          <circle class="accent-fill" cx="23" cy="9" r="5" />
-          <path class="dark-fill" d="M2 25 11 12l5 7 5-9 9 15Z" />
-          <path class="main-fill" d="M1 27 10 18l5 6 5-5 11 8Z" />
-          <path class="light-line" d="M13 27c1-4 7-4 6-9" />
-        </svg>
-      }
-      @case ('fitness') {
-        <svg viewBox="0 0 32 32">
-          <path class="accent-line wide" d="M7 16h18" />
-          <path class="main-line wide" d="M5 10v12M27 10v12" />
-          <path class="dark-line wide" d="M9 7v18M23 7v18" />
-        </svg>
-      }
-      @case ('cycling') {
-        <svg viewBox="0 0 32 32">
-          <circle class="light-line" cx="8" cy="22" r="6" />
-          <circle class="light-line" cx="25" cy="22" r="6" />
-          <path class="dark-line" d="m8 22 6-11 5 11H8l8-7h7M13 8h5" />
-        </svg>
-      }
-      @case ('tennis') {
-        <svg viewBox="0 0 32 32">
-          <ellipse class="light-fill" cx="13" cy="12" rx="8" ry="10" transform="rotate(35 13 12)" />
-          <path class="dark-line" d="m18 19 8 9M8 5l11 13M5 11l10 9" />
-          <circle class="accent-fill" cx="25" cy="8" r="4" />
-        </svg>
-      }
-      @case ('badminton') {
-        <svg viewBox="0 0 32 32">
-          <path class="light-fill" d="m6 5 12 9-5 5L4 7Z" />
-          <path class="dark-line" d="M7 7l8 9m-5-6 7 3M5 6l4 6" />
-          <path class="accent-line wide" d="m15 17 12 11" />
-        </svg>
-      }
-      @case ('table_tennis') {
-        <svg viewBox="0 0 32 32">
-          <circle class="main-fill" cx="13" cy="12" r="9" />
-          <path class="dark-fill" d="m17 18 5 9 4-3-8-7Z" />
-          <path class="light-line" d="M7 6l12 12" />
-          <circle class="accent-fill" cx="25" cy="7" r="4" />
-        </svg>
-      }
-      @case ('construction') {
-        <svg viewBox="0 0 32 32">
-          <path class="accent-fill" d="M4 17a12 12 0 0 1 24 0v3H4Z" />
-          <path class="dark-fill" d="M14 5h4v12h-4zM2 20h28v5H2z" />
-          <path class="light-line" d="M7 25h18" />
-        </svg>
-      }
-      @case ('housework') {
-        <svg viewBox="0 0 32 32">
-          <path class="light-fill" d="m3 15 13-11 13 11v14H3Z" />
-          <path class="dark-fill" d="M13 20h6v9h-6z" />
-          <path class="accent-line" d="m7 13 9-7 9 7" />
-        </svg>
-      }
-    }
-  </span>
-</ng-template>

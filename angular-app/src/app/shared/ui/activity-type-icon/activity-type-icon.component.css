@@ -1,0 +1,109 @@
+:host {
+  display: inline-grid;
+  flex: none;
+}
+
+.activity-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid #ffffffb8;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px #173e2b24;
+}
+
+.activity-icon.large {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+}
+
+.activity-icon.hiking {
+  background: linear-gradient(145deg, #fff4d8, #ffd493);
+}
+
+.activity-icon.fitness {
+  background: linear-gradient(145deg, #dcefe1, #a8cfad);
+}
+
+.activity-icon.cycling {
+  background: linear-gradient(145deg, #d9f5ec, #67c7a1);
+}
+
+.activity-icon.tennis {
+  background: linear-gradient(145deg, #f4ffd0, #badf59);
+}
+
+.activity-icon.badminton {
+  background: linear-gradient(145deg, #e5edff, #9eb9ef);
+}
+
+.activity-icon.table_tennis {
+  background: linear-gradient(145deg, #ffe0d7, #ff9d7e);
+}
+
+.activity-icon.construction {
+  background: linear-gradient(145deg, #fff0ba, #f6b83f);
+}
+
+.activity-icon.housework {
+  background: linear-gradient(145deg, #f1e5ff, #c49ce7);
+}
+
+.activity-icon svg {
+  width: 31px;
+  height: 31px;
+}
+
+.activity-icon.large svg {
+  width: 42px;
+  height: 42px;
+}
+
+.activity-icon .accent-fill {
+  fill: #ff7a12;
+}
+
+.activity-icon .dark-fill {
+  fill: #075237;
+}
+
+.activity-icon .main-fill {
+  fill: #3f8950;
+}
+
+.activity-icon .light-fill {
+  fill: #fff8e8;
+}
+
+.activity-icon .light-line,
+.activity-icon .accent-line,
+.activity-icon .main-line,
+.activity-icon .dark-line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.activity-icon .light-line {
+  stroke: #fff8e8;
+}
+
+.activity-icon .accent-line {
+  stroke: #ff7a12;
+}
+
+.activity-icon .main-line {
+  stroke: #3f8950;
+}
+
+.activity-icon .dark-line {
+  stroke: #075237;
+}
+
+.activity-icon .wide {
+  stroke-width: 4;
+}

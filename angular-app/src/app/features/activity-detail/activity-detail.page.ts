@@ -11,10 +11,17 @@ import { activityTypeOption } from '../../core/utils/activity-type.helpers';
 import { formatRegistrationDate } from '../../core/utils/date-format.helpers';
 import { AppHeaderComponent } from '../../shared/ui/app-header/app-header.component';
 import { ActivityRouteMapComponent } from '../../shared/ui/activity-route-map/activity-route-map.component';
+import { ActivityTypeIconComponent } from '../../shared/ui/activity-type-icon/activity-type-icon.component';
 import { environment } from '../../../environments/environment';
 
 @Component({
-  imports: [ActivityRouteMapComponent, AppHeaderComponent, RouterLink, TranslocoPipe],
+  imports: [
+    ActivityRouteMapComponent,
+    ActivityTypeIconComponent,
+    AppHeaderComponent,
+    RouterLink,
+    TranslocoPipe,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './activity-detail.page.html',
   styleUrl: './activity-detail.page.css',

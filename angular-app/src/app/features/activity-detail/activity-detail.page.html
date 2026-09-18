@@ -17,7 +17,7 @@
   } @else if (activity(); as item) {
     <section class="detail-card">
       <div class="heading">
-        <span class="activity-icon" aria-hidden="true">⌁</span>
+        <app-activity-type-icon [type]="item.activityType" size="large" />
         <div>
           <p>{{ typeTranslationKey(item) | transloco }}</p>
           <h1>{{ item.name }}</h1>

@@ -32,19 +32,6 @@ main {
   gap: 0.85rem;
 }
 
-.activity-icon {
-  display: grid;
-  width: 52px;
-  height: 52px;
-  flex: none;
-  place-items: center;
-  border-radius: 16px;
-  background: linear-gradient(145deg, #e8f2e8, #cfe5d3);
-  color: #245e3b;
-  font-size: 1.8rem;
-  font-weight: 900;
-}
-
 .heading p,
 .heading h1,
 .people h2,

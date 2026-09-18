@@ -1,0 +1,1 @@
+export const MAPBOX_LOAD_TIMEOUT_MS = 15_000;

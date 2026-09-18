@@ -12,6 +12,9 @@ const mapbox = vi.hoisted(() => ({
   fitBounds: vi.fn(),
   remove: vi.fn(),
   resize: vi.fn(),
+  autoLoad: true,
+  loadCallback: null as (() => void) | null,
+  errorCallback: null as ((event: { error: Error }) => void) | null,
 }));
 
 vi.mock('mapbox-gl', () => {
@@ -32,9 +35,13 @@ vi.mock('mapbox-gl', () => {
       mapbox.fitBounds(bounds, options);
     }
     once(event: string, callback: () => void) {
-      if (event === 'load') queueMicrotask(callback);
+      if (event !== 'load') return;
+      mapbox.loadCallback = callback;
+      if (mapbox.autoLoad) queueMicrotask(callback);
     }
-    on() {}
+    on(event: string, callback: (event: { error: Error }) => void) {
+      if (event === 'error') mapbox.errorCallback = callback;
+    }
     remove() {
       mapbox.remove();
     }
@@ -73,7 +80,18 @@ describe('ActivityRouteMapComponent', () => {
   ];
 
   beforeEach(() => {
-    Object.values(mapbox).forEach((spy) => spy.mockClear());
+    [
+      mapbox.constructor,
+      mapbox.addControl,
+      mapbox.addSource,
+      mapbox.addLayer,
+      mapbox.fitBounds,
+      mapbox.remove,
+      mapbox.resize,
+    ].forEach((spy) => spy.mockClear());
+    mapbox.autoLoad = true;
+    mapbox.loadCallback = null;
+    mapbox.errorCallback = null;
   });
 
   function create(accessToken = 'pk.test-token', route = locations) {
@@ -135,6 +153,25 @@ describe('ActivityRouteMapComponent', () => {
 
     expect(mapbox.constructor).not.toHaveBeenCalled();
     expect(logger.error).toHaveBeenCalled();
+  });
+
+  it('keeps loading after a recoverable Mapbox resource error', async () => {
+    mapbox.autoLoad = false;
+    const { fixture, logger } = create();
+    await vi.waitFor(() => expect(mapbox.errorCallback).not.toBeNull());
+
+    const resourceError = new Error('Temporary tile failure');
+    mapbox.errorCallback!({ error: resourceError });
+
+    expect(fixture.componentInstance.failed()).toBe(false);
+    expect(logger.error).toHaveBeenCalledWith(
+      'Mapbox reported a map resource error',
+      resourceError,
+    );
+
+    mapbox.loadCallback!();
+    expect(fixture.componentInstance.ready()).toBe(true);
+    fixture.destroy();
   });
 
   it('does not initialize Mapbox without a drawable line', async () => {

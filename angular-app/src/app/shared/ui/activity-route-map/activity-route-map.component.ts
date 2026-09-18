@@ -14,6 +14,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import type { Map as MapboxMap } from 'mapbox-gl';
 import type { ActivityGpsLocation } from '../../../core/interface/activity-gps-location.interface';
 import { LogWrapper } from '../../../core/logging/log-wrapper.service';
+import { MAPBOX_LOAD_TIMEOUT_MS } from './activity-route-map.constants';
 import { routeBounds, routeGeoJson } from './activity-route-map.helpers';
 
 @Component({
@@ -28,6 +29,7 @@ export class ActivityRouteMapComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly container = viewChild<ElementRef<HTMLDivElement>>('mapContainer');
   private map: MapboxMap | null = null;
+  private loadTimeout: ReturnType<typeof setTimeout> | null = null;
   private initialization = 0;
   readonly locations = input.required<readonly ActivityGpsLocation[]>();
   readonly accessToken = input.required<string>();
@@ -76,10 +78,14 @@ export class ActivityRouteMapComponent {
         attributionControl: true,
       });
       this.map = map;
+      this.loadTimeout = setTimeout(() => {
+        if (this.map === map && !this.ready()) this.fail('Mapbox map load timed out');
+      }, MAPBOX_LOAD_TIMEOUT_MS);
       map.addControl(new mapbox.NavigationControl(), 'top-right');
       map.addControl(new mapbox.FullscreenControl({ container }), 'top-right');
       map.once('load', () => {
         if (this.map !== map) return;
+        this.clearLoadTimeout();
         map.addSource('activity-route', { type: 'geojson', data: feature });
         map.addLayer({
           id: 'activity-route',
@@ -92,8 +98,8 @@ export class ActivityRouteMapComponent {
         this.loading.set(false);
         this.ready.set(true);
       });
-      map.on('error', () => {
-        if (!this.ready() && this.map === map) this.fail('Mapbox failed to load the map');
+      map.on('error', (event) => {
+        this.logger.error('Mapbox reported a map resource error', event.error);
       });
     } catch (error) {
       this.fail('Unable to initialize Mapbox', error);
@@ -109,7 +115,14 @@ export class ActivityRouteMapComponent {
   }
 
   private disposeMap(): void {
+    this.clearLoadTimeout();
     this.map?.remove();
     this.map = null;
+  }
+
+  private clearLoadTimeout(): void {
+    if (this.loadTimeout === null) return;
+    clearTimeout(this.loadTimeout);
+    this.loadTimeout = null;
   }
 }

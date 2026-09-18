@@ -1,13 +1,16 @@
 import 'fake-indexeddb/auto';
 import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { INDEXED_DB_NAME } from '../data/indexeddb/indexed-db.constants';
 import { LiveActivityLocationRepository } from './live-activity-location.repository';
 
 describe('LiveActivityLocationRepository', () => {
   let repository: LiveActivityLocationRepository;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [{ provide: INDEXED_DB_NAME, useValue: 'location-repository-test' }],
+    });
     repository = TestBed.inject(LiveActivityLocationRepository);
   });
 

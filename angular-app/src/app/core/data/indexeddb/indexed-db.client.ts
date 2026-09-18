@@ -1,11 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { INDEXED_DB_NAME } from './indexed-db.constants';
 
 type StoreName = 'hikes' | 'settings' | 'weights' | 'liveActivityLocations';
 
 @Injectable({ providedIn: 'root' })
 export class IndexedDbClient {
+  private readonly databaseName = inject(INDEXED_DB_NAME);
   private readonly database = new Promise<IDBDatabase>((resolve, reject) => {
-    const request = indexedDB.open('hike-log', 4);
+    const request = indexedDB.open(this.databaseName, 4);
     request.onupgradeneeded = () => {
       const db = request.result;
       if (!db.objectStoreNames.contains('hikes')) db.createObjectStore('hikes', { keyPath: 'id' });

@@ -2,12 +2,15 @@ import 'fake-indexeddb/auto';
 import { TestBed } from '@angular/core/testing';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { IndexedDbClient } from './indexed-db.client';
+import { INDEXED_DB_NAME } from './indexed-db.constants';
 
 describe('IndexedDbClient', () => {
   let service: IndexedDbClient;
 
   beforeAll(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [{ provide: INDEXED_DB_NAME, useValue: 'indexed-db-client-test' }],
+    });
     service = TestBed.inject(IndexedDbClient);
   });
 
